@@ -1,0 +1,22 @@
+[
+  {
+    "id": "mon-chinh",
+    "ten": "Món chính"
+  },
+  {
+    "id": "an-vat",
+    "ten": "Ăn vặt"
+  },
+  {
+    "id": "ca-phe",
+    "ten": "Cà phê & Tráng miệng"
+  },
+  {
+    "id": "do-han",
+    "ten": "Đồ Hàn"
+  },
+  {
+    "id": "hai-san",
+    "ten": "Hải sản"
+  }
+]
