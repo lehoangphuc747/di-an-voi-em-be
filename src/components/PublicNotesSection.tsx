@@ -19,10 +19,10 @@ interface PublicNote {
   content: string;
   created_at: string;
   updated_at: string;
-  profiles?: Array<{ // Thay đổi để chấp nhận mảng các profile
+  profiles?: Array<{
     first_name: string | null;
     last_name: string | null;
-  }> | null; // Có thể là null nếu không có profile
+  }> | null;
 }
 
 interface PublicNotesSectionProps {
@@ -59,7 +59,6 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
       showError('Lỗi khi tải ghi chú công khai.');
       setNotes([]);
     } else {
-      // Ép kiểu an toàn hơn bằng cách chuyển đổi qua unknown trước
       setNotes(data as unknown as PublicNote[]);
     }
     setLoading(false);
@@ -91,9 +90,8 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
 
     if (error) {
       console.error("Error adding public note:", error);
-      showError('Lỗi khi thêm ghi chú.');
+      showError(`Lỗi khi thêm ghi chú: ${error.message}`); // Hiển thị thông báo lỗi chi tiết
     } else if (data) {
-      // Ép kiểu an toàn hơn bằng cách chuyển đổi qua unknown trước
       setNotes(prev => [data as unknown as PublicNote, ...prev]);
       setNewNoteContent('');
       showSuccess('Đã thêm ghi chú công khai!');
@@ -115,7 +113,7 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
 
     if (error) {
       console.error("Error updating public note:", error);
-      showError('Lỗi khi cập nhật ghi chú.');
+      showError(`Lỗi khi cập nhật ghi chú: ${error.message}`); // Hiển thị thông báo lỗi chi tiết
     } else {
       setNotes(prev => prev.map(note => 
         note.id === noteId ? { ...note, content: editingNoteContent.trim(), updated_at: new Date().toISOString() } : note
@@ -141,7 +139,7 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
 
     if (error) {
       console.error("Error deleting public note:", error);
-      showError('Lỗi khi xóa ghi chú.');
+      showError(`Lỗi khi xóa ghi chú: ${error.message}`); // Hiển thị thông báo lỗi chi tiết
     } else {
       setNotes(prev => prev.filter(note => note.id !== noteId));
       showSuccess('Đã xóa ghi chú!');
@@ -150,7 +148,6 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
   };
 
   const getDisplayName = (note: PublicNote) => {
-    // Truy cập phần tử đầu tiên của mảng profiles một cách an toàn
     const profile = note.profiles?.[0]; 
     if (profile?.first_name || profile?.last_name) {
       return `${profile.first_name || ''} ${profile.last_name || ''}`.trim();
