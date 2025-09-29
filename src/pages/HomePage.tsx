@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { MonAn, LoaiMon } from "@/types/index";
 import { MonAnCard } from "@/components/MonAnCard";
 import { FilterSidebar, PriceRange } from "@/components/FilterSidebar";
@@ -9,6 +9,9 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { monAnData } from "@/data/loader";
 import loaiMonData from "@/data/loaimon.json";
+import { supabase } from "@/integrations/supabase/client";
+import { showError } from "@/utils/toast";
+import { Loader2 } from "lucide-react";
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
 
@@ -22,7 +25,9 @@ const PRICE_RANGES: (PriceRange & { min: number; max: number })[] = [
 ];
 
 const HomePage = () => {
-  const [monAnList] = useState<MonAn[]>(monAnData);
+  const [userSubmittedMonAn, setUserSubmittedMonAn] = useState<MonAn[]>([]);
+  const [loadingSubmitted, setLoadingSubmitted] = useState(true);
+
   const [loaiMonMap] = useState<Map<string, LoaiMon>>(() => {
     const map = new Map<string, LoaiMon>();
     loaiMonData.forEach(loai => map.set(loai.id, loai));
@@ -39,7 +44,49 @@ const HomePage = () => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  const allCities = useMemo(() => [...new Set(monAnData.map(m => m.thanhPho))], []);
+  const fetchUserSubmittedMonAn = useCallback(async () => {
+    setLoadingSubmitted(true);
+    const { data, error } = await supabase
+      .from('user_submitted_mon_an')
+      .select('*')
+      .eq('is_approved', true); // Chỉ lấy các món ăn đã được duyệt
+
+    if (error) {
+      console.error("Error fetching user submitted food items:", error);
+      showError('Lỗi khi tải món ăn do người dùng gửi.');
+      setUserSubmittedMonAn([]);
+    } else {
+      // Chuyển đổi tên cột từ snake_case sang camelCase để phù hợp với MonAn interface
+      const formattedData: MonAn[] = data.map(item => ({
+        id: item.id,
+        ten: item.ten,
+        loaiId: item.loai_id,
+        hinhAnh: item.hinh_anh || [],
+        moTa: item.mo_ta || '',
+        diaChi: item.dia_chi,
+        thanhPho: item.thanh_pho,
+        googleMapLink: item.google_map_link || '',
+        facebookLink: item.facebook_link || '',
+        tags: item.tags || [],
+        giaMin: item.gia_min || undefined,
+        giaMax: item.gia_max || undefined,
+        ngayTao: item.ngay_tao,
+      }));
+      setUserSubmittedMonAn(formattedData);
+    }
+    setLoadingSubmitted(false);
+  }, []);
+
+  useEffect(() => {
+    fetchUserSubmittedMonAn();
+  }, [fetchUserSubmittedMonAn]);
+
+  const allMonAn = useMemo(() => {
+    // Kết hợp dữ liệu tĩnh và dữ liệu từ Supabase
+    return [...monAnData, ...userSubmittedMonAn];
+  }, [monAnData, userSubmittedMonAn]);
+
+  const allCities = useMemo(() => [...new Set(allMonAn.map(m => m.thanhPho))], [allMonAn]);
   const allCategories = useMemo(() => [...loaiMonData], []);
 
   const handleCityChange = (city: string) => {
@@ -55,7 +102,7 @@ const HomePage = () => {
   };
 
   const filteredAndSortedMonAn = useMemo(() => {
-    let filtered = monAnList.filter(mon => {
+    let filtered = allMonAn.filter(mon => {
       const searchTermLower = debouncedSearchTerm.toLowerCase();
       const searchMatch = debouncedSearchTerm 
         ? mon.ten.toLowerCase().includes(searchTermLower) || 
@@ -100,7 +147,7 @@ const HomePage = () => {
     }
 
     return filtered;
-  }, [monAnList, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, sortOption]);
+  }, [allMonAn, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, sortOption]);
 
   const filterContent = (
     <FilterSidebar
@@ -149,7 +196,12 @@ const HomePage = () => {
           </Select>
         </div>
 
-        {filteredAndSortedMonAn.length > 0 ? (
+        {loadingSubmitted ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <span className="sr-only">Đang tải món ăn...</span>
+          </div>
+        ) : filteredAndSortedMonAn.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredAndSortedMonAn.map((monAn) => (
               <MonAnCard 
