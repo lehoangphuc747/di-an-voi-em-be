@@ -39,6 +39,11 @@ export const Header = () => {
             <Link to="/visited" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               Ăn rùi
             </Link>
+            {session && ( // Chỉ hiển thị nút "Thêm món ăn" khi người dùng đã đăng nhập
+              <Link to="/submit-food" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+                Thêm món ăn
+              </Link>
+            )}
           </nav>
         </div>
         <div className="flex items-center space-x-4">
