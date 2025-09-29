@@ -327,7 +327,7 @@ const SubmitFoodPage = () => {
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              )}
+            )}
             />
           </div>
 
