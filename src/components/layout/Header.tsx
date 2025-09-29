@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { Heart, UtensilsCrossed } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { UtensilsCrossed } from "lucide-react";
 
 export const Header = () => {
   return (
@@ -21,14 +20,6 @@ export const Header = () => {
             Ăn rùi
           </Link>
         </nav>
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <Link to="/favorites">
-            <Button variant="ghost" size="icon">
-              <Heart className="h-5 w-5" />
-              <span className="sr-only">Yêu thích</span>
-            </Button>
-          </Link>
-        </div>
       </div>
     </header>
   );
