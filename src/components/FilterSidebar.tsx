@@ -2,6 +2,7 @@ import { LoaiMon } from "@/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 
 interface FilterSidebarProps {
   cities: string[];
@@ -10,7 +11,12 @@ interface FilterSidebarProps {
   onCityChange: (city: string) => void;
   selectedCategories: string[];
   onCategoryChange: (categoryId: string) => void;
+  priceRange: [number, number];
+  onPriceChange: (value: [number, number]) => void;
+  maxPrice: number;
 }
+
+const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
 export const FilterSidebar = ({
   cities,
@@ -19,11 +25,13 @@ export const FilterSidebar = ({
   onCityChange,
   selectedCategories,
   onCategoryChange,
+  priceRange,
+  onPriceChange,
+  maxPrice,
 }: FilterSidebarProps) => {
   return (
-    <aside className="sticky top-20 h-fit">
-      <h2 className="text-xl font-semibold mb-4">Bộ lọc</h2>
-      <Accordion type="multiple" defaultValue={['cities', 'categories']} className="w-full">
+    <div className="space-y-6">
+      <Accordion type="multiple" defaultValue={['cities', 'categories', 'price']} className="w-full">
         <AccordionItem value="cities">
           <AccordionTrigger>Thành phố</AccordionTrigger>
           <AccordionContent>
@@ -35,7 +43,7 @@ export const FilterSidebar = ({
                     checked={selectedCities.includes(city)}
                     onCheckedChange={() => onCityChange(city)}
                   />
-                  <Label htmlFor={`city-${city}`} className="font-normal">
+                  <Label htmlFor={`city-${city}`} className="font-normal cursor-pointer">
                     {city}
                   </Label>
                 </div>
@@ -54,7 +62,7 @@ export const FilterSidebar = ({
                     checked={selectedCategories.includes(category.id)}
                     onCheckedChange={() => onCategoryChange(category.id)}
                   />
-                  <Label htmlFor={`cat-${category.id}`} className="font-normal">
+                  <Label htmlFor={`cat-${category.id}`} className="font-normal cursor-pointer">
                     {category.ten}
                   </Label>
                 </div>
@@ -62,7 +70,25 @@ export const FilterSidebar = ({
             </div>
           </AccordionContent>
         </AccordionItem>
+        <AccordionItem value="price">
+          <AccordionTrigger>Khoảng giá</AccordionTrigger>
+          <AccordionContent>
+            <div className="p-2">
+              <Slider
+                min={0}
+                max={maxPrice}
+                step={10000}
+                value={priceRange}
+                onValueChange={onPriceChange}
+              />
+              <div className="flex justify-between text-sm text-muted-foreground mt-2">
+                <span>{formatPrice(priceRange[0])}</span>
+                <span>{formatPrice(priceRange[1])}</span>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
       </Accordion>
-    </aside>
+    </div>
   );
 };
