@@ -11,7 +11,8 @@ import { Loader2, MessageSquare, Edit, Trash2, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'; // Import Accordion components
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Profile } from '@/types'; // Import Profile interface
 
 interface PublicNote {
   id: string;
@@ -20,8 +21,7 @@ interface PublicNote {
   content: string;
   created_at: string;
   updated_at: string;
-  author_first_name?: string | null; // Thêm trường này để lưu tên tác giả
-  author_last_name?: string | null;  // Thêm trường này để lưu họ tác giả
+  author_nickname?: string | null; // Thay đổi thành nickname
 }
 
 interface PublicNotesSectionProps {
@@ -41,13 +41,13 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
     setLoading(true);
     const { data: notesData, error: notesError } = await supabase
       .from('public_notes')
-      .select(`id, mon_an_id, user_id, content, created_at, updated_at`) // Chỉ chọn các trường trực tiếp của ghi chú
+      .select(`id, mon_an_id, user_id, content, created_at, updated_at`)
       .eq('mon_an_id', monAnId)
       .order('created_at', { ascending: false });
 
     if (notesError) {
       console.error("Error fetching public notes:", notesError);
-      showError('Lỗi khi tải ghi chú công khai.');
+      showError('Lỗi khi tải ghi chú.');
       setNotes([]);
       setLoading(false);
       return;
@@ -59,33 +59,28 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
       return;
     }
 
-    // Lấy tất cả các user_id duy nhất từ các ghi chú
     const uniqueUserIds = [...new Set(notesData.map(note => note.user_id))];
 
-    // Lấy thông tin hồ sơ cho các user_id này
     const { data: profilesData, error: profilesError } = await supabase
       .from('profiles')
-      .select('id, first_name, last_name')
+      .select('id, nickname') // Chỉ chọn nickname
       .in('id', uniqueUserIds);
 
     if (profilesError) {
       console.error("Error fetching profiles for notes:", profilesError);
       showError('Lỗi khi tải thông tin người dùng cho ghi chú.');
-      // Tiếp tục với ghi chú mà không có dữ liệu hồ sơ nếu có lỗi
-      setNotes(notesData.map(note => ({ ...note, author_first_name: null, author_last_name: null })));
+      setNotes(notesData.map(note => ({ ...note, author_nickname: null })));
       setLoading(false);
       return;
     }
 
-    const profilesMap = new Map(profilesData.map(profile => [profile.id, profile]));
+    const profilesMap = new Map<string, Profile>(profilesData.map(profile => [profile.id, profile]));
 
-    // Ghép thông tin hồ sơ vào ghi chú
     const mergedNotes: PublicNote[] = notesData.map(note => {
       const profile = profilesMap.get(note.user_id);
       return {
         ...note,
-        author_first_name: profile?.first_name || null,
-        author_last_name: profile?.last_name || null,
+        author_nickname: profile?.nickname || null,
       };
     });
 
@@ -106,23 +101,27 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
     const { data, error } = await supabase
       .from('public_notes')
       .insert({ mon_an_id: monAnId, user_id: user.id, content: newNoteContent.trim() })
-      .select(`id, mon_an_id, user_id, content, created_at, updated_at`) // Chọn các trường trực tiếp
+      .select(`id, mon_an_id, user_id, content, created_at, updated_at`)
       .single();
 
     if (error) {
       console.error("Error adding public note:", error);
       showError(`Lỗi khi thêm ghi chú: ${error.message}`);
     } else if (data) {
-      // Sau khi thêm thành công, chúng ta cần lấy lại thông tin profile cho ghi chú mới
-      // hoặc thêm thủ công nếu profile của user hiện tại đã có sẵn
+      // Lấy nickname từ user_metadata hoặc từ profile nếu đã có
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('nickname')
+        .eq('id', user.id)
+        .single();
+
       const newNoteWithProfile: PublicNote = {
         ...data,
-        author_first_name: user.user_metadata.first_name || null, // Giả định user_metadata có first_name
-        author_last_name: user.user_metadata.last_name || null,   // Giả định user_metadata có last_name
+        author_nickname: profileData?.nickname || user.user_metadata.nickname || null,
       };
       setNotes(prev => [newNoteWithProfile, ...prev]);
       setNewNoteContent('');
-      showSuccess('Đã thêm ghi chú công khai!');
+      showSuccess('Đã thêm ghi chú!');
     }
     setSubmitting(false);
   };
@@ -176,10 +175,7 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
   };
 
   const getDisplayName = (note: PublicNote) => {
-    if (note.author_first_name || note.author_last_name) {
-      return `${note.author_first_name || ''} ${note.author_last_name || ''}`.trim();
-    }
-    return 'Người dùng ẩn danh';
+    return note.author_nickname || 'Người dùng ẩn danh';
   };
 
   return (
@@ -189,16 +185,16 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
           <CardHeader className="p-0">
             <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
               <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-6 w-6" /> Ghi chú công khai
+                <MessageSquare className="h-6 w-6" /> Notes
               </CardTitle>
             </AccordionTrigger>
           </CardHeader>
           <AccordionContent className="px-6 pb-6">
             <CardContent className="p-0">
-              {user && (
+              {user ? (
                 <div className="mb-6 space-y-2">
                   <Textarea
-                    placeholder="Viết ghi chú công khai về món ăn này..."
+                    placeholder="Viết ghi chú về món ăn này..."
                     value={newNoteContent}
                     onChange={(e) => setNewNoteContent(e.target.value)}
                     rows={3}
@@ -209,6 +205,10 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
                     <Send className="h-4 w-4 mr-2" /> Gửi ghi chú
                   </Button>
                 </div>
+              ) : (
+                <p className="text-muted-foreground text-center py-4">
+                  Đăng nhập để thêm ghi chú của bạn!
+                </p>
               )}
 
               {loading ? (
@@ -217,7 +217,7 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
                   <span className="sr-only">Đang tải ghi chú...</span>
                 </div>
               ) : notes.length === 0 ? (
-                <p className="text-muted-foreground text-center py-8">Chưa có ghi chú công khai nào. Hãy là người đầu tiên!</p>
+                <p className="text-muted-foreground text-center py-8">Chưa có ghi chú nào. Hãy là người đầu tiên!</p>
               ) : (
                 <div className="space-y-4">
                   {notes.map((note) => (

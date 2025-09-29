@@ -12,12 +12,12 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2, Plus } from 'lucide-react'; // Import Plus icon
-import { useNavigate, Link } from 'react-router-dom'; // Import useNavigate and Link
+import { Loader2, Plus } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Profile } from '@/types'; // Import Profile interface
 
 const profileFormSchema = z.object({
-  first_name: z.string().min(1, { message: "Tên không được để trống." }).max(50, { message: "Tên quá dài." }).optional().or(z.literal('')),
-  last_name: z.string().min(1, { message: "Họ không được để trống." }).max(50, { message: "Họ quá dài." }).optional().or(z.literal('')),
+  nickname: z.string().min(1, { message: "Nickname không được để trống." }).max(50, { message: "Nickname quá dài." }).optional().or(z.literal('')),
 });
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
@@ -25,13 +25,12 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 const ProfilePage = () => {
   const { user, isLoading: isSessionLoading } = useSession();
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); // Khởi tạo useNavigate
+  const navigate = useNavigate();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      first_name: '',
-      last_name: '',
+      nickname: '',
     },
   });
 
@@ -44,7 +43,7 @@ const ProfilePage = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
-        .select('first_name, last_name, avatar_url')
+        .select('nickname, avatar_url') // Chỉ chọn nickname
         .eq('id', user.id)
         .single();
 
@@ -53,8 +52,7 @@ const ProfilePage = () => {
         showError('Lỗi khi tải thông tin hồ sơ.');
       } else if (data) {
         form.reset({
-          first_name: data.first_name || '',
-          last_name: data.last_name || '',
+          nickname: data.nickname || '',
         });
       }
       setLoading(false);
@@ -72,8 +70,7 @@ const ProfilePage = () => {
     const { error } = await supabase
       .from('profiles')
       .update({
-        first_name: values.first_name,
-        last_name: values.last_name,
+        nickname: values.nickname,
         updated_at: new Date().toISOString(),
       })
       .eq('id', user.id);
@@ -88,16 +85,16 @@ const ProfilePage = () => {
   };
 
   const handleSignOut = async () => {
-    setLoading(true); // Đặt loading khi đang đăng xuất
+    setLoading(true);
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error("Error signing out:", error);
       showError("Lỗi khi đăng xuất.");
     } else {
       showSuccess("Đã đăng xuất thành công!");
-      navigate('/login'); // Chuyển hướng về trang đăng nhập sau khi đăng xuất
+      navigate('/login');
     }
-    setLoading(false); // Tắt loading sau khi hoàn tất
+    setLoading(false);
   };
 
   if (isSessionLoading || loading) {
@@ -126,25 +123,12 @@ const ProfilePage = () => {
 
               <FormField
                 control={form.control}
-                name="first_name"
+                name="nickname"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Tên</FormLabel>
+                    <FormLabel>Nickname</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nhập tên của bạn" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="last_name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Họ</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nhập họ của bạn" {...field} />
+                      <Input placeholder="Nhập nickname của bạn" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

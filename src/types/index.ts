@@ -26,3 +26,10 @@ export interface YeuThich {
   monAnId: string;
   ghiChu?: string;
 }
+
+export interface Profile {
+  id: string;
+  nickname?: string | null;
+  avatar_url?: string | null;
+  updated_at?: string;
+}
