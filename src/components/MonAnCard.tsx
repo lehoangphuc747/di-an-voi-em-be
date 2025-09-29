@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useFoodLists } from "@/hooks/use-food-lists";
-import { CheckCircle2, Bookmark } from "lucide-react";
+import { CheckCircle2, Bookmark, Heart } from "lucide-react"; // Import Heart icon
 
 interface MonAnCardProps {
   monAn: MonAn;
@@ -15,9 +15,10 @@ const formatPrice = (price: number) => {
 };
 
 export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
-  const { isVisited, isWishlist } = useFoodLists();
+  const { isVisited, isWishlist, isFavorite } = useFoodLists(); // Get isFavorite
   const hasBeenVisited = isVisited(monAn.id);
   const isOnWishlist = isWishlist(monAn.id);
+  const isCurrentlyFavorite = isFavorite(monAn.id); // Check if it's a favorite
 
   const priceRange =
     monAn.giaMin && monAn.giaMax
@@ -42,6 +43,11 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
           <div className="flex justify-between items-start mb-2 gap-2">
             <CardTitle className="text-lg font-semibold">{monAn.ten}</CardTitle>
             <div className="flex items-center space-x-1 flex-shrink-0">
+              {isCurrentlyFavorite && ( // Conditionally render Heart icon
+                <div className="text-red-500" title="Yêu thích">
+                  <Heart className="h-5 w-5 fill-current" />
+                </div>
+              )}
               {isOnWishlist && (
                 <div className="text-blue-500" title="Chờ embe">
                   <Bookmark className="h-5 w-5 fill-current" />
