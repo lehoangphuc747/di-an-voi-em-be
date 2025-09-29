@@ -2,8 +2,7 @@ import { useParams, Navigate } from "react-router-dom";
 import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Separator } from "@/components/ui/separator";
 import { useFoodLists } from "@/hooks/use-food-lists";
 import { showError, showSuccess } from "@/utils/toast";
 import monAnData from "@/data/monan.json";
@@ -61,92 +60,94 @@ const DetailPage = () => {
       ? `Dưới ${formatPrice(monAn.giaMax)}`
       : monAn.giaMin
       ? `Từ ${formatPrice(monAn.giaMin)}`
-      : "Không có thông tin";
+      : "Chưa cập nhật";
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <Card>
-        <CardHeader className="p-0">
-           <Carousel className="w-full rounded-t-lg overflow-hidden">
-            <CarouselContent>
-              {(monAn.hinhAnh && monAn.hinhAnh.length > 0) ? monAn.hinhAnh.map((img, index) => (
-                <CarouselItem key={index}>
-                  <div className="aspect-w-16 aspect-h-9">
-                    <img src={img} alt={`${monAn.ten} - ảnh ${index + 1}`} className="w-full h-80 object-cover" />
-                  </div>
-                </CarouselItem>
-              )) : (
-                 <CarouselItem>
-                   <div className="aspect-w-16 aspect-h-9">
-                    <img src="/placeholder.svg" alt="Ảnh mặc định" className="w-full h-80 object-cover" />
-                   </div>
-                </CarouselItem>
-              )}
-            </CarouselContent>
-            <CarouselPrevious className="left-4" />
-            <CarouselNext className="right-4" />
-          </Carousel>
-        </CardHeader>
-        <CardContent className="p-6">
-          <CardTitle className="text-3xl font-bold mb-4">{monAn.ten}</CardTitle>
-          
-          <div className="flex flex-wrap gap-2 mb-4">
-            {monAn.tags.map(tag => <Badge key={tag}>{tag}</Badge>)}
-          </div>
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Phần thông tin */}
+      <div className="mb-8">
+        <h1 className="text-3xl sm:text-4xl font-bold mb-4">{monAn.ten}</h1>
+        
+        <div className="flex flex-wrap gap-2 mb-4">
+          {monAn.tags.map(tag => <Badge key={tag}>{tag}</Badge>)}
+        </div>
 
-          <p className="text-muted-foreground mb-6">{monAn.moTa}</p>
+        <p className="text-muted-foreground mb-6">{monAn.moTa}</p>
 
-          <div className="space-y-4 mb-6">
-            <div className="flex items-start">
-              <MapPin className="h-5 w-5 mr-3 mt-1 flex-shrink-0" />
-              <div>
-                <p className="font-semibold">{monAn.diaChi}</p>
-                <p className="text-sm text-muted-foreground">{monAn.thanhPho}</p>
-              </div>
-            </div>
-             <div className="flex items-center">
-              <span className="font-semibold mr-2">Giá:</span>
-              <span>{priceRange}</span>
+        <div className="space-y-4 mb-6">
+          <div className="flex items-start">
+            <MapPin className="h-5 w-5 mr-3 mt-1 flex-shrink-0 text-primary" />
+            <div>
+              <p className="font-semibold">{monAn.diaChi}</p>
+              <p className="text-sm text-muted-foreground">{monAn.thanhPho}</p>
             </div>
           </div>
+           <div className="flex items-center">
+            <span className="font-semibold mr-2 text-primary">Giá:</span>
+            <span>{priceRange}</span>
+          </div>
+        </div>
 
-          <div className="flex flex-wrap gap-2">
-            <a href={monAn.googleMapLink} target="_blank" rel="noopener noreferrer">
-              <Button>
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Mở trên Google Maps
+        <div className="flex flex-wrap gap-2 mb-6">
+          <a href={monAn.googleMapLink} target="_blank" rel="noopener noreferrer">
+            <Button>
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Mở trên Google Maps
+            </Button>
+          </a>
+          {monAn.facebookLink && (
+            <a href={monAn.facebookLink} target="_blank" rel="noopener noreferrer">
+              <Button variant="outline">
+                <Facebook className="h-4 w-4 mr-2" />
+                Facebook
               </Button>
             </a>
-            {monAn.facebookLink && (
-              <a href={monAn.facebookLink} target="_blank" rel="noopener noreferrer">
-                <Button variant="outline">
-                  <Facebook className="h-4 w-4 mr-2" />
-                  Facebook
-                </Button>
-              </a>
-            )}
-            <Button variant="outline" onClick={handleCopyAddress}>
-              <Copy className="h-4 w-4 mr-2" />
-              Sao chép địa chỉ
-            </Button>
+          )}
+          <Button variant="outline" onClick={handleCopyAddress}>
+            <Copy className="h-4 w-4 mr-2" />
+            Sao chép địa chỉ
+          </Button>
+        </div>
+        
+        <Separator className="my-6" />
+
+        <div className="flex flex-wrap gap-2">
+           <Button variant={isCurrentlyFavorite ? "destructive" : "outline"} onClick={handleToggleFavorite}>
+            <Heart className={`h-4 w-4 mr-2 ${isCurrentlyFavorite ? 'fill-current' : ''}`} />
+            {isCurrentlyFavorite ? "Bỏ yêu thích" : "Yêu thích"}
+          </Button>
+          <Button variant={isCurrentlyOnWishlist ? "secondary" : "outline"} onClick={handleToggleWishlist}>
+            <Bookmark className={`h-4 w-4 mr-2 ${isCurrentlyOnWishlist ? 'fill-current' : ''}`} />
+            {isCurrentlyOnWishlist ? "Bỏ lưu 'Chờ embe'" : "Lưu 'Chờ embe'"}
+          </Button>
+          <Button variant={hasBeenVisited ? "secondary" : "outline"} onClick={handleToggleVisited}>
+            <CheckCircle2 className={`h-4 w-4 mr-2 ${hasBeenVisited ? 'text-green-500' : ''}`} />
+            {hasBeenVisited ? "Bỏ đánh dấu 'Ăn rùi'" : "Đánh dấu 'Ăn rùi'"}
+          </Button>
+        </div>
+      </div>
+
+      {/* Phần hình ảnh */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Hình ảnh</h2>
+        {(monAn.hinhAnh && monAn.hinhAnh.length > 0 && monAn.hinhAnh[0] !== '/placeholder.svg') ? (
+          <div className="space-y-4">
+            {monAn.hinhAnh.map((img, index) => (
+              <div key={index} className="rounded-lg overflow-hidden shadow-lg">
+                <img 
+                  src={img} 
+                  alt={`${monAn.ten} - ảnh ${index + 1}`} 
+                  className="w-full h-auto object-cover" 
+                />
+              </div>
+            ))}
           </div>
-          <div className="border-t my-6"></div>
-          <div className="flex flex-wrap gap-2">
-             <Button variant={isCurrentlyFavorite ? "destructive" : "outline"} onClick={handleToggleFavorite}>
-              <Heart className={`h-4 w-4 mr-2 ${isCurrentlyFavorite ? 'fill-current' : ''}`} />
-              {isCurrentlyFavorite ? "Bỏ yêu thích" : "Yêu thích"}
-            </Button>
-            <Button variant={isCurrentlyOnWishlist ? "secondary" : "outline"} onClick={handleToggleWishlist}>
-              <Bookmark className={`h-4 w-4 mr-2 ${isCurrentlyOnWishlist ? 'fill-current' : ''}`} />
-              {isCurrentlyOnWishlist ? "Bỏ lưu 'Chờ embe'" : "Lưu 'Chờ embe'"}
-            </Button>
-            <Button variant={hasBeenVisited ? "secondary" : "outline"} onClick={handleToggleVisited}>
-              <CheckCircle2 className={`h-4 w-4 mr-2 ${hasBeenVisited ? 'text-green-500' : ''}`} />
-              {hasBeenVisited ? "Bỏ đánh dấu 'Ăn rùi'" : "Đánh dấu 'Ăn rùi'"}
-            </Button>
+        ) : (
+          <div className="text-center py-12 border-2 border-dashed rounded-lg">
+            <p className="text-muted-foreground">Chưa có hình ảnh cho món này.</p>
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </div>
     </div>
   );
 };
