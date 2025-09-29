@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Navigate } from "react-router-dom";
+import { useParams, Navigate, Link } from "react-router-dom"; // Import Link
 import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, Phone, List, LayoutGrid } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -91,7 +91,11 @@ const DetailPage = () => {
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">{monAn.ten}</h1>
           <div className="flex flex-wrap gap-2 mb-4">
-            {monAn.tags.map(tag => <Badge key={tag}>{tag}</Badge>)}
+            {monAn.tags.map(tag => (
+              <Link key={tag} to={`/?searchTerm=${encodeURIComponent(tag)}`}>
+                <Badge className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors">{tag}</Badge>
+              </Link>
+            ))}
           </div>
           <p className="text-muted-foreground mb-6">{monAn.moTa}</p>
           <div className="space-y-4 mb-6">

@@ -12,6 +12,7 @@ import loaiMonData from "@/data/loaimon.json";
 import { supabase } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
 import { Loader2 } from "lucide-react";
+import { useSearchParams } from "react-router-dom"; // Import useSearchParams
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
 
@@ -27,6 +28,7 @@ const PRICE_RANGES: (PriceRange & { min: number; max: number })[] = [
 const HomePage = () => {
   const [userSubmittedMonAn, setUserSubmittedMonAn] = useState<MonAn[]>([]);
   const [loadingSubmitted, setLoadingSubmitted] = useState(true);
+  const [searchParams] = useSearchParams(); // Initialize useSearchParams
 
   const [loaiMonMap] = useState<Map<string, LoaiMon>>(() => {
     const map = new Map<string, LoaiMon>();
@@ -36,13 +38,22 @@ const HomePage = () => {
 
   const isMobile = useIsMobile();
 
-  const [searchTerm, setSearchTerm] = useState("");
+  // Initialize searchTerm from URL query parameter
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('searchTerm') || "");
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPriceRangeId, setSelectedPriceRangeId] = useState<string>('all');
   const [sortOption, setSortOption] = useState<SortOption>("newest");
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+  // Effect to update searchTerm if URL search parameter changes (e.g., navigating from a tag)
+  useEffect(() => {
+    const urlSearchTerm = searchParams.get('searchTerm') || '';
+    if (searchTerm !== urlSearchTerm) {
+      setSearchTerm(urlSearchTerm);
+    }
+  }, [searchParams]); // Depend on searchParams to react to URL changes
 
   const fetchUserSubmittedMonAn = useCallback(async () => {
     setLoadingSubmitted(true);
