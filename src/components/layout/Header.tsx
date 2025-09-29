@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { UtensilsCrossed } from "lucide-react";
+import { UtensilsCrossed, Plus } from "lucide-react"; // Import Plus icon
 import { useSession } from "@/components/SessionContextProvider";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,9 +39,9 @@ export const Header = () => {
             <Link to="/visited" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               Ăn rùi
             </Link>
-            {session && ( // Chỉ hiển thị nút "Thêm món ăn" khi người dùng đã đăng nhập
+            {session && (
               <Link to="/submit-food" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-                Thêm món ăn
+                <Plus className="h-4 w-4" /> {/* Thay thế văn bản bằng icon Plus */}
               </Link>
             )}
           </nav>
