@@ -11,6 +11,7 @@ import { Loader2, MessageSquare, Edit, Trash2, Send } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'; // Import Accordion components
 
 interface PublicNote {
   id: string;
@@ -183,107 +184,115 @@ export const PublicNotesSection = ({ monAnId }: PublicNotesSectionProps) => {
 
   return (
     <Card className="mt-8">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageSquare className="h-6 w-6" /> Ghi chú công khai
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {user && (
-          <div className="mb-6 space-y-2">
-            <Textarea
-              placeholder="Viết ghi chú công khai về món ăn này..."
-              value={newNoteContent}
-              onChange={(e) => setNewNoteContent(e.target.value)}
-              rows={3}
-              disabled={submitting}
-            />
-            <Button onClick={handleAddNote} disabled={submitting || !newNoteContent.trim()}>
-              {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              <Send className="h-4 w-4 mr-2" /> Gửi ghi chú
-            </Button>
-          </div>
-        )}
-
-        {loading ? (
-          <div className="flex justify-center items-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <span className="sr-only">Đang tải ghi chú...</span>
-          </div>
-        ) : notes.length === 0 ? (
-          <p className="text-muted-foreground text-center py-8">Chưa có ghi chú công khai nào. Hãy là người đầu tiên!</p>
-        ) : (
-          <div className="space-y-4">
-            {notes.map((note) => (
-              <div key={note.id} className="border rounded-lg p-4 bg-card">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-semibold text-sm">{getDisplayName(note)}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(note.created_at), { addSuffix: true, locale: vi })}
-                  </span>
+      <Accordion type="single" collapsible defaultValue="public-notes">
+        <AccordionItem value="public-notes">
+          <CardHeader className="p-0">
+            <AccordionTrigger className="px-6 py-4 text-left hover:no-underline">
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-6 w-6" /> Ghi chú công khai
+              </CardTitle>
+            </AccordionTrigger>
+          </CardHeader>
+          <AccordionContent className="px-6 pb-6">
+            <CardContent className="p-0">
+              {user && (
+                <div className="mb-6 space-y-2">
+                  <Textarea
+                    placeholder="Viết ghi chú công khai về món ăn này..."
+                    value={newNoteContent}
+                    onChange={(e) => setNewNoteContent(e.target.value)}
+                    rows={3}
+                    disabled={submitting}
+                  />
+                  <Button onClick={handleAddNote} disabled={submitting || !newNoteContent.trim()}>
+                    {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    <Send className="h-4 w-4 mr-2" /> Gửi ghi chú
+                  </Button>
                 </div>
-                {editingNoteId === note.id ? (
-                  <div className="space-y-2">
-                    <Textarea
-                      value={editingNoteContent}
-                      onChange={(e) => setEditingNoteContent(e.target.value)}
-                      rows={3}
-                      disabled={submitting}
-                    />
-                    <div className="flex gap-2">
-                      <Button size="sm" onClick={() => handleUpdateNote(note.id)} disabled={submitting || !editingNoteContent.trim()}>
-                        {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Lưu
-                      </Button>
-                      <Button size="sm" variant="ghost" onClick={() => {
-                        setEditingNoteId(null);
-                        setEditingNoteContent('');
-                      }} disabled={submitting}>
-                        Hủy
-                      </Button>
+              )}
+
+              {loading ? (
+                <div className="flex justify-center items-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                  <span className="sr-only">Đang tải ghi chú...</span>
+                </div>
+              ) : notes.length === 0 ? (
+                <p className="text-muted-foreground text-center py-8">Chưa có ghi chú công khai nào. Hãy là người đầu tiên!</p>
+              ) : (
+                <div className="space-y-4">
+                  {notes.map((note) => (
+                    <div key={note.id} className="border rounded-lg p-4 bg-card">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-semibold text-sm">{getDisplayName(note)}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDistanceToNow(new Date(note.created_at), { addSuffix: true, locale: vi })}
+                        </span>
+                      </div>
+                      {editingNoteId === note.id ? (
+                        <div className="space-y-2">
+                          <Textarea
+                            value={editingNoteContent}
+                            onChange={(e) => setEditingNoteContent(e.target.value)}
+                            rows={3}
+                            disabled={submitting}
+                          />
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => handleUpdateNote(note.id)} disabled={submitting || !editingNoteContent.trim()}>
+                              {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                              Lưu
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => {
+                              setEditingNoteId(null);
+                              setEditingNoteContent('');
+                            }} disabled={submitting}>
+                              Hủy
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-foreground whitespace-pre-wrap">{note.content}</p>
+                      )}
+                      
+                      {user && user.id === note.user_id && editingNoteId !== note.id && (
+                        <div className="flex gap-2 mt-3">
+                          <Button variant="ghost" size="sm" onClick={() => {
+                            setEditingNoteId(note.id);
+                            setEditingNoteContent(note.content);
+                          }}>
+                            <Edit className="h-4 w-4 mr-2" /> Sửa
+                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="destructive" size="sm">
+                                <Trash2 className="h-4 w-4 mr-2" /> Xóa
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Bạn có chắc chắn muốn xóa ghi chú này?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Hành động này không thể hoàn tác. Ghi chú sẽ bị xóa vĩnh viễn.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Hủy</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteNote(note.id)} disabled={submitting}>
+                                  {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                  Xóa
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-foreground whitespace-pre-wrap">{note.content}</p>
-                )}
-                
-                {user && user.id === note.user_id && editingNoteId !== note.id && (
-                  <div className="flex gap-2 mt-3">
-                    <Button variant="ghost" size="sm" onClick={() => {
-                      setEditingNoteId(note.id);
-                      setEditingNoteContent(note.content);
-                    }}>
-                      <Edit className="h-4 w-4 mr-2" /> Sửa
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="destructive" size="sm">
-                          <Trash2 className="h-4 w-4 mr-2" /> Xóa
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Bạn có chắc chắn muốn xóa ghi chú này?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Hành động này không thể hoàn tác. Ghi chú sẽ bị xóa vĩnh viễn.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Hủy</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDeleteNote(note.id)} disabled={submitting}>
-                            {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Xóa
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </Card>
   );
 };
