@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { UtensilsCrossed, Settings } from "lucide-react"; // Import Settings icon
+import { UtensilsCrossed, Settings, Heart, Bookmark, CheckCircle2, Plus } from "lucide-react"; // Import new icons
 import { useSession } from "@/components/SessionContextProvider";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,24 +30,33 @@ export const Header = () => {
             <UtensilsCrossed className="h-6 w-6" />
             <span className="font-bold">embe</span>
           </Link>
-          <nav className="flex items-center space-x-4 lg:space-x-6">
-            <Link to="/favorites" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Yêu thích
+          <nav className="flex items-center space-x-2 lg:space-x-4"> {/* Adjusted spacing for icons */}
+            <Link to="/favorites" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Yêu thích">
+              <Button variant="ghost" size="icon">
+                <Heart className="h-5 w-5" />
+                <span className="sr-only">Yêu thích</span>
+              </Button>
             </Link>
-            <Link to="/wishlist" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Chờ embe
+            <Link to="/wishlist" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Chờ embe">
+              <Button variant="ghost" size="icon">
+                <Bookmark className="h-5 w-5" />
+                <span className="sr-only">Chờ embe</span>
+              </Button>
             </Link>
-            <Link to="/visited" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Ăn rùi
+            <Link to="/visited" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Ăn rùi">
+              <Button variant="ghost" size="icon">
+                <CheckCircle2 className="h-5 w-5" />
+                <span className="sr-only">Ăn rùi</span>
+              </Button>
             </Link>
           </nav>
         </div>
         <div className="flex items-center space-x-4">
           {session ? (
-            <Link to="/profile" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              <Button variant="ghost" size="icon"> {/* Sử dụng Button để có styling nhất quán */}
+            <Link to="/profile" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Tài khoản">
+              <Button variant="ghost" size="icon">
                 <Settings className="h-5 w-5" />
-                <span className="sr-only">Tài khoản</span> {/* Dành cho khả năng tiếp cận */}
+                <span className="sr-only">Tài khoản</span>
               </Button>
             </Link>
           ) : (
