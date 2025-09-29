@@ -29,9 +29,8 @@ export const SessionContextProvider = ({ children }: { children: React.ReactNode
       } else if (event === 'INITIAL_SESSION') {
         setSession(currentSession);
         setUser(currentSession?.user || null);
-      } else if (event === 'AUTH_ERROR') {
-        showError('Lỗi xác thực: Vui lòng thử lại.');
       }
+      // Removed: else if (event === 'AUTH_ERROR') as it's not a valid event type for onAuthStateChange
       setIsLoading(false);
     });
 
@@ -39,6 +38,10 @@ export const SessionContextProvider = ({ children }: { children: React.ReactNode
     supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
       setSession(initialSession);
       setUser(initialSession?.user || null);
+      setIsLoading(false);
+    }).catch((error) => {
+      console.error("Error fetching initial session:", error);
+      showError('Lỗi khi tải phiên đăng nhập ban đầu.');
       setIsLoading(false);
     });
 
