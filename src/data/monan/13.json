@@ -1,0 +1,17 @@
+{
+  "id": "13",
+  "ten": "Ốc Mỹ Anh",
+  "loaiId": "hai-san",
+  "hinhAnh": [
+    "https://via.placeholder.com/400x250?text=Oc+My+Anh"
+  ],
+  "moTa": "Quán Ốc Mỹ Anh nổi tiếng với các món ốc tươi ngon, đa dạng cách chế biến. Giờ mở cửa: 7:30 AM–10 PM. Liên hệ: +84902127953.",
+  "diaChi": "42 Đ. Lương Định Của, Ngọc Hiệp, Nha Trang, Khánh Hòa 650000, Vietnam",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://maps.app.goo.gl/exampleOcMyAnh",
+  "facebookLink": "",
+  "tags": ["ốc", "hải sản", "nha trang", "ăn vặt"],
+  "giaMin": 100000,
+  "giaMax": 200000,
+  "ngayTao": "2024-07-27T12:00:00Z"
+}
