@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { MonAn, LoaiMon } from "@/types/index";
 import { MonAnCard } from "@/components/MonAnCard";
-import { FilterSidebar } from "@/components/FilterSidebar";
+import { FilterSidebar, PriceRange } from "@/components/FilterSidebar";
 import { FilterDrawer } from "@/components/FilterDrawer";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -11,6 +11,15 @@ import { monAnData } from "@/data/loader";
 import loaiMonData from "@/data/loaimon.json";
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
+
+const PRICE_RANGES: (PriceRange & { min: number; max: number })[] = [
+  { id: 'all', ten: 'Tất cả', min: 0, max: Infinity },
+  { id: 'under-100', ten: 'Dưới 100k', min: 0, max: 100000 },
+  { id: '100-200', ten: '100k - 200k', min: 100000, max: 200000 },
+  { id: '200-300', ten: '200k - 300k', min: 200000, max: 300000 },
+  { id: '300-500', ten: '300k - 500k', min: 300000, max: 500000 },
+  { id: 'over-500', ten: 'Trên 500k', min: 500000, max: Infinity },
+];
 
 const HomePage = () => {
   const [monAnList] = useState<MonAn[]>(monAnData);
@@ -22,14 +31,10 @@ const HomePage = () => {
 
   const isMobile = useIsMobile();
 
-  const maxPrice = useMemo(() => {
-    return Math.max(...monAnData.map(m => m.giaMax || m.giaMin || 0));
-  }, []);
-
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, maxPrice]);
+  const [selectedPriceRangeId, setSelectedPriceRangeId] = useState<string>('all');
   const [sortOption, setSortOption] = useState<SortOption>("newest");
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -60,7 +65,19 @@ const HomePage = () => {
       const categoryMatch = selectedCategories.length > 0 
         ? selectedCategories.includes(mon.loaiId) 
         : true;
-      const priceMatch = (mon.giaMin || 0) >= priceRange[0] && (mon.giaMax || mon.giaMin || Infinity) <= priceRange[1];
+      
+      const priceMatch = (() => {
+        if (selectedPriceRangeId === 'all') return true;
+        const range = PRICE_RANGES.find(r => r.id === selectedPriceRangeId);
+        if (!range) return true;
+
+        // Món ăn phải có ít nhất một mức giá để so sánh
+        const itemPrice = mon.giaMin ?? mon.giaMax;
+        if (itemPrice === undefined) return false;
+
+        // Kiểm tra xem giá của món ăn có nằm trong khoảng đã chọn không
+        return itemPrice >= range.min && itemPrice < range.max;
+      })();
       
       return searchMatch && cityMatch && categoryMatch && priceMatch;
     });
@@ -82,7 +99,7 @@ const HomePage = () => {
     }
 
     return filtered;
-  }, [monAnList, debouncedSearchTerm, selectedCities, selectedCategories, priceRange, sortOption]);
+  }, [monAnList, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, sortOption]);
 
   const filterContent = (
     <FilterSidebar
@@ -92,9 +109,9 @@ const HomePage = () => {
       onCityChange={handleCityChange}
       selectedCategories={selectedCategories}
       onCategoryChange={handleCategoryChange}
-      priceRange={priceRange}
-      onPriceChange={(value) => setPriceRange(value as [number, number])}
-      maxPrice={maxPrice}
+      priceRanges={PRICE_RANGES}
+      selectedPriceRangeId={selectedPriceRangeId}
+      onPriceRangeChange={setSelectedPriceRangeId}
     />
   );
 

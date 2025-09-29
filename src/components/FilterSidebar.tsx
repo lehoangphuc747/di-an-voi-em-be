@@ -2,7 +2,12 @@ import { LoaiMon } from "@/types";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+export interface PriceRange {
+  id: string;
+  ten: string;
+}
 
 interface FilterSidebarProps {
   cities: string[];
@@ -11,12 +16,10 @@ interface FilterSidebarProps {
   onCityChange: (city: string) => void;
   selectedCategories: string[];
   onCategoryChange: (categoryId: string) => void;
-  priceRange: [number, number];
-  onPriceChange: (value: [number, number]) => void;
-  maxPrice: number;
+  priceRanges: PriceRange[];
+  selectedPriceRangeId: string;
+  onPriceRangeChange: (id: string) => void;
 }
-
-const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
 export const FilterSidebar = ({
   cities,
@@ -25,9 +28,9 @@ export const FilterSidebar = ({
   onCityChange,
   selectedCategories,
   onCategoryChange,
-  priceRange,
-  onPriceChange,
-  maxPrice,
+  priceRanges,
+  selectedPriceRangeId,
+  onPriceRangeChange,
 }: FilterSidebarProps) => {
   return (
     <div className="space-y-6">
@@ -73,19 +76,20 @@ export const FilterSidebar = ({
         <AccordionItem value="price">
           <AccordionTrigger>Khoảng giá</AccordionTrigger>
           <AccordionContent>
-            <div className="p-2">
-              <Slider
-                min={0}
-                max={maxPrice}
-                step={10000}
-                value={priceRange}
-                onValueChange={onPriceChange}
-              />
-              <div className="flex justify-between text-sm text-muted-foreground mt-2">
-                <span>{formatPrice(priceRange[0])}</span>
-                <span>{formatPrice(priceRange[1])}</span>
-              </div>
-            </div>
+            <RadioGroup
+              value={selectedPriceRangeId}
+              onValueChange={onPriceRangeChange}
+              className="space-y-2 p-2"
+            >
+              {priceRanges.map((range) => (
+                <div key={range.id} className="flex items-center space-x-2">
+                  <RadioGroupItem value={range.id} id={`price-${range.id}`} />
+                  <Label htmlFor={`price-${range.id}`} className="font-normal cursor-pointer">
+                    {range.ten}
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
