@@ -8,11 +8,12 @@ export interface MonAn {
   id: string;
   ten: string;
   loaiId: string;
-  hinhAnh: string;
+  hinhAnh: string[];
   moTa: string;
   diaChi: string;
   thanhPho: string;
   googleMapLink: string;
+  facebookLink?: string;
   tags: string[];
   giaMin?: number;
   giaMax?: number;

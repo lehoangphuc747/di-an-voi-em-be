@@ -8,7 +8,7 @@ export const Header = () => {
       <div className="container flex h-14 items-center">
         <Link to="/" className="flex items-center space-x-2 mr-6">
           <UtensilsCrossed className="h-6 w-6" />
-          <span className="font-bold">Food Diary</span>
+          <span className="font-bold">Đi ăn with embe</span>
         </Link>
         <nav className="flex items-center space-x-4 lg:space-x-6">
           <Link to="/favorites" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">

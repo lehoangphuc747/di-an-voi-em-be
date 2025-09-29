@@ -1,8 +1,9 @@
 import { useParams, Navigate } from "react-router-dom";
-import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2 } from "lucide-react";
+import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useFoodLists } from "@/hooks/use-food-lists";
 import { showError, showSuccess } from "@/utils/toast";
 import monAnData from "@/data/monan.json";
@@ -66,7 +67,25 @@ const DetailPage = () => {
     <div className="max-w-4xl mx-auto">
       <Card>
         <CardHeader className="p-0">
-          <img src={monAn.hinhAnh} alt={monAn.ten} className="w-full h-64 object-cover rounded-t-lg" />
+           <Carousel className="w-full rounded-t-lg overflow-hidden">
+            <CarouselContent>
+              {(monAn.hinhAnh && monAn.hinhAnh.length > 0) ? monAn.hinhAnh.map((img, index) => (
+                <CarouselItem key={index}>
+                  <div className="aspect-w-16 aspect-h-9">
+                    <img src={img} alt={`${monAn.ten} - ảnh ${index + 1}`} className="w-full h-80 object-cover" />
+                  </div>
+                </CarouselItem>
+              )) : (
+                 <CarouselItem>
+                   <div className="aspect-w-16 aspect-h-9">
+                    <img src="/placeholder.svg" alt="Ảnh mặc định" className="w-full h-80 object-cover" />
+                   </div>
+                </CarouselItem>
+              )}
+            </CarouselContent>
+            <CarouselPrevious className="left-4" />
+            <CarouselNext className="right-4" />
+          </Carousel>
         </CardHeader>
         <CardContent className="p-6">
           <CardTitle className="text-3xl font-bold mb-4">{monAn.ten}</CardTitle>
@@ -98,6 +117,14 @@ const DetailPage = () => {
                 Mở trên Google Maps
               </Button>
             </a>
+            {monAn.facebookLink && (
+              <a href={monAn.facebookLink} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline">
+                  <Facebook className="h-4 w-4 mr-2" />
+                  Facebook
+                </Button>
+              </a>
+            )}
             <Button variant="outline" onClick={handleCopyAddress}>
               <Copy className="h-4 w-4 mr-2" />
               Sao chép địa chỉ

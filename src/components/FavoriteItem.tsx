@@ -41,7 +41,7 @@ export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
       <Link to={`/mon/${monAn.id}`} className="block">
         <CardHeader className="p-0">
           <img
-            src={monAn.hinhAnh}
+            src={monAn.hinhAnh[0] || '/placeholder.svg'}
             alt={monAn.ten}
             className="w-full h-40 object-cover"
           />

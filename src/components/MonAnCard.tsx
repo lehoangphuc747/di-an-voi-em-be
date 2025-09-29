@@ -37,7 +37,7 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
         )}
         <CardHeader className="p-0">
           <img
-            src={monAn.hinhAnh}
+            src={monAn.hinhAnh[0] || '/placeholder.svg'}
             alt={monAn.ten}
             className="w-full h-40 object-cover"
           />
