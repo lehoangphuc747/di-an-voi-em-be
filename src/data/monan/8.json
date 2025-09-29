@@ -1,0 +1,12 @@
+{
+  "id": "8",
+  "ten": "Hải sản Làng Chài",
+  "loaiId": "hai-san",
+  "hinhAnh": ["https://images.unsplash.com/photo-1559737558-2f5a35d80387?q=80&w=800"],
+  "moTa": "Hải sản tươi sống được đánh bắt trong ngày, chế biến đa dạng theo yêu cầu của thực khách.",
+  "diaChi": "Võ Nguyên Giáp, Vĩnh Ngọc, Nha Trang",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://maps.app.goo.gl/example8",
+  "tags": ["hải sản", "tươi sống", "view biển"],
+  "ngayTao": "2024-07-13T18:00:00Z"
+}

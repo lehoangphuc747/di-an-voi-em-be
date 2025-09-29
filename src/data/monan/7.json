@@ -1,0 +1,14 @@
+{
+  "id": "7",
+  "ten": "Bún chả cá Bà Năm",
+  "loaiId": "mon-chinh",
+  "hinhAnh": ["https://images.unsplash.com/photo-1597393353298-4533a2656334?q=80&w=800"],
+  "moTa": "Nước lèo thanh ngọt nấu từ xương cá, chả cá dai ngon, là món ăn đặc trưng của thành phố biển.",
+  "diaChi": "32 Phan Bội Châu, Xương Huân, Nha Trang",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://maps.app.goo.gl/example7",
+  "tags": ["bún", "đặc sản", "cá"],
+  "giaMin": 35000,
+  "giaMax": 55000,
+  "ngayTao": "2024-07-14T09:00:00Z"
+}

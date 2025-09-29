@@ -1,0 +1,12 @@
+{
+  "id": "3",
+  "ten": "Cheo Veooo Cafe",
+  "loaiId": "ca-phe",
+  "hinhAnh": ["https://images.unsplash.com/photo-1559925393-8be0ec4767c8?q=80&w=800"],
+  "moTa": "Quán cà phê có view thung lũng đèn cực chill, thích hợp để ngắm hoàng hôn và thư giãn.",
+  "diaChi": "116 Hùng Vương, Phường 11, Thành phố Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://maps.app.goo.gl/example3",
+  "tags": ["cafe", "view đẹp", "sống ảo"],
+  "ngayTao": "2024-07-18T16:00:00Z"
+}

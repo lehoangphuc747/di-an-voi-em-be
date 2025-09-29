@@ -1,6 +1,6 @@
 import { useFoodLists } from "@/hooks/use-food-lists";
 import { FavoriteItem } from "@/components/FavoriteItem";
-import monAnData from "@/data/monan.json";
+import { monAnData } from "@/data/loader";
 import loaiMonData from "@/data/loaimon.json";
 import { MonAn, LoaiMon } from "@/types";
 

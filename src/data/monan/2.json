@@ -1,0 +1,14 @@
+{
+  "id": "2",
+  "ten": "Bánh căn Nhà Chung",
+  "loaiId": "an-vat",
+  "hinhAnh": ["https://images.unsplash.com/photo-1623334044333-525d37a7577a?q=80&w=800"],
+  "moTa": "Bánh căn giòn rụm ăn kèm với xíu mại và nước mắm pha chua ngọt, một món ăn sáng không thể bỏ qua.",
+  "diaChi": "13 Nhà Chung, Phường 3, Thành phố Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://maps.app.goo.gl/example2",
+  "tags": ["bánh", "ăn sáng", "truyền thống"],
+  "giaMin": 30000,
+  "giaMax": 50000,
+  "ngayTao": "2024-07-19T08:00:00Z"
+}

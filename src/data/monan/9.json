@@ -1,0 +1,14 @@
+{
+  "id": "9",
+  "ten": "Bánh xèo chảo 85",
+  "loaiId": "an-vat",
+  "hinhAnh": ["https://images.unsplash.com/photo-1635331033543-3133d297a3a3?q=80&w=800"],
+  "moTa": "Bánh xèo giòn rụm với nhân tôm, thịt, giá đỗ, ăn kèm rau sống và nước chấm chua ngọt.",
+  "diaChi": "85 Tô Hiến Thành, Tân Lập, Nha Trang",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://maps.app.goo.gl/example9",
+  "tags": ["bánh xèo", "truyền thống"],
+  "giaMin": 20000,
+  "giaMax": 40000,
+  "ngayTao": "2024-07-12T17:00:00Z"
+}

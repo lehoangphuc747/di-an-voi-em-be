@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useIsMobile } from "@/hooks/use-mobile";
-import monAnData from "@/data/monan.json";
+import { monAnData } from "@/data/loader";
 import loaiMonData from "@/data/loaimon.json";
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";

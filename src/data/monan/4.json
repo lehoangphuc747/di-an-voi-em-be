@@ -1,0 +1,14 @@
+{
+  "id": "4",
+  "ten": "Bún bò Dì Sáu",
+  "loaiId": "mon-chinh",
+  "hinhAnh": ["https://images.unsplash.com/photo-1626078302349-4c8853341e3f?q=80&w=800"],
+  "moTa": "Tô bún bò đậm đà hương vị miền Trung, nước lèo ngọt xương, thịt bò mềm.",
+  "diaChi": "Hẻm 288 Trần Phú, Phường 1, Bảo Lộc",
+  "thanhPho": "Bảo Lộc",
+  "googleMapLink": "https://maps.app.goo.gl/example4",
+  "tags": ["bún bò", "truyền thống"],
+  "giaMin": 40000,
+  "giaMax": 60000,
+  "ngayTao": "2024-07-17T12:00:00Z"
+}
