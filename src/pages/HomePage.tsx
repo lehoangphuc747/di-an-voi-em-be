@@ -56,9 +56,12 @@ const HomePage = () => {
 
   const filteredAndSortedMonAn = useMemo(() => {
     let filtered = monAnList.filter(mon => {
+      const searchTermLower = debouncedSearchTerm.toLowerCase();
       const searchMatch = debouncedSearchTerm 
-        ? mon.ten.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) 
+        ? mon.ten.toLowerCase().includes(searchTermLower) || 
+          mon.tags.some(tag => tag.toLowerCase().includes(searchTermLower))
         : true;
+
       const cityMatch = selectedCities.length > 0 
         ? selectedCities.includes(mon.thanhPho) 
         : true;
@@ -71,11 +74,9 @@ const HomePage = () => {
         const range = PRICE_RANGES.find(r => r.id === selectedPriceRangeId);
         if (!range) return true;
 
-        // Món ăn phải có ít nhất một mức giá để so sánh
         const itemPrice = mon.giaMin ?? mon.giaMax;
         if (itemPrice === undefined) return false;
 
-        // Kiểm tra xem giá của món ăn có nằm trong khoảng đã chọn không
         return itemPrice >= range.min && itemPrice < range.max;
       })();
       
@@ -130,7 +131,7 @@ const HomePage = () => {
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <Input
             type="text"
-            placeholder="Tìm kiếm tên món ăn..."
+            placeholder="Tìm kiếm tên món ăn, tag..."
             className="flex-grow"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
