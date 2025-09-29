@@ -136,8 +136,11 @@ const DetailPage = () => {
           </div>
         </div>
 
+        {/* Phần ghi chú công khai */}
+        <PublicNotesSection monAnId={monAn.id} />
+
         {/* Phần hình ảnh */}
-        <div>
+        <div className="mt-8"> {/* Thêm margin-top để tạo khoảng cách */}
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">Hình ảnh</h2>
             <div className="flex items-center gap-1">
@@ -170,9 +173,6 @@ const DetailPage = () => {
             </div>
           )}
         </div>
-
-        {/* Phần ghi chú công khai */}
-        <PublicNotesSection monAnId={monAn.id} />
       </div>
 
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
