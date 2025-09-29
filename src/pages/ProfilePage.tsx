@@ -12,8 +12,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { Loader2, Plus } from 'lucide-react'; // Import Plus icon
+import { useNavigate, Link } from 'react-router-dom'; // Import useNavigate and Link
 
 const profileFormSchema = z.object({
   first_name: z.string().min(1, { message: "Tên không được để trống." }).max(50, { message: "Tên quá dài." }).optional().or(z.literal('')),
@@ -161,6 +161,15 @@ const ProfilePage = () => {
               </div>
             </form>
           </Form>
+
+          <div className="mt-8 pt-6 border-t">
+            <h3 className="text-xl font-semibold mb-4">Đóng góp của bạn</h3>
+            <Link to="/submit-food">
+              <Button className="w-full">
+                <Plus className="h-4 w-4 mr-2" /> Thêm món ăn mới
+              </Button>
+            </Link>
+          </div>
         </CardContent>
       </Card>
     </div>

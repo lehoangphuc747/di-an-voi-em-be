@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { UtensilsCrossed, Plus } from "lucide-react";
+import { UtensilsCrossed } from "lucide-react";
 import { useSession } from "@/components/SessionContextProvider";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -40,11 +40,6 @@ export const Header = () => {
             <Link to="/visited" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
               Ăn rùi
             </Link>
-            {session && (
-              <Link to="/submit-food" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary flex items-center">
-                <Plus className="h-4 w-4 mr-1" /> Thêm món
-              </Link>
-            )}
           </nav>
         </div>
         <div className="flex items-center space-x-4">
