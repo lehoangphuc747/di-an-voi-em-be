@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { UtensilsCrossed } from "lucide-react";
+import { UtensilsCrossed, Settings } from "lucide-react"; // Import Settings icon
 import { useSession } from "@/components/SessionContextProvider";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -45,7 +45,10 @@ export const Header = () => {
         <div className="flex items-center space-x-4">
           {session ? (
             <Link to="/profile" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
-              Tài khoản
+              <Button variant="ghost" size="icon"> {/* Sử dụng Button để có styling nhất quán */}
+                <Settings className="h-5 w-5" />
+                <span className="sr-only">Tài khoản</span> {/* Dành cho khả năng tiếp cận */}
+              </Button>
             </Link>
           ) : (
             <Link to="/login">
