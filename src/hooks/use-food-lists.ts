@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { YeuThich } from '@/types';
-
-const LISTS_KEY = 'food-diary-lists';
+import { supabase } from '@/integrations/supabase/client';
+import { useSession } from '@/components/SessionContextProvider';
+import { showError, showSuccess } from '@/utils/toast';
 
 interface FoodLists {
   favorites: YeuThich[];
@@ -16,44 +17,104 @@ const initialLists: FoodLists = {
 };
 
 export const useFoodLists = () => {
+  const { user, isLoading: isSessionLoading } = useSession();
   const [lists, setLists] = useState<FoodLists>(initialLists);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchFoodLists = useCallback(async () => {
+    if (!user) {
+      setLists(initialLists);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data: favoritesData, error: favoritesError } = await supabase
+        .from('favorites')
+        .select('mon_an_id, ghi_chu')
+        .eq('user_id', user.id);
+
+      if (favoritesError) throw favoritesError;
+
+      const { data: wishlistData, error: wishlistError } = await supabase
+        .from('wishlist')
+        .select('mon_an_id')
+        .eq('user_id', user.id);
+
+      if (wishlistError) throw wishlistError;
+
+      const { data: visitedData, error: visitedError } = await supabase
+        .from('visited')
+        .select('mon_an_id')
+        .eq('user_id', user.id);
+
+      if (visitedError) throw visitedError;
+
+      setLists({
+        favorites: favoritesData.map(item => ({ monAnId: item.mon_an_id, ghiChu: item.ghi_chu || '' })),
+        wishlist: wishlistData.map(item => item.mon_an_id),
+        visited: visitedData.map(item => item.mon_an_id),
+      });
+    } catch (error) {
+      console.error("Error fetching food lists:", error);
+      showError('Lỗi khi tải danh sách món ăn của bạn.');
+      setLists(initialLists);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
 
   useEffect(() => {
-    try {
-      const storedLists = localStorage.getItem(LISTS_KEY);
-      if (storedLists) {
-        const parsedLists = JSON.parse(storedLists);
-        setLists({
-          favorites: parsedLists.favorites || [],
-          wishlist: parsedLists.wishlist || [],
-          visited: parsedLists.visited || [],
-        });
-      }
-    } catch (error) {
-      console.error("Failed to parse lists from localStorage", error);
-      setLists(initialLists);
+    if (!isSessionLoading) {
+      fetchFoodLists();
     }
-  }, []);
-
-  const saveLists = (newLists: FoodLists) => {
-    try {
-      setLists(newLists);
-      localStorage.setItem(LISTS_KEY, JSON.stringify(newLists));
-    } catch (error) {
-      console.error("Failed to save lists to localStorage", error);
-    }
-  };
+  }, [user, isSessionLoading, fetchFoodLists]);
 
   // Favorites
-  const addFavorite = useCallback((monAnId: string, ghiChu?: string) => {
-    const newFavorite: YeuThich = { monAnId, ghiChu: ghiChu || '' };
-    saveLists({ ...lists, favorites: [...lists.favorites, newFavorite] });
-  }, [lists]);
+  const addFavorite = useCallback(async (monAnId: string, ghiChu?: string) => {
+    if (!user) {
+      showError('Bạn cần đăng nhập để thêm món ăn yêu thích.');
+      return;
+    }
+    const { error } = await supabase
+      .from('favorites')
+      .insert({ user_id: user.id, mon_an_id: monAnId, ghi_chu: ghiChu || '' });
 
-  const removeFavorite = useCallback((monAnId: string) => {
-    const newFavorites = lists.favorites.filter(fav => fav.monAnId !== monAnId);
-    saveLists({ ...lists, favorites: newFavorites });
-  }, [lists]);
+    if (error) {
+      console.error("Error adding favorite:", error);
+      showError('Lỗi khi thêm vào danh sách yêu thích.');
+    } else {
+      setLists(prev => ({
+        ...prev,
+        favorites: [...prev.favorites, { monAnId, ghiChu: ghiChu || '' }],
+      }));
+      showSuccess("Đã thêm vào danh sách yêu thích");
+    }
+  }, [user]);
+
+  const removeFavorite = useCallback(async (monAnId: string) => {
+    if (!user) {
+      showError('Bạn cần đăng nhập để xóa món ăn yêu thích.');
+      return;
+    }
+    const { error } = await supabase
+      .from('favorites')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('mon_an_id', monAnId);
+
+    if (error) {
+      console.error("Error removing favorite:", error);
+      showError('Lỗi khi xóa khỏi danh sách yêu thích.');
+    } else {
+      setLists(prev => ({
+        ...prev,
+        favorites: prev.favorites.filter(fav => fav.monAnId !== monAnId),
+      }));
+      showSuccess("Đã xóa khỏi danh sách yêu thích");
+    }
+  }, [user]);
 
   const isFavorite = useCallback((monAnId: string) => {
     return lists.favorites.some(fav => fav.monAnId === monAnId);
@@ -63,37 +124,112 @@ export const useFoodLists = () => {
     return lists.favorites.find(fav => fav.monAnId === monAnId)?.ghiChu;
   }, [lists.favorites]);
 
-  const updateFavoriteNote = useCallback((monAnId: string, ghiChu: string) => {
-    const newFavorites = lists.favorites.map(fav => 
-      fav.monAnId === monAnId ? { ...fav, ghiChu } : fav
-    );
-    saveLists({ ...lists, favorites: newFavorites });
-  }, [lists]);
+  const updateFavoriteNote = useCallback(async (monAnId: string, ghiChu: string) => {
+    if (!user) {
+      showError('Bạn cần đăng nhập để cập nhật ghi chú.');
+      return;
+    }
+    const { error } = await supabase
+      .from('favorites')
+      .update({ ghi_chu: ghiChu, updated_at: new Date().toISOString() })
+      .eq('user_id', user.id)
+      .eq('mon_an_id', monAnId);
+
+    if (error) {
+      console.error("Error updating favorite note:", error);
+      showError('Lỗi khi cập nhật ghi chú.');
+    } else {
+      setLists(prev => ({
+        ...prev,
+        favorites: prev.favorites.map(fav => 
+          fav.monAnId === monAnId ? { ...fav, ghiChu } : fav
+        ),
+      }));
+      showSuccess('Đã lưu ghi chú!');
+    }
+  }, [user]);
 
   // Wishlist
   const isWishlist = useCallback((monAnId: string) => {
     return lists.wishlist.includes(monAnId);
   }, [lists.wishlist]);
 
-  const toggleWishlist = useCallback((monAnId: string) => {
-    const newWishlist = isWishlist(monAnId)
-      ? lists.wishlist.filter(id => id !== monAnId)
-      : [...lists.wishlist, monAnId];
-    saveLists({ ...lists, wishlist: newWishlist });
-  }, [lists, isWishlist]);
+  const toggleWishlist = useCallback(async (monAnId: string) => {
+    if (!user) {
+      showError('Bạn cần đăng nhập để quản lý danh sách muốn thử.');
+      return;
+    }
+    const currentlyOnWishlist = isWishlist(monAnId);
+    let error;
+
+    if (currentlyOnWishlist) {
+      const { error: deleteError } = await supabase
+        .from('wishlist')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('mon_an_id', monAnId);
+      error = deleteError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('wishlist')
+        .insert({ user_id: user.id, mon_an_id: monAnId });
+      error = insertError;
+    }
+
+    if (error) {
+      console.error("Error toggling wishlist:", error);
+      showError('Lỗi khi cập nhật danh sách muốn thử.');
+    } else {
+      setLists(prev => ({
+        ...prev,
+        wishlist: currentlyOnWishlist
+          ? prev.wishlist.filter(id => id !== monAnId)
+          : [...prev.wishlist, monAnId],
+      }));
+      showSuccess(currentlyOnWishlist ? "Đã xóa khỏi danh sách 'Chờ embe'" : "Đã thêm vào danh sách 'Chờ embe'");
+    }
+  }, [user, isWishlist]);
 
   // Visited
   const isVisited = useCallback((monAnId: string) => {
     return lists.visited.includes(monAnId);
   }, [lists.visited]);
 
-  const toggleVisited = useCallback((monAnId: string) => {
-    const newVisited = isVisited(monAnId)
-      ? lists.visited.filter(id => id !== monAnId)
-      : [...lists.visited, monAnId];
-    saveLists({ ...lists, visited: newVisited });
-  }, [lists, isVisited]);
+  const toggleVisited = useCallback(async (monAnId: string) => {
+    if (!user) {
+      showError('Bạn cần đăng nhập để quản lý danh sách đã thử.');
+      return;
+    }
+    const hasBeenVisited = isVisited(monAnId);
+    let error;
 
+    if (hasBeenVisited) {
+      const { error: deleteError } = await supabase
+        .from('visited')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('mon_an_id', monAnId);
+      error = deleteError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('visited')
+        .insert({ user_id: user.id, mon_an_id: monAnId });
+      error = insertError;
+    }
+
+    if (error) {
+      console.error("Error toggling visited:", error);
+      showError('Lỗi khi cập nhật danh sách đã thử.');
+    } else {
+      setLists(prev => ({
+        ...prev,
+        visited: hasBeenVisited
+          ? prev.visited.filter(id => id !== monAnId)
+          : [...prev.visited, monAnId],
+      }));
+      showSuccess(hasBeenVisited ? "Đã bỏ đánh dấu 'Ăn rùi'" : "Đã đánh dấu 'Ăn rùi'");
+    }
+  }, [user, isVisited]);
 
   return { 
     favorites: lists.favorites, 
@@ -107,6 +243,7 @@ export const useFoodLists = () => {
     isWishlist,
     toggleWishlist,
     isVisited,
-    toggleVisited
+    toggleVisited,
+    isLoading: isLoading || isSessionLoading, // Combine loading states
   };
 };
