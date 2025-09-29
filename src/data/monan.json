@@ -118,5 +118,18 @@
     "giaMin": 20000,
     "giaMax": 40000,
     "ngayTao": "2024-07-12T17:00:00Z"
+  },
+  {
+    "id": "10",
+    "ten": "Há cảo Lâm Gia",
+    "loaiId": "an-vat",
+    "hinhAnh": "https://a.l3n.co/P6Z8Tk.jpg",
+    "moTa": "Há cảo chuẩn vị người Hoa, vỏ mỏng nhân đầy đặn, được làm thủ công mỗi ngày. Một địa điểm không thể bỏ qua cho các tín đồ dimsum.",
+    "diaChi": "Hẻm 288/1 Bùi Thị Xuân, Phường 2, Thành phố Đà Lạt",
+    "thanhPho": "Đà Lạt",
+    "googleMapLink": "https://maps.app.goo.gl/example10",
+    "tags": ["há cảo", "dimsum", "người hoa", "ăn vặt"],
+    "giaMax": 100000,
+    "ngayTao": "2024-07-21T10:00:00Z"
   }
 ]
