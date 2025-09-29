@@ -14,6 +14,12 @@ export const Header = () => {
           <Link to="/favorites" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
             Yêu thích
           </Link>
+          <Link to="/wishlist" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            Chờ embe
+          </Link>
+          <Link to="/visited" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">
+            Ăn rùi
+          </Link>
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <Link to="/favorites">

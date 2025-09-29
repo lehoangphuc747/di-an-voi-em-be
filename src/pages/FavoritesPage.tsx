@@ -1,11 +1,11 @@
-import { useFavorites } from "@/hooks/use-favorites";
+import { useFoodLists } from "@/hooks/use-food-lists";
 import { FavoriteItem } from "@/components/FavoriteItem";
 import monAnData from "@/data/monan.json";
 import loaiMonData from "@/data/loaimon.json";
 import { MonAn, LoaiMon } from "@/types";
 
 const FavoritesPage = () => {
-  const { favorites } = useFavorites();
+  const { favorites } = useFoodLists();
   
   const loaiMonMap = new Map<string, LoaiMon>();
   loaiMonData.forEach(loai => loaiMonMap.set(loai.id, loai));

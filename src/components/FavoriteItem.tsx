@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
-import { useFavorites } from '@/hooks/use-favorites';
+import { useFoodLists } from '@/hooks/use-food-lists';
 import { showSuccess } from '@/utils/toast';
 
 interface FavoriteItemProps {
@@ -17,7 +17,7 @@ interface FavoriteItemProps {
 const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
 export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
-  const { getFavoriteNote, updateFavoriteNote } = useFavorites();
+  const { getFavoriteNote, updateFavoriteNote } = useFoodLists();
   const [note, setNote] = useState(getFavoriteNote(monAn.id) || '');
   const [isEditing, setIsEditing] = useState(false);
 
@@ -30,6 +30,8 @@ export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
   const priceRange =
     monAn.giaMin && monAn.giaMax
       ? `${formatPrice(monAn.giaMin)} - ${formatPrice(monAn.giaMax)}`
+      : monAn.giaMax
+      ? `Dưới ${formatPrice(monAn.giaMax)}`
       : monAn.giaMin
       ? `Từ ${formatPrice(monAn.giaMin)}`
       : "—";
