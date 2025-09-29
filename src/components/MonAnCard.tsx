@@ -30,17 +30,7 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
 
   return (
     <Link to={`/mon/${monAn.id}`} className="block">
-      <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300 relative">
-        {isOnWishlist && (
-          <div className="absolute top-2 left-2 bg-blue-500 text-white rounded-full p-1 z-10">
-            <Bookmark className="h-5 w-5 fill-current" />
-          </div>
-        )}
-        {hasBeenVisited && (
-          <div className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 z-10">
-            <CheckCircle2 className="h-5 w-5" />
-          </div>
-        )}
+      <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
         <CardHeader className="p-0">
           <img
             src={monAn.hinhAnh[0] || '/placeholder.svg'}
@@ -49,7 +39,21 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
           />
         </CardHeader>
         <CardContent className="p-4 flex-grow">
-          <CardTitle className="text-lg font-semibold mb-2 truncate">{monAn.ten}</CardTitle>
+          <div className="flex justify-between items-start mb-2 gap-2">
+            <CardTitle className="text-lg font-semibold truncate">{monAn.ten}</CardTitle>
+            <div className="flex items-center space-x-1 flex-shrink-0">
+              {isOnWishlist && (
+                <div className="text-blue-500" title="Chờ embe">
+                  <Bookmark className="h-5 w-5 fill-current" />
+                </div>
+              )}
+              {hasBeenVisited && (
+                <div className="text-green-500" title="Ăn rùi">
+                  <CheckCircle2 className="h-5 w-5" />
+                </div>
+              )}
+            </div>
+          </div>
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <span>{monAn.thanhPho}</span>
           </div>
