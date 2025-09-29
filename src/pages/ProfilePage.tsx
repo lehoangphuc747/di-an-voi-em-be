@@ -13,6 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const profileFormSchema = z.object({
   first_name: z.string().min(1, { message: "Tên không được để trống." }).max(50, { message: "Tên quá dài." }).optional().or(z.literal('')),
@@ -24,6 +25,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 const ProfilePage = () => {
   const { user, isLoading: isSessionLoading } = useSession();
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate(); // Khởi tạo useNavigate
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
@@ -85,6 +87,19 @@ const ProfilePage = () => {
     setLoading(false);
   };
 
+  const handleSignOut = async () => {
+    setLoading(true); // Đặt loading khi đang đăng xuất
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error);
+      showError("Lỗi khi đăng xuất.");
+    } else {
+      showSuccess("Đã đăng xuất thành công!");
+      navigate('/login'); // Chuyển hướng về trang đăng nhập sau khi đăng xuất
+    }
+    setLoading(false); // Tắt loading sau khi hoàn tất
+  };
+
   if (isSessionLoading || loading) {
     return (
       <div className="flex justify-center items-center min-h-[calc(100vh-100px)]">
@@ -135,10 +150,15 @@ const ProfilePage = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Lưu thay đổi
-              </Button>
+              <div className="flex gap-4">
+                <Button type="submit" disabled={loading}>
+                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Lưu thay đổi
+                </Button>
+                <Button type="button" variant="outline" onClick={handleSignOut} disabled={loading}>
+                  Đăng xuất
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
