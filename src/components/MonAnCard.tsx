@@ -40,7 +40,7 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
         </CardHeader>
         <CardContent className="p-4 flex-grow">
           <div className="flex justify-between items-start mb-2 gap-2">
-            <CardTitle className="text-lg font-semibold truncate">{monAn.ten}</CardTitle>
+            <CardTitle className="text-lg font-semibold">{monAn.ten}</CardTitle>
             <div className="flex items-center space-x-1 flex-shrink-0">
               {isOnWishlist && (
                 <div className="text-blue-500" title="Chờ embe">

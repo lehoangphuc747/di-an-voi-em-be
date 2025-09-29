@@ -47,7 +47,7 @@ export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
           />
         </CardHeader>
         <CardContent className="p-4">
-          <CardTitle className="text-lg font-semibold mb-2 truncate">{monAn.ten}</CardTitle>
+          <CardTitle className="text-lg font-semibold mb-2">{monAn.ten}</CardTitle>
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <span>{monAn.thanhPho}</span>
           </div>
