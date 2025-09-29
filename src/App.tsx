@@ -10,6 +10,7 @@ import WishlistPage from "./pages/WishlistPage";
 import VisitedPage from "./pages/VisitedPage";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
+import ProfilePage from "./pages/ProfilePage"; // Import ProfilePage
 import { Layout } from "@/components/layout/Layout";
 import { SessionContextProvider, useSession } from "@/components/SessionContextProvider";
 import React from "react";
@@ -40,6 +41,7 @@ const AppContent = () => (
       <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
       <Route path="/wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
       <Route path="/visited" element={<ProtectedRoute><VisitedPage /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} /> {/* New Profile Route */}
       <Route path="*" element={<NotFound />} />
     </Routes>
   </Layout>
