@@ -1,5 +1,5 @@
 import { useFavorites } from "@/hooks/use-favorites";
-import { MonAnCard } from "@/components/MonAnCard";
+import { FavoriteItem } from "@/components/FavoriteItem";
 import monAnData from "@/data/monan.json";
 import loaiMonData from "@/data/loaimon.json";
 import { MonAn, LoaiMon } from "@/types";
@@ -17,9 +17,9 @@ const FavoritesPage = () => {
     <div>
       <h1 className="text-3xl font-bold mb-6">Món ăn yêu thích</h1>
       {favoriteMonAnList.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {favoriteMonAnList.map((monAn) => (
-            <MonAnCard 
+            <FavoriteItem 
               key={monAn.id} 
               monAn={monAn} 
               loaiMon={loaiMonMap.get(monAn.loaiId)} 
