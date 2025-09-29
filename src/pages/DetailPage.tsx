@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
-import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook } from "lucide-react";
+import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, List, LayoutGrid } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -9,6 +9,7 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useFoodLists } from "@/hooks/use-food-lists";
 import { showError, showSuccess } from "@/utils/toast";
 import { findMonAnById } from "@/data/loader";
+import { cn } from "@/lib/utils";
 
 const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
@@ -16,6 +17,7 @@ const DetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   const { 
     addFavorite, removeFavorite, isFavorite,
@@ -135,15 +137,28 @@ const DetailPage = () => {
 
         {/* Phần hình ảnh */}
         <div>
-          <h2 className="text-2xl font-bold mb-4">Hình ảnh</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">Hình ảnh</h2>
+            <div className="flex items-center gap-1">
+              <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" onClick={() => setViewMode('list')}>
+                <List className="h-5 w-5" />
+              </Button>
+              <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon" onClick={() => setViewMode('grid')}>
+                <LayoutGrid className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
           {(monAn.hinhAnh && monAn.hinhAnh.length > 0 && monAn.hinhAnh[0] !== '/placeholder.svg') ? (
-            <div className="space-y-4">
+            <div className={cn(viewMode === 'list' ? 'space-y-4' : 'grid grid-cols-2 md:grid-cols-3 gap-4')}>
               {monAn.hinhAnh.map((img, index) => (
-                <button key={index} className="w-full block rounded-lg overflow-hidden shadow-lg cursor-pointer" onClick={() => openImageViewer(index)}>
+                <button key={index} className="w-full block rounded-lg overflow-hidden shadow-lg cursor-pointer group" onClick={() => openImageViewer(index)}>
                   <img 
                     src={img} 
                     alt={`${monAn.ten} - ảnh ${index + 1}`} 
-                    className="w-full h-auto object-cover" 
+                    className={cn(
+                      "w-full object-cover transition-transform duration-300 group-hover:scale-105",
+                      viewMode === 'list' ? 'h-auto' : 'h-full aspect-square'
+                    )}
                   />
                 </button>
               ))}
