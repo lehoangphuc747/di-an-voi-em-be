@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
-import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, List, LayoutGrid } from "lucide-react";
+import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, Phone, List, LayoutGrid } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +10,7 @@ import { useFoodLists } from "@/hooks/use-food-lists";
 import { showError, showSuccess } from "@/utils/toast";
 import { findMonAnById } from "@/data/loader";
 import { cn } from "@/lib/utils";
-import { PublicNotesSection } from "@/components/PublicNotesSection"; // Import PublicNotesSection
+import { PublicNotesSection } from "@/components/PublicNotesSection";
 
 const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
@@ -67,6 +67,14 @@ const DetailPage = () => {
       .catch(() => showError("Không thể sao chép địa chỉ."));
   };
 
+  const handleCopyPhoneNumber = () => {
+    if (monAn.soDienThoai) {
+      navigator.clipboard.writeText(monAn.soDienThoai)
+        .then(() => showSuccess("Đã sao chép số điện thoại!"))
+        .catch(() => showError("Không thể sao chép số điện thoại."));
+    }
+  };
+
   const priceRange =
     monAn.giaMin && monAn.giaMax
       ? `${formatPrice(monAn.giaMin)} - ${formatPrice(monAn.giaMax)}`
@@ -94,6 +102,22 @@ const DetailPage = () => {
                 <p className="text-sm text-muted-foreground">{monAn.thanhPho}</p>
               </div>
             </div>
+            {monAn.gioMoCua && (
+              <div className="flex items-center">
+                <Clock className="h-5 w-5 mr-3 flex-shrink-0 text-primary" />
+                <span>{monAn.gioMoCua}</span>
+              </div>
+            )}
+            {monAn.soDienThoai && (
+              <div className="flex items-center">
+                <Phone className="h-5 w-5 mr-3 flex-shrink-0 text-primary" />
+                <span>{monAn.soDienThoai}</span>
+                <Button variant="ghost" size="icon" onClick={handleCopyPhoneNumber} className="ml-2">
+                  <Copy className="h-4 w-4" />
+                  <span className="sr-only">Sao chép số điện thoại</span>
+                </Button>
+              </div>
+            )}
             <div className="flex items-center">
               <span className="font-semibold mr-2 text-primary">Giá:</span>
               <span>{priceRange}</span>
@@ -140,7 +164,7 @@ const DetailPage = () => {
         <PublicNotesSection monAnId={monAn.id} />
 
         {/* Phần hình ảnh */}
-        <div className="mt-8"> {/* Thêm margin-top để tạo khoảng cách */}
+        <div className="mt-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">Hình ảnh</h2>
             <div className="flex items-center gap-1">

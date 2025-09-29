@@ -18,6 +18,8 @@ export interface MonAn {
   giaMin?: number;
   giaMax?: number;
   ngayTao: string; // ISO 8601 date string
+  gioMoCua?: string; // Thêm trường giờ mở cửa
+  soDienThoai?: string; // Thêm trường số điện thoại
 }
 
 export interface YeuThich {
