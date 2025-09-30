@@ -1,7 +1,7 @@
 {
   "id": "12",
   "ten": "Súp cua - Gỏi cuốn",
-  "loaiId": "an-vat",
+  "loaiIds": ["an-vat"],
   "hinhAnh": [
     "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nohdyL7koB7Gvyyi1ZLUj-_hmy-cEFXUp2UC9d8g63DnkEEUioBXh1AFff4qyhiUwrDw-GS8_9dMZdbu7GhTyn2liQEY61hc9digdWFZ5P4O3iwRrg5QDgr6JLQTuw0WcERkBsa0jSWonUo=s680-w680-h510-rw"
   ],

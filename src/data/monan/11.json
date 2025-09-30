@@ -1,7 +1,7 @@
 {
   "id": "11",
   "ten": "Súp cua Tom",
-  "loaiId": "an-vat",
+  "loaiIds": ["an-vat"],
   "hinhAnh": [
     "https://d.l3n.co/P6ZbHo.png",
     "https://c.l3n.co/P6ZUGm.png",

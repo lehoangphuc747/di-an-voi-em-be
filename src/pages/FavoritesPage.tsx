@@ -22,7 +22,7 @@ const FavoritesPage = () => {
             <FavoriteItem 
               key={monAn.id} 
               monAn={monAn} 
-              loaiMon={loaiMonMap.get(monAn.loaiId)} 
+              loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]} 
             />
           ))}
         </div>

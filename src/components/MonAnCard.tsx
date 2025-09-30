@@ -3,11 +3,11 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useFoodLists } from "@/hooks/use-food-lists";
-import { CheckCircle2, Bookmark, Heart } from "lucide-react"; // Import Heart icon
+import { CheckCircle2, Bookmark, Heart } from "lucide-react";
 
 interface MonAnCardProps {
   monAn: MonAn;
-  loaiMon?: LoaiMon;
+  loaiMon?: LoaiMon[];
 }
 
 const formatPrice = (price: number) => {
@@ -15,10 +15,10 @@ const formatPrice = (price: number) => {
 };
 
 export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
-  const { isVisited, isWishlist, isFavorite } = useFoodLists(); // Get isFavorite
+  const { isVisited, isWishlist, isFavorite } = useFoodLists();
   const hasBeenVisited = isVisited(monAn.id);
   const isOnWishlist = isWishlist(monAn.id);
-  const isCurrentlyFavorite = isFavorite(monAn.id); // Check if it's a favorite
+  const isCurrentlyFavorite = isFavorite(monAn.id);
 
   const priceRange =
     monAn.giaMin && monAn.giaMax
@@ -43,7 +43,7 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
           <div className="flex justify-between items-start mb-2 gap-2">
             <CardTitle className="text-lg font-semibold">{monAn.ten}</CardTitle>
             <div className="flex items-center space-x-1 flex-shrink-0">
-              {isCurrentlyFavorite && ( // Conditionally render Heart icon
+              {isCurrentlyFavorite && (
                 <div className="text-red-500" title="Yêu thích">
                   <Heart className="h-5 w-5 fill-current" />
                 </div>
@@ -65,8 +65,12 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
           </div>
         </CardContent>
         <CardFooter className="p-4 pt-0 flex justify-between items-center text-sm">
-          {loaiMon && <Badge variant="outline">{loaiMon.ten}</Badge>}
-          <span className="font-medium text-primary">{priceRange}</span>
+          <div className="flex flex-wrap gap-1">
+            {loaiMon?.map((loai) => (
+              <Badge key={loai.id} variant="outline">{loai.ten}</Badge>
+            ))}
+          </div>
+          <span className="font-medium text-primary flex-shrink-0 ml-2">{priceRange}</span>
         </CardFooter>
       </Card>
     </Link>

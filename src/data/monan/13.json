@@ -1,7 +1,7 @@
 {
   "id": "13",
   "ten": "Ốc Mỹ Anh",
-  "loaiId": "hai-san",
+  "loaiIds": ["hai-san", "an-no"],
   "hinhAnh": [
     "https://d.l3n.co/P6Dk3q.png",
     "https://lh3.googleusercontent.com/gps-cs-s/AC9h4noZQ98kCP-tcU3AUo4Jzz5H7-PkhP7EAVX5yRclDj4i7UETQWmgjaR2724eUwsPAkp9HKv0iopXj1vuFFXZyY3bFZYShI1CZylbSrGopEoaIpp9cBjyHHgjdhCa7IC453XU4iuqYw=s680-w680-h510-rw",

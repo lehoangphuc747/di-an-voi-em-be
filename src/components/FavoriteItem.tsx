@@ -11,7 +11,7 @@ import { showSuccess } from '@/utils/toast';
 
 interface FavoriteItemProps {
   monAn: MonAn;
-  loaiMon?: LoaiMon;
+  loaiMon?: LoaiMon[];
 }
 
 const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
@@ -53,8 +53,12 @@ export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
           </div>
         </CardContent>
         <CardFooter className="p-4 pt-0 flex justify-between items-center text-sm">
-          {loaiMon && <Badge variant="outline">{loaiMon.ten}</Badge>}
-          <span className="font-medium text-primary">{priceRange}</span>
+          <div className="flex flex-wrap gap-1">
+            {loaiMon?.map((loai) => (
+              <Badge key={loai.id} variant="outline">{loai.ten}</Badge>
+            ))}
+          </div>
+          <span className="font-medium text-primary flex-shrink-0 ml-2">{priceRange}</span>
         </CardFooter>
       </Link>
       

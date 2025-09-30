@@ -12,7 +12,7 @@ import loaiMonData from "@/data/loaimon.json";
 import { supabase } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
 import { Loader2 } from "lucide-react";
-import { useSearchParams } from "react-router-dom"; // Import useSearchParams
+import { useSearchParams } from "react-router-dom";
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
 
@@ -28,7 +28,7 @@ const PRICE_RANGES: (PriceRange & { min: number; max: number })[] = [
 const HomePage = () => {
   const [userSubmittedMonAn, setUserSubmittedMonAn] = useState<MonAn[]>([]);
   const [loadingSubmitted, setLoadingSubmitted] = useState(true);
-  const [searchParams] = useSearchParams(); // Initialize useSearchParams
+  const [searchParams] = useSearchParams();
 
   const [loaiMonMap] = useState<Map<string, LoaiMon>>(() => {
     const map = new Map<string, LoaiMon>();
@@ -38,7 +38,6 @@ const HomePage = () => {
 
   const isMobile = useIsMobile();
 
-  // Initialize searchTerm from URL query parameter
   const [searchTerm, setSearchTerm] = useState(searchParams.get('searchTerm') || "");
   const [selectedCities, setSelectedCities] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -47,31 +46,29 @@ const HomePage = () => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  // Effect to update searchTerm if URL search parameter changes (e.g., navigating from a tag)
   useEffect(() => {
     const urlSearchTerm = searchParams.get('searchTerm') || '';
     if (searchTerm !== urlSearchTerm) {
       setSearchTerm(urlSearchTerm);
     }
-  }, [searchParams]); // Depend on searchParams to react to URL changes
+  }, [searchParams]);
 
   const fetchUserSubmittedMonAn = useCallback(async () => {
     setLoadingSubmitted(true);
     const { data, error } = await supabase
       .from('user_submitted_mon_an')
       .select('*')
-      .eq('is_approved', true); // Chỉ lấy các món ăn đã được duyệt
+      .eq('is_approved', true);
 
     if (error) {
       console.error("Error fetching user submitted food items:", error);
       showError('Lỗi khi tải món ăn do người dùng gửi.');
       setUserSubmittedMonAn([]);
     } else {
-      // Chuyển đổi tên cột từ snake_case sang camelCase để phù hợp với MonAn interface
       const formattedData: MonAn[] = data.map(item => ({
         id: item.id,
         ten: item.ten,
-        loaiId: item.loai_id,
+        loaiIds: [item.loai_id], // Món ăn do người dùng gửi chỉ có 1 loại
         hinhAnh: item.hinh_anh || [],
         moTa: item.mo_ta || '',
         diaChi: item.dia_chi,
@@ -93,9 +90,8 @@ const HomePage = () => {
   }, [fetchUserSubmittedMonAn]);
 
   const allMonAn = useMemo(() => {
-    // Kết hợp dữ liệu tĩnh và dữ liệu từ Supabase
     return [...monAnData, ...userSubmittedMonAn];
-  }, [monAnData, userSubmittedMonAn]);
+  }, [userSubmittedMonAn]);
 
   const allCities = useMemo(() => [...new Set(allMonAn.map(m => m.thanhPho))], [allMonAn]);
   const allCategories = useMemo(() => [...loaiMonData], []);
@@ -123,8 +119,9 @@ const HomePage = () => {
       const cityMatch = selectedCities.length > 0 
         ? selectedCities.includes(mon.thanhPho) 
         : true;
-      const categoryMatch = selectedCategories.length > 0 
-        ? selectedCategories.includes(mon.loaiId) 
+      
+      const categoryMatch = selectedCategories.length > 0
+        ? selectedCategories.some(catId => mon.loaiIds.includes(catId))
         : true;
       
       const priceMatch = (() => {
@@ -218,7 +215,7 @@ const HomePage = () => {
               <MonAnCard 
                 key={monAn.id} 
                 monAn={monAn} 
-                loaiMon={loaiMonMap.get(monAn.loaiId)} 
+                loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]} 
               />
             ))}
           </div>

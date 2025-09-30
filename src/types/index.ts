@@ -7,7 +7,7 @@ export interface LoaiMon {
 export interface MonAn {
   id: string;
   ten: string;
-  loaiId: string;
+  loaiIds: string[]; // Thay đổi từ loaiId: string
   hinhAnh: string[];
   moTa: string;
   diaChi: string;

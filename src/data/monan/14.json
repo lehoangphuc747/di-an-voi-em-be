@@ -1,7 +1,7 @@
 {
   "id": "14",
   "ten": "CHẢ CỐM CHIÊN, CHẢ CÁ, CHẢ RAM CHIÊN",
-  "loaiId": "an-vat",
+  "loaiIds": ["an-vat"],
   "hinhAnh": [
     "https://b.l3n.co/P6DJWM.jpg"
   ],
