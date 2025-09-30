@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useParams, Navigate, Link } from "react-router-dom"; // Import Link
-import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, Phone, List, LayoutGrid } from "lucide-react";
+import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
+import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, Phone, List, LayoutGrid, ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -16,6 +16,7 @@ const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
 const DetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
@@ -87,6 +88,11 @@ const DetailPage = () => {
   return (
     <>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6 -ml-4">
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Quay lại
+        </Button>
+
         {/* Phần thông tin */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">{monAn.ten}</h1>
