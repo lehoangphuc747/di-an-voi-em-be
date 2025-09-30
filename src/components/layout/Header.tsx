@@ -1,52 +1,63 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Home, Settings, Heart, Bookmark, CheckCircle2 } from "lucide-react";
 import { useSession } from "@/components/SessionContextProvider";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 export const Header = () => {
   const { session } = useSession();
+
+  const navLinks = [
+    { to: "/", title: "Trang chủ", icon: Home },
+    { to: "/favorites", title: "Yêu thích", icon: Heart },
+    { to: "/wishlist", title: "Muốn thử", icon: Bookmark },
+    { to: "/visited", title: "Ăn rùi", icon: CheckCircle2 },
+  ];
+
+  const getNavLinkClass = ({ isActive }: { isActive: boolean }) =>
+    cn(
+      buttonVariants({ variant: "ghost", size: "icon" }),
+      "transition-colors",
+      isActive
+        ? "bg-secondary text-primary hover:bg-secondary/80"
+        : "text-muted-foreground hover:text-primary"
+    );
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center justify-center">
         <nav className="flex items-center space-x-2 lg:space-x-4">
-          <Link to="/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Trang chủ">
-            <Button variant="ghost" size="icon">
-              <Home className="h-5 w-5" />
-              <span className="sr-only">Trang chủ</span>
-            </Button>
-          </Link>
-          <Link to="/favorites" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Yêu thích">
-            <Button variant="ghost" size="icon">
-              <Heart className="h-5 w-5" />
-              <span className="sr-only">Yêu thích</span>
-            </Button>
-          </Link>
-          <Link to="/wishlist" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Muốn thử">
-            <Button variant="ghost" size="icon">
-              <Bookmark className="h-5 w-5" />
-              <span className="sr-only">Muốn thử</span>
-            </Button>
-          </Link>
-          <Link to="/visited" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Ăn rùi">
-            <Button variant="ghost" size="icon">
-              <CheckCircle2 className="h-5 w-5" />
-              <span className="sr-only">Ăn rùi</span>
-            </Button>
-          </Link>
+          {navLinks.map(({ to, title, icon: Icon }) => (
+            <NavLink
+              key={to}
+              to={to}
+              title={title}
+              className={getNavLinkClass}
+            >
+              <Icon className="h-5 w-5" />
+              <span className="sr-only">{title}</span>
+            </NavLink>
+          ))}
           {session ? (
-            <Link to="/profile" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Tài khoản">
-              <Button variant="ghost" size="icon">
-                <Settings className="h-5 w-5" />
-                <span className="sr-only">Tài khoản</span>
-              </Button>
-            </Link>
+            <NavLink
+              to="/profile"
+              title="Tài khoản"
+              className={getNavLinkClass}
+            >
+              <Settings className="h-5 w-5" />
+              <span className="sr-only">Tài khoản</span>
+            </NavLink>
           ) : (
-            <Link to="/login">
-              <Button variant="ghost" size="sm">
-                Đăng nhập
-              </Button>
-            </Link>
+            <NavLink
+              to="/login"
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "sm" }),
+                "text-muted-foreground"
+              )}
+            >
+              Đăng nhập
+            </NavLink>
           )}
         </nav>
       </div>
