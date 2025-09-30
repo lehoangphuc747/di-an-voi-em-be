@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
-import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, Phone, List, LayoutGrid, ArrowLeft } from "lucide-react";
+import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, Phone, List, LayoutGrid, ArrowLeft, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -8,15 +8,19 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useFoodLists } from "@/hooks/use-food-lists";
 import { showError, showSuccess } from "@/utils/toast";
-import { findMonAnById } from "@/data/loader";
 import { cn } from "@/lib/utils";
 import { PersonalNotesSection } from "@/components/PersonalNotesSection";
+import { useAllMonAn } from "@/hooks/use-all-mon-an";
+import { MonAn } from "@/types";
 
 const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
 const DetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { allMonAn, isLoading: isMonAnLoading } = useAllMonAn();
+  const [monAn, setMonAn] = useState<MonAn | undefined | null>(undefined);
+
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
@@ -27,9 +31,22 @@ const DetailPage = () => {
     toggleVisited, isVisited
   } = useFoodLists();
 
-  const monAn = findMonAnById(id);
+  useEffect(() => {
+    if (!isMonAnLoading) {
+      const foundMonAn = allMonAn.find(m => m.id === id);
+      setMonAn(foundMonAn || null);
+    }
+  }, [id, allMonAn, isMonAnLoading]);
 
-  if (!monAn) {
+  if (isMonAnLoading || monAn === undefined) {
+    return (
+      <div className="flex justify-center items-center min-h-[calc(100vh-100px)]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (monAn === null) {
     return <Navigate to="/404" replace />;
   }
 
@@ -45,21 +62,17 @@ const DetailPage = () => {
   const handleToggleFavorite = () => {
     if (isCurrentlyFavorite) {
       removeFavorite(monAn.id);
-      showSuccess("Đã xóa khỏi danh sách yêu thích");
     } else {
       addFavorite(monAn.id);
-      showSuccess("Đã thêm vào danh sách yêu thích");
     }
   };
 
   const handleToggleWishlist = () => {
     toggleWishlist(monAn.id);
-    showSuccess(isCurrentlyOnWishlist ? "Đã xóa khỏi danh sách 'Chờ embe'" : "Đã thêm vào danh sách 'Chờ embe'");
   };
 
   const handleToggleVisited = () => {
     toggleVisited(monAn.id);
-    showSuccess(hasBeenVisited ? "Đã bỏ đánh dấu 'Ăn rùi'" : "Đã đánh dấu 'Ăn rùi'");
   };
 
   const handleCopyAddress = () => {
