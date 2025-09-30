@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { isStoreOpen } from "@/lib/time-utils";
 import { cn } from "@/lib/utils";
-import { Clock, Heart, Bookmark, CheckCircle2 } from "lucide-react";
+import { Clock, Heart, Bookmark, CheckCircle2, MapPin } from "lucide-react";
 
 interface MonAnCardProps {
   monAn: MonAn;
@@ -66,7 +66,10 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
               )}
             </div>
           </div>
-          <p className="text-sm text-muted-foreground mt-1 flex-grow">{monAn.diaChi}</p>
+          <div className="flex items-start text-sm text-muted-foreground mt-1 flex-grow">
+            <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+            <span>{monAn.diaChi}</span>
+          </div>
           
           <div className="flex items-center text-xs text-muted-foreground mt-2">
             {monAn.gioMoCua && (
