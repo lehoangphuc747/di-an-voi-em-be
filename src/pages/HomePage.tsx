@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useIsMobile } from "@/hooks/use-mobile";
 import loaiMonData from "@/data/loaimon.json";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Loader2 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { isStoreOpen } from "@/lib/time-utils";
 import { useFoodLists } from "@/hooks/use-food-lists";
@@ -27,6 +27,8 @@ const PRICE_RANGES: (PriceRange & { min: number; max: number })[] = [
   { id: '300-500', ten: '300k - 500k', min: 300000, max: 500000 },
   { id: 'over-500', ten: 'Trên 500k', min: 500000, max: Infinity },
 ];
+
+const ITEMS_PER_PAGE = 9;
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
@@ -47,6 +49,7 @@ const HomePage = () => {
   const [selectedPriceRangeId, setSelectedPriceRangeId] = useState<string>('all');
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [selectedOpeningStatus, setSelectedOpeningStatus] = useState<OpeningStatus>('all');
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
@@ -144,6 +147,15 @@ const HomePage = () => {
     return filtered;
   }, [allMonAn, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, sortOption, selectedOpeningStatus]);
 
+  // Reset visible count when filters change
+  useEffect(() => {
+    setVisibleCount(ITEMS_PER_PAGE);
+  }, [filteredAndSortedMonAn]);
+
+  const itemsToDisplay = useMemo(() => {
+    return filteredAndSortedMonAn.slice(0, visibleCount);
+  }, [filteredAndSortedMonAn, visibleCount]);
+
   const filterContent = (
     <div>
       <Button variant="ghost" onClick={handleResetFilters} className="w-full justify-start mb-2 text-sm text-muted-foreground hover:text-foreground">
@@ -205,19 +217,28 @@ const HomePage = () => {
               <MonAnCardSkeleton key={index} />
             ))}
           </div>
-        ) : filteredAndSortedMonAn.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredAndSortedMonAn.map((monAn) => (
-              <MonAnCard 
-                key={monAn.id} 
-                monAn={monAn} 
-                loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]}
-                isFavorite={isFavorite(monAn.id)}
-                isWishlist={isWishlist(monAn.id)}
-                isVisited={isVisited(monAn.id)}
-              />
-            ))}
-          </div>
+        ) : itemsToDisplay.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              {itemsToDisplay.map((monAn) => (
+                <MonAnCard 
+                  key={monAn.id} 
+                  monAn={monAn} 
+                  loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]}
+                  isFavorite={isFavorite(monAn.id)}
+                  isWishlist={isWishlist(monAn.id)}
+                  isVisited={isVisited(monAn.id)}
+                />
+              ))}
+            </div>
+            {visibleCount < filteredAndSortedMonAn.length && (
+              <div className="mt-8 text-center">
+                <Button onClick={() => setVisibleCount(prev => prev + ITEMS_PER_PAGE)}>
+                  Tải thêm
+                </Button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Không tìm thấy món ăn nào phù hợp.</p>
