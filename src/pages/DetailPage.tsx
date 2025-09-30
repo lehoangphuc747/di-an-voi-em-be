@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
-import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, List, LayoutGrid, ArrowLeft, Phone } from "lucide-react";
+import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, List, LayoutGrid, ArrowLeft, Phone, Share2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +10,7 @@ import { useFoodLists } from "@/hooks/use-food-lists";
 import { showError, showSuccess } from "@/utils/toast";
 import { findMonAnById } from "@/data/loader";
 import { cn } from "@/lib/utils";
-import { UserFeedbackSection } from "@/components/UserFeedbackSection"; // Updated import
+import { UserFeedbackSection } from "@/components/UserFeedbackSection";
 
 const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
@@ -24,7 +24,7 @@ const DetailPage = () => {
   const { 
     addFavorite, removeFavorite, isFavorite,
     toggleWishlist, isWishlist,
-    toggleVisited, isVisited // Keep toggleVisited for marking as visited/unvisited
+    toggleVisited, isVisited
   } = useFoodLists();
 
   const monAn = findMonAnById(id);
@@ -38,6 +38,25 @@ const DetailPage = () => {
     setIsViewerOpen(true);
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: monAn.ten,
+      text: `Cùng xem thử "${monAn.ten}" nhé!`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(window.location.href);
+        showSuccess("Đã sao chép liên kết vào clipboard!");
+      }
+    } catch (err) {
+      console.error("Error sharing:", err);
+      showError("Không thể chia sẻ vào lúc này.");
+    }
+  };
+
   const isCurrentlyFavorite = isFavorite(monAn.id);
   const isCurrentlyOnWishlist = isWishlist(monAn.id);
   const hasBeenVisited = isVisited(monAn.id);
@@ -45,21 +64,17 @@ const DetailPage = () => {
   const handleToggleFavorite = () => {
     if (isCurrentlyFavorite) {
       removeFavorite(monAn.id);
-      showSuccess("Đã xóa khỏi danh sách yêu thích");
     } else {
       addFavorite(monAn.id);
-      showSuccess("Đã thêm vào danh sách yêu thích");
     }
   };
 
   const handleToggleWishlist = () => {
     toggleWishlist(monAn.id);
-    showSuccess(isCurrentlyOnWishlist ? "Đã xóa khỏi danh sách 'Chờ embe'" : "Đã thêm vào danh sách 'Chờ embe'");
   };
 
   const handleToggleVisited = () => {
     toggleVisited(monAn.id);
-    showSuccess(hasBeenVisited ? "Đã bỏ đánh dấu 'Ăn rùi'" : "Đã đánh dấu 'Ăn rùi'");
   };
 
   const handleCopyAddress = () => {
@@ -93,7 +108,6 @@ const DetailPage = () => {
           Quay lại
         </Button>
 
-        {/* Phần thông tin */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">{monAn.ten}</h1>
           <div className="flex flex-wrap gap-2 mb-4">
@@ -167,13 +181,15 @@ const DetailPage = () => {
               <CheckCircle2 className={`h-4 w-4 mr-2 ${hasBeenVisited ? 'text-green-500' : ''}`} />
               {hasBeenVisited ? "Bỏ đánh dấu 'Ăn rùi'" : "Đánh dấu 'Ăn rùi'"}
             </Button>
+            <Button variant="outline" onClick={handleShare}>
+              <Share2 className="h-4 w-4 mr-2" />
+              Chia sẻ
+            </Button>
           </div>
         </div>
 
-        {/* Phần ghi chú & đánh giá cá nhân */}
         <UserFeedbackSection monAnId={monAn.id} />
 
-        {/* Phần hình ảnh */}
         <div className="mt-8">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">Hình ảnh</h2>

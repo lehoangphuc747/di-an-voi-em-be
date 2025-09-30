@@ -35,6 +35,7 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
               src={monAn.hinhAnh[0] || '/placeholder.svg'}
               alt={monAn.ten}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
             />
           </div>
         </CardHeader>

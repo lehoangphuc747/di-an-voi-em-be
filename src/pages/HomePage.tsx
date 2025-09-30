@@ -9,11 +9,12 @@ import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useIsMobile } from "@/hooks/use-mobile";
 import loaiMonData from "@/data/loaimon.json";
-import { Loader2, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { isStoreOpen } from "@/lib/time-utils";
 import { useFoodLists } from "@/hooks/use-food-lists";
 import { useAllMonAn } from "@/hooks/use-all-mon-an";
+import { MonAnCardSkeleton } from "@/components/MonAnCardSkeleton";
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
 type OpeningStatus = 'all' | 'open' | 'closed';
@@ -199,9 +200,10 @@ const HomePage = () => {
         </div>
 
         {loadingSubmitted ? (
-          <div className="flex justify-center items-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <span className="sr-only">Đang tải món ăn...</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <MonAnCardSkeleton key={index} />
+            ))}
           </div>
         ) : filteredAndSortedMonAn.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
