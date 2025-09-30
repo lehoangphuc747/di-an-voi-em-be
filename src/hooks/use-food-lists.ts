@@ -4,10 +4,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSession } from '@/components/SessionContextProvider';
 import { showError, showSuccess } from '@/utils/toast';
 
+interface VisitedEntry {
+  monAnId: string;
+  rating: number | null;
+  notes: string | null;
+}
+
 interface FoodLists {
   favorites: YeuThich[];
   wishlist: string[]; // array of monAnId
-  visited: string[]; // array of monAnId
+  visited: VisitedEntry[];
 }
 
 const initialLists: FoodLists = {
@@ -46,7 +52,7 @@ export const useFoodLists = () => {
 
       const { data: visitedData, error: visitedError } = await supabase
         .from('visited')
-        .select('mon_an_id')
+        .select('mon_an_id, rating, notes')
         .eq('user_id', user.id);
 
       if (visitedError) throw visitedError;
@@ -54,7 +60,11 @@ export const useFoodLists = () => {
       setLists({
         favorites: favoritesData.map(item => ({ monAnId: item.mon_an_id, ghiChu: item.ghi_chu || '' })),
         wishlist: wishlistData.map(item => item.mon_an_id),
-        visited: visitedData.map(item => item.mon_an_id),
+        visited: visitedData.map(item => ({ 
+          monAnId: item.mon_an_id, 
+          rating: item.rating, 
+          notes: item.notes 
+        })),
       });
     } catch (error) {
       console.error("Error fetching food lists:", error);
@@ -192,7 +202,11 @@ export const useFoodLists = () => {
 
   // Visited
   const isVisited = useCallback((monAnId: string) => {
-    return lists.visited.includes(monAnId);
+    return lists.visited.some(v => v.monAnId === monAnId);
+  }, [lists.visited]);
+
+  const getVisitedDetails = useCallback((monAnId: string) => {
+    return lists.visited.find(v => v.monAnId === monAnId);
   }, [lists.visited]);
 
   const toggleVisited = useCallback(async (monAnId: string) => {
@@ -224,12 +238,41 @@ export const useFoodLists = () => {
       setLists(prev => ({
         ...prev,
         visited: hasBeenVisited
-          ? prev.visited.filter(id => id !== monAnId)
-          : [...prev.visited, monAnId],
+          ? prev.visited.filter(v => v.monAnId !== monAnId)
+          : [...prev.visited, { monAnId, rating: null, notes: null }],
       }));
       showSuccess(hasBeenVisited ? "Đã bỏ đánh dấu 'Ăn rùi'" : "Đã đánh dấu 'Ăn rùi'");
     }
   }, [user, isVisited]);
+
+  const updateVisited = useCallback(async (monAnId: string, details: { rating?: number | null; notes?: string | null }) => {
+    if (!user) {
+      showError('Bạn cần đăng nhập để cập nhật đánh giá.');
+      return;
+    }
+    const { error } = await supabase
+      .from('visited')
+      .update({ 
+        rating: details.rating, 
+        notes: details.notes,
+        updated_at: new Date().toISOString() 
+      })
+      .eq('user_id', user.id)
+      .eq('mon_an_id', monAnId);
+
+    if (error) {
+      console.error("Error updating visited entry:", error);
+      showError('Lỗi khi cập nhật đánh giá.');
+    } else {
+      setLists(prev => ({
+        ...prev,
+        visited: prev.visited.map(v => 
+          v.monAnId === monAnId ? { ...v, rating: details.rating ?? v.rating, notes: details.notes ?? v.notes } : v
+        ),
+      }));
+      showSuccess('Đã cập nhật đánh giá!');
+    }
+  }, [user]);
 
   return { 
     favorites: lists.favorites, 
@@ -244,6 +287,8 @@ export const useFoodLists = () => {
     toggleWishlist,
     isVisited,
     toggleVisited,
-    isLoading: isLoading || isSessionLoading, // Combine loading states
+    getVisitedDetails,
+    updateVisited,
+    isLoading: isLoading || isSessionLoading,
   };
 };
