@@ -1,24 +1,34 @@
+"use client";
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Index from './pages/Index';
-import MonAnDetail from './pages/MonAnDetail';
-import NotFound from './pages/NotFound';
-import { Header } from './components/Header';
-import { Footer } from './components/Footer';
+import { AuthProvider } from '@/contexts/AuthContext';
+import Navbar from '@/components/Navbar';
+import Index from '@/pages/Index';
+import Login from '@/pages/Login';
+import Favorites from '@/pages/Favorites';
+import Wishlist from '@/pages/Wishlist';
+import Visited from '@/pages/Visited';
+import Account from '@/pages/Account';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 function App() {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-grow container mx-auto px-4 py-8">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/mon/:id" element={<MonAnDetail />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <AuthProvider>
+        <div className="min-h-screen bg-gray-50">
+          <Navbar />
+          <main className="container mx-auto p-4 md:p-6">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+              <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+              <Route path="/visited" element={<ProtectedRoute><Visited /></ProtectedRoute>} />
+              <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
+            </Routes>
+          </main>
+        </div>
+      </AuthProvider>
     </Router>
   );
 }
