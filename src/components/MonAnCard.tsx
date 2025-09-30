@@ -17,23 +17,6 @@ interface MonAnCardProps {
 export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }: MonAnCardProps) => {
   const isOpen = isStoreOpen(monAn.gioMoCua);
 
-  const renderStatusBadge = () => {
-    if (isOpen === null) {
-      return null;
-    }
-    
-    const statusText = isOpen ? "Đang mở" : "Đóng cửa";
-    const badgeClass = isOpen 
-      ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-100" 
-      : "bg-red-100 text-red-800 border-red-200 hover:bg-red-100";
-
-    return (
-      <Badge variant="outline" className={cn("absolute top-3 right-3 font-semibold", badgeClass)}>
-        {statusText}
-      </Badge>
-    );
-  };
-
   const priceRange =
     monAn.giaMin && monAn.giaMax
       ? `${(monAn.giaMin / 1000).toFixed(0)}k - ${(monAn.giaMax / 1000).toFixed(0)}k`
@@ -54,7 +37,6 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </div>
-          {renderStatusBadge()}
         </CardHeader>
         <CardContent className="flex-grow p-4 flex flex-col">
           <div className="flex flex-wrap gap-2 mb-2">
@@ -85,12 +67,27 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
             </div>
           </div>
           <p className="text-sm text-muted-foreground mt-1 flex-grow">{monAn.diaChi}</p>
-          {monAn.gioMoCua && (
-            <div className="flex items-center text-xs text-muted-foreground mt-2">
-              <Clock className="w-3 h-3 mr-1.5" />
-              <span>{monAn.gioMoCua}</span>
-            </div>
-          )}
+          
+          <div className="flex items-center text-xs text-muted-foreground mt-2">
+            {monAn.gioMoCua && (
+              <>
+                <Clock className="w-3 h-3 mr-1.5 flex-shrink-0" />
+                <span>{monAn.gioMoCua}</span>
+              </>
+            )}
+            {isOpen !== null && (
+              <>
+                {monAn.gioMoCua && <span className="mx-1.5">·</span>}
+                <span className={cn(
+                  "font-semibold",
+                  isOpen ? "text-green-600" : "text-red-600"
+                )}>
+                  {isOpen ? "Đang mở" : "Đóng cửa"}
+                </span>
+              </>
+            )}
+          </div>
+
         </CardContent>
         <CardFooter className="p-4 pt-0 mt-auto">
           <p className="text-base font-semibold text-primary">
