@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
-import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, Phone, List, LayoutGrid, ArrowLeft } from "lucide-react";
+import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, List, LayoutGrid, ArrowLeft, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -10,7 +10,7 @@ import { useFoodLists } from "@/hooks/use-food-lists";
 import { showError, showSuccess } from "@/utils/toast";
 import { findMonAnById } from "@/data/loader";
 import { cn } from "@/lib/utils";
-import { PersonalNotesSection } from "@/components/PersonalNotesSection";
+import { UserFeedbackSection } from "@/components/UserFeedbackSection"; // Updated import
 
 const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
@@ -24,7 +24,7 @@ const DetailPage = () => {
   const { 
     addFavorite, removeFavorite, isFavorite,
     toggleWishlist, isWishlist,
-    toggleVisited, isVisited
+    toggleVisited, isVisited // Keep toggleVisited for marking as visited/unvisited
   } = useFoodLists();
 
   const monAn = findMonAnById(id);
@@ -170,8 +170,8 @@ const DetailPage = () => {
           </div>
         </div>
 
-        {/* Phần ghi chú cá nhân */}
-        <PersonalNotesSection monAnId={monAn.id} />
+        {/* Phần ghi chú & đánh giá cá nhân */}
+        <UserFeedbackSection monAnId={monAn.id} />
 
         {/* Phần hình ảnh */}
         <div className="mt-8">

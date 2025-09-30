@@ -1,12 +1,12 @@
 import { useFoodLists } from "@/hooks/use-food-lists";
-import { VisitedItem } from "@/components/VisitedItem";
+import { MonAnCard } from "@/components/MonAnCard"; // Changed from VisitedItem
 import loaiMonData from "@/data/loaimon.json";
 import { MonAn, LoaiMon } from "@/types";
 import { useAllMonAn } from "@/hooks/use-all-mon-an";
 import { Loader2 } from "lucide-react";
 
 const VisitedPage = () => {
-  const { visited } = useFoodLists();
+  const { visited, isFavorite, isWishlist } = useFoodLists(); // Added isFavorite, isWishlist
   const { allMonAn, isLoading } = useAllMonAn();
   
   const loaiMonMap = new Map<string, LoaiMon>();
@@ -29,10 +29,13 @@ const VisitedPage = () => {
       {visitedMonAnList.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {visitedMonAnList.map((monAn) => (
-            <VisitedItem 
+            <MonAnCard 
               key={monAn.id} 
               monAn={monAn} 
               loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]}
+              isVisited={true} // Mark as visited
+              isFavorite={isFavorite(monAn.id)} // Pass favorite status
+              isWishlist={isWishlist(monAn.id)} // Pass wishlist status
             />
           ))}
         </div>

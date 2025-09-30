@@ -205,10 +205,6 @@ export const useFoodLists = () => {
     return lists.visited.some(v => v.monAnId === monAnId);
   }, [lists.visited]);
 
-  const getVisitedDetails = useCallback((monAnId: string) => {
-    return lists.visited.find(v => v.monAnId === monAnId);
-  }, [lists.visited]);
-
   const toggleVisited = useCallback(async (monAnId: string) => {
     if (!user) {
       showError('Bạn cần đăng nhập để quản lý danh sách đã thử.');
@@ -245,34 +241,7 @@ export const useFoodLists = () => {
     }
   }, [user, isVisited]);
 
-  const updateVisited = useCallback(async (monAnId: string, details: { rating?: number | null; notes?: string | null }) => {
-    if (!user) {
-      showError('Bạn cần đăng nhập để cập nhật đánh giá.');
-      return;
-    }
-    const { error } = await supabase
-      .from('visited')
-      .update({ 
-        rating: details.rating, 
-        notes: details.notes,
-        updated_at: new Date().toISOString() 
-      })
-      .eq('user_id', user.id)
-      .eq('mon_an_id', monAnId);
-
-    if (error) {
-      console.error("Error updating visited entry:", error);
-      showError('Lỗi khi cập nhật đánh giá.');
-    } else {
-      setLists(prev => ({
-        ...prev,
-        visited: prev.visited.map(v => 
-          v.monAnId === monAnId ? { ...v, rating: details.rating ?? v.rating, notes: details.notes ?? v.notes } : v
-        ),
-      }));
-      showSuccess('Đã cập nhật đánh giá!');
-    }
-  }, [user]);
+  // Removed getVisitedDetails and updateVisited as their logic is now handled in UserFeedbackSection
 
   return { 
     favorites: lists.favorites, 
@@ -287,8 +256,6 @@ export const useFoodLists = () => {
     toggleWishlist,
     isVisited,
     toggleVisited,
-    getVisitedDetails,
-    updateVisited,
     isLoading: isLoading || isSessionLoading,
   };
 };
