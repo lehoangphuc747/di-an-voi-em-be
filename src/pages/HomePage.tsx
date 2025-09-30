@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MonAn, LoaiMon } from "@/types/index";
 import { MonAnCard } from "@/components/MonAnCard";
 import { FilterSidebar, PriceRange } from "@/components/FilterSidebar";
@@ -8,14 +8,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { monAnData } from "@/data/loader";
 import loaiMonData from "@/data/loaimon.json";
-import { supabase } from "@/integrations/supabase/client";
-import { showError } from "@/utils/toast";
 import { Loader2, RotateCcw } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { isStoreOpen } from "@/lib/time-utils";
 import { useFoodLists } from "@/hooks/use-food-lists";
+import { useAllMonAn } from "@/hooks/use-all-mon-an";
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
 type OpeningStatus = 'all' | 'open' | 'closed';
@@ -30,10 +28,9 @@ const PRICE_RANGES: (PriceRange & { min: number; max: number })[] = [
 ];
 
 const HomePage = () => {
-  const [userSubmittedMonAn, setUserSubmittedMonAn] = useState<MonAn[]>([]);
-  const [loadingSubmitted, setLoadingSubmitted] = useState(true);
   const [searchParams] = useSearchParams();
   const { isFavorite, isWishlist, isVisited } = useFoodLists();
+  const { allMonAn, isLoading: loadingSubmitted } = useAllMonAn();
 
   const [loaiMonMap] = useState<Map<string, LoaiMon>>(() => {
     const map = new Map<string, LoaiMon>();
@@ -58,47 +55,6 @@ const HomePage = () => {
       setSearchTerm(urlSearchTerm);
     }
   }, [searchParams, searchTerm]);
-
-  const fetchUserSubmittedMonAn = useCallback(async () => {
-    setLoadingSubmitted(true);
-    const { data, error } = await supabase
-      .from('user_submitted_mon_an')
-      .select('*')
-      .eq('is_approved', true);
-
-    if (error) {
-      console.error("Error fetching user submitted food items:", error);
-      showError('Lỗi khi tải món ăn do người dùng gửi.');
-      setUserSubmittedMonAn([]);
-    } else {
-      const formattedData: MonAn[] = data.map(item => ({
-        id: item.id,
-        ten: item.ten,
-        loaiIds: [item.loai_id],
-        hinhAnh: item.hinh_anh || [],
-        moTa: item.mo_ta || '',
-        diaChi: item.dia_chi,
-        thanhPho: item.thanh_pho,
-        googleMapLink: item.google_map_link || '',
-        facebookLink: item.facebook_link || '',
-        tags: item.tags || [],
-        giaMin: item.gia_min || undefined,
-        giaMax: item.gia_max || undefined,
-        ngayTao: item.ngay_tao,
-        gioMoCua: item.gio_mo_cua || undefined,
-      }));
-      setUserSubmittedMonAn(formattedData);
-    }
-    setLoadingSubmitted(false);
-  }, []);
-
-  useEffect(() => {
-    fetchUserSubmittedMonAn();
-  }, [fetchUserSubmittedMonAn]);
-
-  const allMonAn = useMemo(() => {
-    return [...monAnData, ...userSubmittedMonAn];
-  }, [userSubmittedMonAn]);
 
   const allCities = useMemo(() => [...new Set(allMonAn.map(m => m.thanhPho))], [allMonAn]);
   const allCategories = useMemo(() => [...loaiMonData], []);

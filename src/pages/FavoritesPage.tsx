@@ -1,17 +1,27 @@
 import { useFoodLists } from "@/hooks/use-food-lists";
 import { FavoriteItem } from "@/components/FavoriteItem";
-import { monAnData } from "@/data/loader";
 import loaiMonData from "@/data/loaimon.json";
 import { MonAn, LoaiMon } from "@/types";
+import { useAllMonAn } from "@/hooks/use-all-mon-an";
+import { Loader2 } from "lucide-react";
 
 const FavoritesPage = () => {
   const { favorites } = useFoodLists();
+  const { allMonAn, isLoading } = useAllMonAn();
   
   const loaiMonMap = new Map<string, LoaiMon>();
   loaiMonData.forEach(loai => loaiMonMap.set(loai.id, loai));
 
   const favoriteMonAnIds = new Set(favorites.map(f => f.monAnId));
-  const favoriteMonAnList: MonAn[] = monAnData.filter(m => favoriteMonAnIds.has(m.id));
+  const favoriteMonAnList: MonAn[] = allMonAn.filter(m => favoriteMonAnIds.has(m.id));
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div>
