@@ -5,13 +5,14 @@ import { FilterSidebar, PriceRange } from "@/components/FilterSidebar";
 import { FilterDrawer } from "@/components/FilterDrawer";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { monAnData } from "@/data/loader";
 import loaiMonData from "@/data/loaimon.json";
 import { supabase } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, RotateCcw } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
@@ -108,6 +109,13 @@ const HomePage = () => {
     );
   };
 
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setSelectedCities([]);
+    setSelectedCategories([]);
+    setSelectedPriceRangeId('all');
+  };
+
   const filteredAndSortedMonAn = useMemo(() => {
     let filtered = allMonAn.filter(mon => {
       const searchTermLower = debouncedSearchTerm.toLowerCase();
@@ -158,17 +166,23 @@ const HomePage = () => {
   }, [allMonAn, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, sortOption]);
 
   const filterContent = (
-    <FilterSidebar
-      cities={allCities}
-      categories={allCategories}
-      selectedCities={selectedCities}
-      onCityChange={handleCityChange}
-      selectedCategories={selectedCategories}
-      onCategoryChange={handleCategoryChange}
-      priceRanges={PRICE_RANGES}
-      selectedPriceRangeId={selectedPriceRangeId}
-      onPriceRangeChange={setSelectedPriceRangeId}
-    />
+    <div>
+      <Button variant="ghost" onClick={handleResetFilters} className="w-full justify-start mb-2 text-sm text-muted-foreground hover:text-foreground">
+        <RotateCcw className="mr-2 h-4 w-4" />
+        Xóa bộ lọc
+      </Button>
+      <FilterSidebar
+        cities={allCities}
+        categories={allCategories}
+        selectedCities={selectedCities}
+        onCityChange={handleCityChange}
+        selectedCategories={selectedCategories}
+        onCategoryChange={handleCategoryChange}
+        priceRanges={PRICE_RANGES}
+        selectedPriceRangeId={selectedPriceRangeId}
+        onPriceRangeChange={setSelectedPriceRangeId}
+      />
+    </div>
   );
 
   return (
