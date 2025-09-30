@@ -10,7 +10,7 @@ import { useFoodLists } from "@/hooks/use-food-lists";
 import { showError, showSuccess } from "@/utils/toast";
 import { findMonAnById } from "@/data/loader";
 import { cn } from "@/lib/utils";
-import { PublicNotesSection } from "@/components/PublicNotesSection";
+import { PersonalNotesSection } from "@/components/PersonalNotesSection";
 
 const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
@@ -170,8 +170,8 @@ const DetailPage = () => {
           </div>
         </div>
 
-        {/* Phần ghi chú công khai */}
-        <PublicNotesSection monAnId={monAn.id} />
+        {/* Phần ghi chú cá nhân */}
+        <PersonalNotesSection monAnId={monAn.id} />
 
         {/* Phần hình ảnh */}
         <div className="mt-8">
