@@ -13,7 +13,7 @@ function App() {
         <main className="flex-grow container mx-auto px-4 py-8">
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/mon-an/:id" element={<MonAnDetail />} />
+            <Route path="/mon/:id" element={<MonAnDetail />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

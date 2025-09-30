@@ -32,7 +32,7 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
   };
 
   return (
-    <Link to={`/mon-an/${monAn.id}`} className="group block h-full">
+    <Link to={`/mon/${monAn.id}`} className="group block h-full">
       <Card className="h-full flex flex-col overflow-hidden transition-shadow duration-300 hover:shadow-xl border">
         <CardHeader className="p-0 relative">
           <div className="aspect-video overflow-hidden">
