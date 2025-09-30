@@ -1,76 +1,71 @@
-import { MonAn, LoaiMon } from "@/types/index";
+import { MonAn, LoaiMon } from "@/types";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
-import { useFoodLists } from "@/hooks/use-food-lists";
-import { CheckCircle2, Bookmark, Heart } from "lucide-react";
+import { isStoreOpen } from "@/lib/time-utils";
+import { cn } from "@/lib/utils";
+import { Clock } from "lucide-react";
 
 interface MonAnCardProps {
   monAn: MonAn;
-  loaiMon?: LoaiMon[];
+  loaiMon: LoaiMon[];
 }
 
-const formatPrice = (price: number) => {
-  return `${(price / 1000).toFixed(0)}k`;
-};
-
 export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
-  const { isVisited, isWishlist, isFavorite } = useFoodLists();
-  const hasBeenVisited = isVisited(monAn.id);
-  const isOnWishlist = isWishlist(monAn.id);
-  const isCurrentlyFavorite = isFavorite(monAn.id);
+  const isOpen = isStoreOpen(monAn.gioMoCua);
 
-  const priceRange =
-    monAn.giaMin && monAn.giaMax
-      ? `${formatPrice(monAn.giaMin)} - ${formatPrice(monAn.giaMax)}`
-      : monAn.giaMax
-      ? `Dưới ${formatPrice(monAn.giaMax)}`
-      : monAn.giaMin
-      ? `Từ ${formatPrice(monAn.giaMin)}`
-      : "—";
+  const renderStatusBadge = () => {
+    if (isOpen === null) {
+      return null; // Không hiển thị huy hiệu nếu không có thông tin giờ
+    }
+    
+    const statusText = isOpen ? "Đang mở" : "Đóng cửa";
+    const badgeClass = isOpen 
+      ? "bg-green-100 text-green-800 border-green-200 hover:bg-green-100" 
+      : "bg-red-100 text-red-800 border-red-200 hover:bg-red-100";
+
+    return (
+      <Badge variant="outline" className={cn("absolute top-3 right-3 font-semibold", badgeClass)}>
+        {statusText}
+      </Badge>
+    );
+  };
 
   return (
-    <Link to={`/mon/${monAn.id}`} className="block">
-      <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
-        <CardHeader className="p-0">
-          <img
-            src={monAn.hinhAnh[0] || '/placeholder.svg'}
-            alt={monAn.ten}
-            className="w-full h-40 object-cover"
-          />
+    <Link to={`/mon-an/${monAn.id}`} className="group block h-full">
+      <Card className="h-full flex flex-col overflow-hidden transition-shadow duration-300 hover:shadow-xl border">
+        <CardHeader className="p-0 relative">
+          <div className="aspect-video overflow-hidden">
+            <img
+              src={monAn.hinhAnh[0]}
+              alt={monAn.ten}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          </div>
+          {renderStatusBadge()}
         </CardHeader>
-        <CardContent className="p-4 flex-grow">
-          <div className="flex justify-between items-start mb-2 gap-2">
-            <CardTitle className="text-lg font-semibold">{monAn.ten}</CardTitle>
-            <div className="flex items-center space-x-1 flex-shrink-0">
-              {isCurrentlyFavorite && (
-                <div className="text-red-500" title="Yêu thích">
-                  <Heart className="h-5 w-5 fill-current" />
-                </div>
-              )}
-              {isOnWishlist && (
-                <div className="text-blue-500" title="Chờ embe">
-                  <Bookmark className="h-5 w-5 fill-current" />
-                </div>
-              )}
-              {hasBeenVisited && (
-                <div className="text-green-500" title="Ăn rùi">
-                  <CheckCircle2 className="h-5 w-5" />
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <span>{monAn.thanhPho}</span>
-          </div>
-        </CardContent>
-        <CardFooter className="p-4 pt-0 flex justify-between items-center text-sm">
-          <div className="flex flex-wrap gap-1">
-            {loaiMon?.map((loai) => (
-              <Badge key={loai.id} variant="outline">{loai.ten}</Badge>
+        <CardContent className="flex-grow p-4 flex flex-col">
+          <div className="flex flex-wrap gap-2 mb-2">
+            {loaiMon.map(l => (
+              <Badge key={l.id} variant="secondary" className="font-normal">{l.ten}</Badge>
             ))}
           </div>
-          <span className="font-medium text-primary flex-shrink-0 ml-2">{priceRange}</span>
+          <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors mt-1">
+            {monAn.ten}
+          </CardTitle>
+          <p className="text-sm text-muted-foreground mt-1 flex-grow">{monAn.diaChi}</p>
+          {monAn.gioMoCua && (
+            <div className="flex items-center text-xs text-muted-foreground mt-2">
+              <Clock className="w-3 h-3 mr-1.5" />
+              <span>{monAn.gioMoCua}</span>
+            </div>
+          )}
+        </CardContent>
+        <CardFooter className="p-4 pt-0 mt-auto">
+          <p className="text-lg font-bold text-primary">
+            {monAn.giaMin ? `${monAn.giaMin.toLocaleString()}đ` : 'Xem chi tiết'}
+            {monAn.giaMax && monAn.giaMin ? ` - ${monAn.giaMax.toLocaleString()}đ` : ''}
+          </p>
         </CardFooter>
       </Card>
     </Link>
