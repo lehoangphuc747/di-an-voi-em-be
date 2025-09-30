@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { MonAn, LoaiMon } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dices } from 'lucide-react';
 import { MonAnCard } from './MonAnCard';
 import { showError } from '@/utils/toast';
@@ -11,23 +12,35 @@ import loaiMonData from "@/data/loaimon.json";
 interface RandomFoodPickerProps {
   wishlist: string[];
   allMonAn: MonAn[];
+  allCategories: LoaiMon[];
+  allCities: string[];
 }
 
 const loaiMonMap = new Map<string, LoaiMon>();
 loaiMonData.forEach(loai => loaiMonMap.set(loai.id, loai));
 
-export const RandomFoodPicker = ({ wishlist, allMonAn }: RandomFoodPickerProps) => {
+export const RandomFoodPicker = ({ wishlist, allMonAn, allCategories, allCities }: RandomFoodPickerProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedMonAn, setSelectedMonAn] = useState<MonAn | null>(null);
   const [searchScope, setSearchScope] = useState<'wishlist' | 'all'>('wishlist');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCity, setSelectedCity] = useState<string>('all');
 
   const handlePick = () => {
     const wishlistMonAn = allMonAn.filter(m => wishlist.includes(m.id));
-    const sourceList = searchScope === 'wishlist' ? wishlistMonAn : allMonAn;
+    let sourceList = searchScope === 'wishlist' ? wishlistMonAn : allMonAn;
+
+    // Apply filters
+    if (selectedCity !== 'all') {
+      sourceList = sourceList.filter(m => m.thanhPho === selectedCity);
+    }
+    if (selectedCategory !== 'all') {
+      sourceList = sourceList.filter(m => m.loaiIds.includes(selectedCategory));
+    }
 
     if (sourceList.length === 0) {
       setSelectedMonAn(null);
-      showError(searchScope === 'wishlist' ? 'Danh sách "Chờ embe" của bạn trống!' : 'Không có món ăn nào để chọn.');
+      showError('Không tìm thấy món ăn nào phù hợp với bộ lọc của bạn.');
       return;
     }
 
@@ -54,6 +67,31 @@ export const RandomFoodPicker = ({ wishlist, allMonAn }: RandomFoodPickerProps) 
               <TabsTrigger value="all">Từ tất cả</TabsTrigger>
             </TabsList>
           </Tabs>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <Select value={selectedCity} onValueChange={setSelectedCity}>
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn thành phố" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả thành phố</SelectItem>
+                {allCities.map(city => (
+                  <SelectItem key={city} value={city}>{city}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger>
+                <SelectValue placeholder="Chọn loại món" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả loại món</SelectItem>
+                {allCategories.map(cat => (
+                  <SelectItem key={cat.id} value={cat.id}>{cat.ten}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           
           <div className="min-h-[300px] flex items-center justify-center">
             {selectedMonAn ? (

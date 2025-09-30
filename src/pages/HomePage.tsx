@@ -191,7 +191,12 @@ const HomePage = () => {
       
       <main>
         <div className="mb-6">
-          <RandomFoodPicker wishlist={wishlist} allMonAn={allMonAn} />
+          <RandomFoodPicker 
+            wishlist={wishlist} 
+            allMonAn={allMonAn} 
+            allCategories={allCategories}
+            allCities={allCities}
+          />
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
