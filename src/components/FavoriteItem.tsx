@@ -23,7 +23,6 @@ export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
 
   const handleSaveNote = () => {
     updateFavoriteNote(monAn.id, note);
-    showSuccess('Đã lưu ghi chú!');
     setIsEditing(false);
   };
 
@@ -38,16 +37,18 @@ export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
 
   return (
     <Card className="h-full flex flex-col overflow-hidden">
-      <Link to={`/mon/${monAn.id}`} className="block">
+      <Link to={`/mon/${monAn.id}`} className="block group">
         <CardHeader className="p-0">
-          <img
-            src={monAn.hinhAnh[0] || '/placeholder.svg'}
-            alt={monAn.ten}
-            className="w-full h-40 object-cover"
-          />
+          <div className="aspect-video overflow-hidden">
+            <img
+              src={monAn.hinhAnh[0] || '/placeholder.svg'}
+              alt={monAn.ten}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          </div>
         </CardHeader>
         <CardContent className="p-4">
-          <CardTitle className="text-lg font-semibold mb-2">{monAn.ten}</CardTitle>
+          <CardTitle className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">{monAn.ten}</CardTitle>
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <span>{monAn.thanhPho}</span>
           </div>
@@ -63,7 +64,7 @@ export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
       </Link>
       
       <div className="p-4 pt-0 border-t mt-auto">
-        <Label htmlFor={`note-${monAn.id}`} className="font-semibold text-sm">Ghi chú</Label>
+        <Label htmlFor={`note-${monAn.id}`} className="font-semibold text-sm">Ghi chú của bạn</Label>
         {isEditing ? (
           <div className="mt-2 space-y-2">
             <Textarea
@@ -87,7 +88,7 @@ export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
               {note || 'Chưa có ghi chú.'}
             </p>
             <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-              {note ? 'Sửa' : 'Thêm ghi chú'}
+              {note ? 'Sửa ghi chú' : 'Thêm ghi chú'}
             </Button>
           </div>
         )}
