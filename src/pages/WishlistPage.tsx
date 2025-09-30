@@ -5,7 +5,7 @@ import loaiMonData from "@/data/loaimon.json";
 import { MonAn, LoaiMon } from "@/types";
 
 const WishlistPage = () => {
-  const { wishlist } = useFoodLists();
+  const { wishlist, isFavorite, isVisited } = useFoodLists();
   
   const loaiMonMap = new Map<string, LoaiMon>();
   loaiMonData.forEach(loai => loaiMonMap.set(loai.id, loai));
@@ -22,7 +22,10 @@ const WishlistPage = () => {
             <MonAnCard 
               key={monAn.id} 
               monAn={monAn} 
-              loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]} 
+              loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]}
+              isWishlist={true}
+              isFavorite={isFavorite(monAn.id)}
+              isVisited={isVisited(monAn.id)}
             />
           ))}
         </div>

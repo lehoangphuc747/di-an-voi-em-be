@@ -4,19 +4,22 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { isStoreOpen } from "@/lib/time-utils";
 import { cn } from "@/lib/utils";
-import { Clock } from "lucide-react";
+import { Clock, Heart, Bookmark, CheckCircle2 } from "lucide-react";
 
 interface MonAnCardProps {
   monAn: MonAn;
   loaiMon: LoaiMon[];
+  isFavorite?: boolean;
+  isWishlist?: boolean;
+  isVisited?: boolean;
 }
 
-export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
+export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }: MonAnCardProps) => {
   const isOpen = isStoreOpen(monAn.gioMoCua);
 
   const renderStatusBadge = () => {
     if (isOpen === null) {
-      return null; // Không hiển thị huy hiệu nếu không có thông tin giờ
+      return null;
     }
     
     const statusText = isOpen ? "Đang mở" : "Đóng cửa";
@@ -30,6 +33,26 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
       </Badge>
     );
   };
+
+  const renderListIcons = () => (
+    <div className="absolute top-3 left-3 flex items-center gap-1.5">
+      {isFavorite && (
+        <div className="p-1.5 bg-background/80 backdrop-blur-sm rounded-full" title="Yêu thích">
+          <Heart className="h-4 w-4 text-red-500 fill-red-500" />
+        </div>
+      )}
+      {isWishlist && (
+        <div className="p-1.5 bg-background/80 backdrop-blur-sm rounded-full" title="Chờ embe">
+          <Bookmark className="h-4 w-4 text-blue-500 fill-blue-500" />
+        </div>
+      )}
+      {isVisited && (
+        <div className="p-1.5 bg-background/80 backdrop-blur-sm rounded-full" title="Ăn rùi">
+          <CheckCircle2 className="h-4 w-4 text-green-500" />
+        </div>
+      )}
+    </div>
+  );
 
   const priceRange =
     monAn.giaMin && monAn.giaMax
@@ -52,6 +75,7 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
             />
           </div>
           {renderStatusBadge()}
+          {renderListIcons()}
         </CardHeader>
         <CardContent className="flex-grow p-4 flex flex-col">
           <div className="flex flex-wrap gap-2 mb-2">

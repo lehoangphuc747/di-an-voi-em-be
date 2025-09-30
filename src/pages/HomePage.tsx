@@ -15,6 +15,7 @@ import { showError } from "@/utils/toast";
 import { Loader2, RotateCcw } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { isStoreOpen } from "@/lib/time-utils";
+import { useFoodLists } from "@/hooks/use-food-lists";
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
 type OpeningStatus = 'all' | 'open' | 'closed';
@@ -32,6 +33,7 @@ const HomePage = () => {
   const [userSubmittedMonAn, setUserSubmittedMonAn] = useState<MonAn[]>([]);
   const [loadingSubmitted, setLoadingSubmitted] = useState(true);
   const [searchParams] = useSearchParams();
+  const { isFavorite, isWishlist, isVisited } = useFoodLists();
 
   const [loaiMonMap] = useState<Map<string, LoaiMon>>(() => {
     const map = new Map<string, LoaiMon>();
@@ -55,7 +57,7 @@ const HomePage = () => {
     if (searchTerm !== urlSearchTerm) {
       setSearchTerm(urlSearchTerm);
     }
-  }, [searchParams]);
+  }, [searchParams, searchTerm]);
 
   const fetchUserSubmittedMonAn = useCallback(async () => {
     setLoadingSubmitted(true);
@@ -153,8 +155,8 @@ const HomePage = () => {
         
         const isOpen = isStoreOpen(mon.gioMoCua);
 
-        if (isOpen === null) { // Không có thông tin giờ mở cửa
-          return selectedOpeningStatus === 'open'; // Hiển thị nếu lọc "Đang mở"
+        if (isOpen === null) {
+          return selectedOpeningStatus === 'open';
         }
 
         if (selectedOpeningStatus === 'open') return isOpen;
@@ -251,7 +253,10 @@ const HomePage = () => {
               <MonAnCard 
                 key={monAn.id} 
                 monAn={monAn} 
-                loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]} 
+                loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]}
+                isFavorite={isFavorite(monAn.id)}
+                isWishlist={isWishlist(monAn.id)}
+                isVisited={isVisited(monAn.id)}
               />
             ))}
           </div>
