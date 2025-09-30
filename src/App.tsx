@@ -1,66 +1,26 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import HomePage from "./pages/HomePage";
-import DetailPage from "./pages/DetailPage";
-import FavoritesPage from "./pages/FavoritesPage";
-import WishlistPage from "./pages/WishlistPage";
-import VisitedPage from "./pages/VisitedPage";
-import NotFound from "./pages/NotFound";
-import LoginPage from "./pages/LoginPage";
-import ProfilePage from "./pages/ProfilePage";
-import SubmitFoodPage from "./pages/SubmitFoodPage"; // Import SubmitFoodPage
-import { Layout } from "@/components/layout/Layout";
-import { SessionContextProvider, useSession } from "@/components/SessionContextProvider";
-import React from "react";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Index from './pages/Index';
+import MonAnDetail from './pages/MonAnDetail';
+import NotFound from './pages/NotFound';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
 
-const queryClient = new QueryClient();
-
-// Component bảo vệ route
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { session, isLoading } = useSession();
-
-  if (isLoading) {
-    return <div className="flex justify-center items-center min-h-screen">Đang tải...</div>;
-  }
-
-  if (!session) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return <>{children}</>;
-};
-
-const AppContent = () => (
-  <Layout>
-    <Routes>
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/" element={<HomePage />} />
-      <Route path="/mon/:id" element={<DetailPage />} />
-      <Route path="/favorites" element={<ProtectedRoute><FavoritesPage /></ProtectedRoute>} />
-      <Route path="/wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
-      <Route path="/visited" element={<ProtectedRoute><VisitedPage /></ProtectedRoute>} />
-      <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
-      <Route path="/submit-food" element={<ProtectedRoute><SubmitFoodPage /></ProtectedRoute>} /> {/* New Submit Food Route */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  </Layout>
-);
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <SessionContextProvider>
-          <AppContent />
-        </SessionContextProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  return (
+    <Router>
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <main className="flex-grow container mx-auto px-4 py-8">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/mon-an/:id" element={<MonAnDetail />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </Router>
+  );
+}
 
 export default App;
