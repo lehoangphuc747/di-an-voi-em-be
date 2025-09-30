@@ -34,26 +34,6 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
     );
   };
 
-  const renderListIcons = () => (
-    <div className="absolute top-3 left-3 flex items-center gap-1.5">
-      {isFavorite && (
-        <div className="p-1.5 bg-background/80 backdrop-blur-sm rounded-full" title="Yêu thích">
-          <Heart className="h-4 w-4 text-red-500 fill-red-500" />
-        </div>
-      )}
-      {isWishlist && (
-        <div className="p-1.5 bg-background/80 backdrop-blur-sm rounded-full" title="Chờ embe">
-          <Bookmark className="h-4 w-4 text-blue-500 fill-blue-500" />
-        </div>
-      )}
-      {isVisited && (
-        <div className="p-1.5 bg-background/80 backdrop-blur-sm rounded-full" title="Ăn rùi">
-          <CheckCircle2 className="h-4 w-4 text-green-500" />
-        </div>
-      )}
-    </div>
-  );
-
   const priceRange =
     monAn.giaMin && monAn.giaMax
       ? `${(monAn.giaMin / 1000).toFixed(0)}k - ${(monAn.giaMax / 1000).toFixed(0)}k`
@@ -75,7 +55,6 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
             />
           </div>
           {renderStatusBadge()}
-          {renderListIcons()}
         </CardHeader>
         <CardContent className="flex-grow p-4 flex flex-col">
           <div className="flex flex-wrap gap-2 mb-2">
@@ -83,9 +62,28 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
               <Badge key={l.id} variant="secondary" className="font-normal">{l.ten}</Badge>
             ))}
           </div>
-          <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors mt-1">
-            {monAn.ten}
-          </CardTitle>
+          <div className="flex justify-between items-start mt-1">
+            <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors">
+              {monAn.ten}
+            </CardTitle>
+            <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+              {isFavorite && (
+                <div title="Yêu thích">
+                  <Heart className="h-4 w-4 text-red-500 fill-red-500" />
+                </div>
+              )}
+              {isWishlist && (
+                <div title="Chờ embe">
+                  <Bookmark className="h-4 w-4 text-blue-500 fill-blue-500" />
+                </div>
+              )}
+              {isVisited && (
+                <div title="Ăn rùi">
+                  <CheckCircle2 className="h-4 w-4 text-green-500" />
+                </div>
+              )}
+            </div>
+          </div>
           <p className="text-sm text-muted-foreground mt-1 flex-grow">{monAn.diaChi}</p>
           {monAn.gioMoCua && (
             <div className="flex items-center text-xs text-muted-foreground mt-2">
