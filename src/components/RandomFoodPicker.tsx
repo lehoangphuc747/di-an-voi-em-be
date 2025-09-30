@@ -63,7 +63,7 @@ export const RandomFoodPicker = ({ wishlist, allMonAn, allCategories, allCities 
         <div className="py-4">
           <Tabs value={searchScope} onValueChange={(value) => setSearchScope(value as 'wishlist' | 'all')} className="w-full mb-4">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="wishlist">Từ "Chờ embe"</TabsTrigger>
+              <TabsTrigger value="wishlist">Từ "Muốn thử"</TabsTrigger>
               <TabsTrigger value="all">Từ tất cả</TabsTrigger>
             </TabsList>
           </Tabs>

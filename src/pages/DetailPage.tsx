@@ -175,7 +175,7 @@ const DetailPage = () => {
             </Button>
             <Button variant={isCurrentlyOnWishlist ? "secondary" : "outline"} onClick={handleToggleWishlist}>
               <Bookmark className={`h-4 w-4 mr-2 ${isCurrentlyOnWishlist ? 'fill-current' : ''}`} />
-              {isCurrentlyOnWishlist ? "Bỏ lưu 'Chờ embe'" : "Lưu 'Chờ embe'"}
+              {isCurrentlyOnWishlist ? "Bỏ lưu 'Muốn thử'" : "Lưu 'Muốn thử'"}
             </Button>
             <Button variant={hasBeenVisited ? "secondary" : "outline"} onClick={handleToggleVisited}>
               <CheckCircle2 className={`h-4 w-4 mr-2 ${hasBeenVisited ? 'text-green-500' : ''}`} />

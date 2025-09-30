@@ -196,7 +196,7 @@ export const useFoodLists = () => {
           ? prev.wishlist.filter(id => id !== monAnId)
           : [...prev.wishlist, monAnId],
       }));
-      showSuccess(currentlyOnWishlist ? "Đã xóa khỏi danh sách 'Chờ embe'" : "Đã thêm vào danh sách 'Chờ embe'");
+      showSuccess(currentlyOnWishlist ? "Đã xóa khỏi danh sách 'Muốn thử'" : "Đã thêm vào danh sách 'Muốn thử'");
     }
   }, [user, isWishlist]);
 

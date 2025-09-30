@@ -22,10 +22,10 @@ export const Header = () => {
               <span className="sr-only">Yêu thích</span>
             </Button>
           </Link>
-          <Link to="/wishlist" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Chờ embe">
+          <Link to="/wishlist" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Muốn thử">
             <Button variant="ghost" size="icon">
               <Bookmark className="h-5 w-5" />
-              <span className="sr-only">Chờ embe</span>
+              <span className="sr-only">Muốn thử</span>
             </Button>
           </Link>
           <Link to="/visited" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary" title="Ăn rùi">

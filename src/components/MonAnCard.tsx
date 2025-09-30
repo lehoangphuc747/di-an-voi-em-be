@@ -56,7 +56,7 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
                 </div>
               )}
               {isWishlist && (
-                <div title="Chờ embe">
+                <div title="Muốn thử">
                   <Bookmark className="h-4 w-4 text-blue-500 fill-blue-500" />
                 </div>
               )}
