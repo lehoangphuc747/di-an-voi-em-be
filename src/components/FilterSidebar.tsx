@@ -9,6 +9,8 @@ export interface PriceRange {
   ten: string;
 }
 
+type OpeningStatus = 'all' | 'open' | 'closed';
+
 interface FilterSidebarProps {
   cities: string[];
   categories: LoaiMon[];
@@ -19,6 +21,8 @@ interface FilterSidebarProps {
   priceRanges: PriceRange[];
   selectedPriceRangeId: string;
   onPriceRangeChange: (id: string) => void;
+  selectedOpeningStatus: OpeningStatus;
+  onOpeningStatusChange: (status: OpeningStatus) => void;
 }
 
 export const FilterSidebar = ({
@@ -31,10 +35,41 @@ export const FilterSidebar = ({
   priceRanges,
   selectedPriceRangeId,
   onPriceRangeChange,
+  selectedOpeningStatus,
+  onOpeningStatusChange,
 }: FilterSidebarProps) => {
   return (
     <div className="space-y-6">
-      <Accordion type="multiple" defaultValue={['cities', 'categories', 'price']} className="w-full">
+      <Accordion type="multiple" defaultValue={['cities', 'categories', 'price', 'status']} className="w-full">
+        <AccordionItem value="status">
+          <AccordionTrigger>Trạng thái</AccordionTrigger>
+          <AccordionContent>
+            <RadioGroup
+              value={selectedOpeningStatus}
+              onValueChange={(value) => onOpeningStatusChange(value as OpeningStatus)}
+              className="space-y-2 p-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="all" id="status-all" />
+                <Label htmlFor="status-all" className="font-normal cursor-pointer">
+                  Tất cả
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="open" id="status-open" />
+                <Label htmlFor="status-open" className="font-normal cursor-pointer">
+                  Đang mở
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="closed" id="status-closed" />
+                <Label htmlFor="status-closed" className="font-normal cursor-pointer">
+                  Đóng cửa
+                </Label>
+              </div>
+            </RadioGroup>
+          </AccordionContent>
+        </AccordionItem>
         <AccordionItem value="cities">
           <AccordionTrigger>Thành phố</AccordionTrigger>
           <AccordionContent>

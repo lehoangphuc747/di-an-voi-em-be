@@ -14,8 +14,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
 import { Loader2, RotateCcw } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
+import { isStoreOpen } from "@/lib/time-utils";
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
+type OpeningStatus = 'all' | 'open' | 'closed';
 
 const PRICE_RANGES: (PriceRange & { min: number; max: number })[] = [
   { id: 'all', ten: 'Tất cả', min: 0, max: Infinity },
@@ -44,6 +46,7 @@ const HomePage = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedPriceRangeId, setSelectedPriceRangeId] = useState<string>('all');
   const [sortOption, setSortOption] = useState<SortOption>("newest");
+  const [selectedOpeningStatus, setSelectedOpeningStatus] = useState<OpeningStatus>('all');
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
@@ -69,7 +72,7 @@ const HomePage = () => {
       const formattedData: MonAn[] = data.map(item => ({
         id: item.id,
         ten: item.ten,
-        loaiIds: [item.loai_id], // Món ăn do người dùng gửi chỉ có 1 loại
+        loaiIds: [item.loai_id],
         hinhAnh: item.hinh_anh || [],
         moTa: item.mo_ta || '',
         diaChi: item.dia_chi,
@@ -80,6 +83,7 @@ const HomePage = () => {
         giaMin: item.gia_min || undefined,
         giaMax: item.gia_max || undefined,
         ngayTao: item.ngay_tao,
+        gioMoCua: item.gio_mo_cua || undefined,
       }));
       setUserSubmittedMonAn(formattedData);
     }
@@ -114,6 +118,7 @@ const HomePage = () => {
     setSelectedCities([]);
     setSelectedCategories([]);
     setSelectedPriceRangeId('all');
+    setSelectedOpeningStatus('all');
   };
 
   const filteredAndSortedMonAn = useMemo(() => {
@@ -142,8 +147,23 @@ const HomePage = () => {
 
         return itemPrice >= range.min && itemPrice < range.max;
       })();
+
+      const statusMatch = (() => {
+        if (selectedOpeningStatus === 'all') return true;
+        
+        const isOpen = isStoreOpen(mon.gioMoCua);
+
+        if (isOpen === null) { // Không có thông tin giờ mở cửa
+          return selectedOpeningStatus === 'open'; // Hiển thị nếu lọc "Đang mở"
+        }
+
+        if (selectedOpeningStatus === 'open') return isOpen;
+        if (selectedOpeningStatus === 'closed') return !isOpen;
+        
+        return true;
+      })();
       
-      return searchMatch && cityMatch && categoryMatch && priceMatch;
+      return searchMatch && cityMatch && categoryMatch && priceMatch && statusMatch;
     });
 
     switch (sortOption) {
@@ -163,7 +183,7 @@ const HomePage = () => {
     }
 
     return filtered;
-  }, [allMonAn, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, sortOption]);
+  }, [allMonAn, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, sortOption, selectedOpeningStatus]);
 
   const filterContent = (
     <div>
@@ -181,6 +201,8 @@ const HomePage = () => {
         priceRanges={PRICE_RANGES}
         selectedPriceRangeId={selectedPriceRangeId}
         onPriceRangeChange={setSelectedPriceRangeId}
+        selectedOpeningStatus={selectedOpeningStatus}
+        onOpeningStatusChange={setSelectedOpeningStatus}
       />
     </div>
   );
