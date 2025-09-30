@@ -40,7 +40,7 @@ export const FilterSidebar = ({
 }: FilterSidebarProps) => {
   return (
     <div className="space-y-6">
-      <Accordion type="multiple" defaultValue={['cities', 'categories', 'price', 'status']} className="w-full">
+      <Accordion type="multiple" className="w-full">
         <AccordionItem value="status">
           <AccordionTrigger>Trạng thái</AccordionTrigger>
           <AccordionContent>

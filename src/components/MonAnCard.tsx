@@ -31,13 +31,22 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
     );
   };
 
+  const priceRange =
+    monAn.giaMin && monAn.giaMax
+      ? `${(monAn.giaMin / 1000).toFixed(0)}k - ${(monAn.giaMax / 1000).toFixed(0)}k`
+      : monAn.giaMax
+      ? `Dưới ${(monAn.giaMax / 1000).toFixed(0)}k`
+      : monAn.giaMin
+      ? `Từ ${(monAn.giaMin / 1000).toFixed(0)}k`
+      : "—";
+
   return (
     <Link to={`/mon/${monAn.id}`} className="group block h-full">
       <Card className="h-full flex flex-col overflow-hidden transition-shadow duration-300 hover:shadow-xl border">
         <CardHeader className="p-0 relative">
           <div className="aspect-video overflow-hidden">
             <img
-              src={monAn.hinhAnh[0]}
+              src={monAn.hinhAnh[0] || '/placeholder.svg'}
               alt={monAn.ten}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
@@ -63,8 +72,7 @@ export const MonAnCard = ({ monAn, loaiMon }: MonAnCardProps) => {
         </CardContent>
         <CardFooter className="p-4 pt-0 mt-auto">
           <p className="text-lg font-bold text-primary">
-            {monAn.giaMin ? `${monAn.giaMin.toLocaleString()}đ` : 'Xem chi tiết'}
-            {monAn.giaMax && monAn.giaMin ? ` - ${monAn.giaMax.toLocaleString()}đ` : ''}
+            {priceRange}
           </p>
         </CardFooter>
       </Card>
