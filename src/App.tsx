@@ -26,6 +26,7 @@ function App() {
             <Route path="/visited" element={<VisitedPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/submit-food" element={<SubmitFoodPage />} />
+            <Route path="/submit-food/:id/edit" element={<SubmitFoodPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Layout>

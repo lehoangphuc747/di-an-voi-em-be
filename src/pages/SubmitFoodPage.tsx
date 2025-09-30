@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -14,7 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSession } from '@/components/SessionContextProvider';
 import { showError, showSuccess } from '@/utils/toast';
 import loaiMonData from '@/data/loaimon.json';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const formSchema = z.object({
   ten: z.string().min(1, { message: "Tên món ăn không được để trống." }).max(100, { message: "Tên món ăn quá dài." }),
@@ -47,10 +47,12 @@ const formSchema = z.object({
 type SubmitFoodFormValues = z.infer<typeof formSchema>;
 
 const SubmitFoodPage = () => {
+  const { id: submissionId } = useParams<{ id: string }>();
   const { user } = useSession();
   const navigate = useNavigate();
   const [imageUrls, setImageUrls] = useState<string[]>(['']);
   const [tagInputs, setTagInputs] = useState<string[]>(['']);
+  const isEditMode = !!submissionId;
 
   const form = useForm<SubmitFoodFormValues>({
     resolver: zodResolver(formSchema),
@@ -68,6 +70,41 @@ const SubmitFoodPage = () => {
       giaMax: undefined,
     },
   });
+
+  useEffect(() => {
+    if (isEditMode && user) {
+      const fetchSubmission = async () => {
+        const { data, error } = await supabase
+          .from('user_submitted_mon_an')
+          .select('*')
+          .eq('id', submissionId)
+          .eq('user_id', user.id)
+          .single();
+
+        if (error || !data) {
+          showError('Không tìm thấy món ăn hoặc bạn không có quyền chỉnh sửa.');
+          navigate('/profile');
+        } else {
+          form.reset({
+            ten: data.ten,
+            loaiId: data.loai_id,
+            hinhAnh: data.hinh_anh || [],
+            moTa: data.mo_ta || '',
+            diaChi: data.dia_chi,
+            thanhPho: data.thanh_pho,
+            googleMapLink: data.google_map_link || '',
+            facebookLink: data.facebook_link || '',
+            tags: data.tags || [],
+            giaMin: data.gia_min ?? undefined,
+            giaMax: data.gia_max ?? undefined,
+          });
+          setImageUrls(data.hinh_anh && data.hinh_anh.length > 0 ? data.hinh_anh : ['']);
+          setTagInputs(data.tags && data.tags.length > 0 ? data.tags : ['']);
+        }
+      };
+      fetchSubmission();
+    }
+  }, [submissionId, user, navigate, form, isEditMode]);
 
   const handleImageUrlChange = (index: number, value: string) => {
     const newUrls = [...imageUrls];
@@ -105,7 +142,7 @@ const SubmitFoodPage = () => {
 
   const onSubmit = async (values: SubmitFoodFormValues) => {
     if (!user) {
-      showError('Bạn cần đăng nhập để gửi món ăn.');
+      showError('Bạn cần đăng nhập để thực hiện hành động này.');
       return;
     }
 
@@ -120,27 +157,38 @@ const SubmitFoodPage = () => {
       gia_max: giaMax,
     };
 
-    const { error } = await supabase
-      .from('user_submitted_mon_an')
-      .insert([payload]);
+    let error;
+
+    if (isEditMode) {
+      const { error: updateError } = await supabase
+        .from('user_submitted_mon_an')
+        .update(payload)
+        .eq('id', submissionId!);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('user_submitted_mon_an')
+        .insert([payload]);
+      error = insertError;
+    }
 
     if (error) {
       console.error("Error submitting food item:", error);
-      showError('Lỗi khi gửi món ăn. Vui lòng thử lại.');
+      showError(`Lỗi khi ${isEditMode ? 'cập nhật' : 'gửi'} món ăn. Vui lòng thử lại.`);
     } else {
-      showSuccess('Món ăn của bạn đã được gửi thành công và đang chờ duyệt!');
-      form.reset();
-      setImageUrls(['']);
-      setTagInputs(['']);
-      navigate('/'); // Redirect to home or a confirmation page
+      showSuccess(`Món ăn đã được ${isEditMode ? 'cập nhật' : 'gửi'} thành công!`);
+      navigate('/profile');
     }
   };
 
   return (
     <div className="max-w-3xl mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Thêm món ăn mới</h1>
+      <h1 className="text-3xl font-bold mb-6">{isEditMode ? 'Chỉnh sửa món ăn' : 'Thêm món ăn mới'}</h1>
       <p className="text-muted-foreground mb-8">
-        Hãy chia sẻ những món ăn ngon mà bạn biết! Món ăn của bạn sẽ được hiển thị sau khi được duyệt.
+        {isEditMode 
+          ? 'Cập nhật thông tin cho món ăn bạn đã gửi.'
+          : 'Hãy chia sẻ những món ăn ngon mà bạn biết! Món ăn của bạn sẽ được hiển thị sau khi được duyệt.'
+        }
       </p>
 
       <Form {...form}>
@@ -165,7 +213,7 @@ const SubmitFoodPage = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Loại món ăn <span className="text-red-500">*</span></FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Chọn loại món ăn" />
@@ -195,7 +243,7 @@ const SubmitFoodPage = () => {
                     onChange={(e) => handleImageUrlChange(index, e.target.value)}
                   />
                   {imageUrls.length > 1 && (
-                    <Button variant="ghost" size="icon" onClick={() => handleRemoveImageUrl(index)}>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveImageUrl(index)}>
                       <XCircle className="h-4 w-4 text-red-500" />
                     </Button>
                   )}
@@ -289,7 +337,7 @@ const SubmitFoodPage = () => {
                     onChange={(e) => handleTagInputChange(index, e.target.value)}
                   />
                   {tagInputs.length > 1 && (
-                    <Button variant="ghost" size="icon" onClick={() => handleRemoveTagInput(index)}>
+                    <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveTagInput(index)}>
                       <XCircle className="h-4 w-4 text-red-500" />
                     </Button>
                   )}
@@ -333,7 +381,7 @@ const SubmitFoodPage = () => {
 
           <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
             {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Gửi món ăn
+            {isEditMode ? 'Lưu thay đổi' : 'Gửi món ăn'}
           </Button>
         </form>
       </Form>

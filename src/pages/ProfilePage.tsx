@@ -12,9 +12,11 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2, Plus } from 'lucide-react';
+import { Loader2, Plus, Edit, Trash2 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Profile } from '@/types'; // Import Profile interface
+import { Profile } from '@/types';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
 
 const profileFormSchema = z.object({
   nickname: z.string().min(1, { message: "Nickname không được để trống." }).max(50, { message: "Nickname quá dài." }).optional().or(z.literal('')),
@@ -25,6 +27,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 const ProfilePage = () => {
   const { user, isLoading: isSessionLoading } = useSession();
   const [loading, setLoading] = useState(true);
+  const [submissions, setSubmissions] = useState<any[]>([]);
   const navigate = useNavigate();
 
   const form = useForm<ProfileFormValues>({
@@ -39,26 +42,50 @@ const ProfilePage = () => {
       return;
     }
 
-    const fetchProfile = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
+    let isMounted = true;
+    setLoading(true);
+
+    const fetchProfileAndSubmissions = async () => {
+      const profilePromise = supabase
         .from('profiles')
-        .select('nickname, avatar_url') // Chỉ chọn nickname
+        .select('nickname, avatar_url')
         .eq('id', user.id)
         .single();
 
-      if (error) {
-        console.error("Error fetching profile:", error);
+      const submissionsPromise = supabase
+        .from('user_submitted_mon_an')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('ngay_tao', { ascending: false });
+
+      const [{ data: profileData, error: profileError }, { data: submissionsData, error: submissionsError }] = await Promise.all([profilePromise, submissionsPromise]);
+
+      if (!isMounted) return;
+
+      if (profileError && profileError.code !== 'PGRST116') { // Ignore "exact one row" error if profile doesn't exist
+        console.error("Error fetching profile:", profileError);
         showError('Lỗi khi tải thông tin hồ sơ.');
-      } else if (data) {
+      } else if (profileData) {
         form.reset({
-          nickname: data.nickname || '',
+          nickname: profileData.nickname || '',
         });
       }
+
+      if (submissionsError) {
+        console.error("Error fetching submissions:", submissionsError);
+        showError('Lỗi khi tải các món ăn đã gửi.');
+      } else if (submissionsData) {
+        setSubmissions(submissionsData);
+      }
+
       setLoading(false);
     };
 
-    fetchProfile();
+    fetchProfileAndSubmissions();
+
+    return () => {
+      isMounted = false;
+    };
   }, [user, isSessionLoading, form]);
 
   const onSubmit = async (values: ProfileFormValues) => {
@@ -95,6 +122,23 @@ const ProfilePage = () => {
       navigate('/login');
     }
     setLoading(false);
+  };
+
+  const handleDeleteSubmission = async (submissionId: string) => {
+    if (!user) return;
+    const { error } = await supabase
+      .from('user_submitted_mon_an')
+      .delete()
+      .eq('id', submissionId)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error("Error deleting submission:", error);
+      showError('Lỗi khi xóa món ăn.');
+    } else {
+      setSubmissions(prev => prev.filter(s => s.id !== submissionId));
+      showSuccess('Đã xóa món ăn thành công.');
+    }
   };
 
   if (isSessionLoading || loading) {
@@ -147,7 +191,7 @@ const ProfilePage = () => {
           </Form>
 
           <div className="mt-8 pt-6 border-t">
-            <h3 className="text-xl font-semibold mb-4">Đóng góp của bạn</h3>
+            <h3 className="text-xl font-semibold mb-4">Đóng góp</h3>
             <Link to="/submit-food">
               <Button className="w-full">
                 <Plus className="h-4 w-4 mr-2" /> Thêm món ăn mới
@@ -156,6 +200,62 @@ const ProfilePage = () => {
           </div>
         </CardContent>
       </Card>
+
+      <div className="mt-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Món ăn bạn đã gửi</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {submissions.length > 0 ? (
+              <div className="space-y-4">
+                {submissions.map(submission => (
+                  <div key={submission.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div>
+                      <p className="font-semibold">{submission.ten}</p>
+                      <Badge variant={submission.is_approved ? "default" : "secondary"}>
+                        {submission.is_approved ? "Đã duyệt" : "Chờ duyệt"}
+                      </Badge>
+                    </div>
+                    {!submission.is_approved && (
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" asChild>
+                          <Link to={`/submit-food/${submission.id}/edit`}>
+                            <Edit className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Hành động này không thể hoàn tác. Món ăn bạn gửi sẽ bị xóa vĩnh viễn.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Hủy</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDeleteSubmission(submission.id)}>
+                                Xóa
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Bạn chưa gửi món ăn nào.</p>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
