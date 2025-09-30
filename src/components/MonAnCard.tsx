@@ -95,7 +95,7 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
           )}
         </CardContent>
         <CardFooter className="p-4 pt-0 mt-auto">
-          <p className="text-lg font-bold text-primary">
+          <p className="text-base font-semibold text-primary">
             {priceRange}
           </p>
         </CardFooter>
