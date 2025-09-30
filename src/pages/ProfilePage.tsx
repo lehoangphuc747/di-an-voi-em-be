@@ -12,10 +12,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Loader2, Plus, Edit, Trash2 } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Profile } from '@/types';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const profileFormSchema = z.object({
   nickname: z.string().min(1, { message: "Nickname không được để trống." }).max(50, { message: "Nickname quá dài." }).optional().or(z.literal('')),
@@ -26,7 +24,6 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 const ProfilePage = () => {
   const { user, isLoading: isSessionLoading } = useSession();
   const [loading, setLoading] = useState(true);
-  const [submissions, setSubmissions] = useState<any[]>([]);
   const navigate = useNavigate();
 
   const form = useForm<ProfileFormValues>({
@@ -44,20 +41,12 @@ const ProfilePage = () => {
     let isMounted = true;
     setLoading(true);
 
-    const fetchProfileAndSubmissions = async () => {
-      const profilePromise = supabase
+    const fetchProfile = async () => {
+      const { data: profileData, error: profileError } = await supabase
         .from('profiles')
         .select('nickname, avatar_url')
         .eq('id', user.id)
         .single();
-
-      const submissionsPromise = supabase
-        .from('user_submitted_mon_an')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('ngay_tao', { ascending: false });
-
-      const [{ data: profileData, error: profileError }, { data: submissionsData, error: submissionsError }] = await Promise.all([profilePromise, submissionsPromise]);
 
       if (!isMounted) return;
 
@@ -70,17 +59,10 @@ const ProfilePage = () => {
         });
       }
 
-      if (submissionsError) {
-        console.error("Error fetching submissions:", submissionsError);
-        showError('Lỗi khi tải các món ăn đã gửi.');
-      } else if (submissionsData) {
-        setSubmissions(submissionsData);
-      }
-
       setLoading(false);
     };
 
-    fetchProfileAndSubmissions();
+    fetchProfile();
 
     return () => {
       isMounted = false;
@@ -121,23 +103,6 @@ const ProfilePage = () => {
       navigate('/login');
     }
     setLoading(false);
-  };
-
-  const handleDeleteSubmission = async (submissionId: string) => {
-    if (!user) return;
-    const { error } = await supabase
-      .from('user_submitted_mon_an')
-      .delete()
-      .eq('id', submissionId)
-      .eq('user_id', user.id);
-
-    if (error) {
-      console.error("Error deleting submission:", error);
-      showError('Lỗi khi xóa món ăn.');
-    } else {
-      setSubmissions(prev => prev.filter(s => s.id !== submissionId));
-      showSuccess('Đã xóa món ăn thành công.');
-    }
   };
 
   if (isSessionLoading || loading) {
@@ -188,68 +153,8 @@ const ProfilePage = () => {
               </div>
             </form>
           </Form>
-
-          <div className="mt-8 pt-6 border-t">
-            <h3 className="text-xl font-semibold mb-4">Địa điểm của bạn</h3>
-            <Link to="/submit-food">
-              <Button className="w-full">
-                <Plus className="h-4 w-4 mr-2" /> Thêm địa điểm mới
-              </Button>
-            </Link>
-          </div>
         </CardContent>
       </Card>
-
-      <div className="mt-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>Các địa điểm bạn đã thêm</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {submissions.length > 0 ? (
-              <div className="space-y-4">
-                {submissions.map(submission => (
-                  <div key={submission.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-semibold">{submission.ten}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link to={`/submit-food/${submission.id}/edit`}>
-                          <Edit className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Hành động này không thể hoàn tác. Địa điểm bạn thêm sẽ bị xóa vĩnh viễn.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Hủy</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDeleteSubmission(submission.id)}>
-                              Xóa
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">Bạn chưa thêm địa điểm nào.</p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 };

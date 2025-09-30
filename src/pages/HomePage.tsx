@@ -9,12 +9,13 @@ import { Button } from "@/components/ui/button";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useIsMobile } from "@/hooks/use-mobile";
 import loaiMonData from "@/data/loaimon.json";
-import { RotateCcw, Loader2 } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { isStoreOpen } from "@/lib/time-utils";
 import { useFoodLists } from "@/hooks/use-food-lists";
 import { useAllMonAn } from "@/hooks/use-all-mon-an";
 import { MonAnCardSkeleton } from "@/components/MonAnCardSkeleton";
+import { RandomFoodPicker } from "@/components/RandomFoodPicker";
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
 type OpeningStatus = 'all' | 'open' | 'closed';
@@ -32,7 +33,7 @@ const ITEMS_PER_PAGE = 9;
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
-  const { isFavorite, isWishlist, isVisited } = useFoodLists();
+  const { wishlist, isFavorite, isWishlist, isVisited } = useFoodLists();
   const { allMonAn, isLoading: loadingSubmitted } = useAllMonAn();
 
   const [loaiMonMap] = useState<Map<string, LoaiMon>>(() => {
@@ -147,7 +148,6 @@ const HomePage = () => {
     return filtered;
   }, [allMonAn, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, sortOption, selectedOpeningStatus]);
 
-  // Reset visible count when filters change
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
   }, [filteredAndSortedMonAn]);
@@ -190,6 +190,10 @@ const HomePage = () => {
       )}
       
       <main>
+        <div className="mb-6">
+          <RandomFoodPicker wishlist={wishlist} allMonAn={allMonAn} />
+        </div>
+
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <Input
             type="text"
