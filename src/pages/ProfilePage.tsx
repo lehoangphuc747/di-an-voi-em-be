@@ -16,7 +16,6 @@ import { Loader2, Plus, Edit, Trash2 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Profile } from '@/types';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { Badge } from '@/components/ui/badge';
 
 const profileFormSchema = z.object({
   nickname: z.string().min(1, { message: "Nickname không được để trống." }).max(50, { message: "Nickname quá dài." }).optional().or(z.literal('')),
@@ -191,10 +190,10 @@ const ProfilePage = () => {
           </Form>
 
           <div className="mt-8 pt-6 border-t">
-            <h3 className="text-xl font-semibold mb-4">Đóng góp</h3>
+            <h3 className="text-xl font-semibold mb-4">Địa điểm của bạn</h3>
             <Link to="/submit-food">
               <Button className="w-full">
-                <Plus className="h-4 w-4 mr-2" /> Thêm món ăn mới
+                <Plus className="h-4 w-4 mr-2" /> Thêm địa điểm mới
               </Button>
             </Link>
           </div>
@@ -204,7 +203,7 @@ const ProfilePage = () => {
       <div className="mt-8">
         <Card>
           <CardHeader>
-            <CardTitle>Món ăn bạn đã gửi</CardTitle>
+            <CardTitle>Các địa điểm bạn đã thêm</CardTitle>
           </CardHeader>
           <CardContent>
             {submissions.length > 0 ? (
@@ -213,45 +212,40 @@ const ProfilePage = () => {
                   <div key={submission.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
                       <p className="font-semibold">{submission.ten}</p>
-                      <Badge variant={submission.is_approved ? "default" : "secondary"}>
-                        {submission.is_approved ? "Đã duyệt" : "Chờ duyệt"}
-                      </Badge>
                     </div>
-                    {!submission.is_approved && (
-                      <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" asChild>
-                          <Link to={`/submit-food/${submission.id}/edit`}>
-                            <Edit className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Hành động này không thể hoàn tác. Món ăn bạn gửi sẽ bị xóa vĩnh viễn.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Hủy</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDeleteSubmission(submission.id)}>
-                                Xóa
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                      <Button variant="ghost" size="icon" asChild>
+                        <Link to={`/submit-food/${submission.id}/edit`}>
+                          <Edit className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Bạn có chắc chắn muốn xóa?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Hành động này không thể hoàn tác. Địa điểm bạn thêm sẽ bị xóa vĩnh viễn.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Hủy</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDeleteSubmission(submission.id)}>
+                              Xóa
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">Bạn chưa gửi món ăn nào.</p>
+              <p className="text-sm text-muted-foreground">Bạn chưa thêm địa điểm nào.</p>
             )}
           </CardContent>
         </Card>

@@ -13,8 +13,7 @@ export const useAllMonAn = () => {
       setIsLoading(true);
       const { data, error } = await supabase
         .from('user_submitted_mon_an')
-        .select('*')
-        .eq('is_approved', true);
+        .select('*');
 
       if (error) {
         console.error("Error fetching user submitted food items:", error);
