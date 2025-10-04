@@ -61,7 +61,11 @@ const HomePage = () => {
     }
   }, [searchParams, searchTerm]);
 
-  const allCities = useMemo(() => [...new Set(allMonAn.map(m => m.thanhPho))], [allMonAn]);
+  const allCities = useMemo(() => {
+    const cities = new Set<string>();
+    allMonAn.forEach(m => m.branches.forEach(b => cities.add(b.thanhPho)));
+    return [...cities];
+  }, [allMonAn]);
   const allCategories = useMemo(() => [...loaiMonData], []);
 
   const handleCityChange = (city: string) => {
@@ -93,7 +97,7 @@ const HomePage = () => {
         : true;
 
       const cityMatch = selectedCities.length > 0 
-        ? selectedCities.includes(mon.thanhPho) 
+        ? mon.branches.some(branch => selectedCities.includes(branch.thanhPho))
         : true;
       
       const categoryMatch = selectedCategories.length > 0
@@ -114,16 +118,17 @@ const HomePage = () => {
       const statusMatch = (() => {
         if (selectedOpeningStatus === 'all') return true;
         
-        const isOpen = isStoreOpen(mon.gioMoCua);
-
-        if (isOpen === null) {
-          return selectedOpeningStatus === 'open';
-        }
-
-        if (selectedOpeningStatus === 'open') return isOpen;
-        if (selectedOpeningStatus === 'closed') return !isOpen;
-        
-        return true;
+        // Check if ANY branch matches the opening status
+        const anyBranchMatches = mon.branches.some(branch => {
+          const isOpen = isStoreOpen(branch.gioMoCua);
+          if (isOpen === null) { // If no opening hours, treat as closed for 'open' filter, or match for 'closed' filter
+            return selectedOpeningStatus === 'closed';
+          }
+          if (selectedOpeningStatus === 'open') return isOpen;
+          if (selectedOpeningStatus === 'closed') return !isOpen;
+          return true;
+        });
+        return anyBranchMatches;
       })();
       
       return searchMatch && cityMatch && categoryMatch && priceMatch && statusMatch;

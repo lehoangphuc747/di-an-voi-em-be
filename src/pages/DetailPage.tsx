@@ -11,14 +11,15 @@ import { showError, showSuccess } from "@/utils/toast";
 import { findMonAnById } from "@/data/loader";
 import { cn } from "@/lib/utils";
 import { UserFeedbackSection } from "@/components/UserFeedbackSection";
+import { isStoreOpen } from "@/lib/time-utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
 const DetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isViewerOpen, setIsViewerOpen] = useState(0); // Use number for selected image index
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
 
   const { 
@@ -34,8 +35,7 @@ const DetailPage = () => {
   }
 
   const openImageViewer = (index: number) => {
-    setSelectedImageIndex(index);
-    setIsViewerOpen(true);
+    setIsViewerOpen(index + 1); // Use 1-based index for dialog open state
   };
 
   const handleShare = async () => {
@@ -77,18 +77,16 @@ const DetailPage = () => {
     toggleVisited(monAn.id);
   };
 
-  const handleCopyAddress = () => {
-    navigator.clipboard.writeText(monAn.diaChi)
+  const handleCopyAddress = (address: string) => {
+    navigator.clipboard.writeText(address)
       .then(() => showSuccess("Đã sao chép địa chỉ!"))
       .catch(() => showError("Không thể sao chép địa chỉ."));
   };
 
-  const handleCopyPhoneNumber = () => {
-    if (monAn.soDienThoai) {
-      navigator.clipboard.writeText(monAn.soDienThoai)
-        .then(() => showSuccess("Đã sao chép số điện thoại!"))
-        .catch(() => showError("Không thể sao chép số điện thoại."));
-    }
+  const handleCopyPhoneNumber = (phoneNumber: string) => {
+    navigator.clipboard.writeText(phoneNumber)
+      .then(() => showSuccess("Đã sao chép số điện thoại!"))
+      .catch(() => showError("Không thể sao chép số điện thoại."));
   };
 
   const priceRange =
@@ -118,42 +116,73 @@ const DetailPage = () => {
             ))}
           </div>
           <p className="text-muted-foreground mb-6">{monAn.moTa}</p>
+          
           <div className="space-y-4 mb-6">
-            <div className="flex items-start">
-              <MapPin className="h-5 w-5 mr-3 mt-1 flex-shrink-0 text-primary" />
-              <div>
-                <p className="font-semibold">{monAn.diaChi}</p>
-                <p className="text-sm text-muted-foreground">{monAn.thanhPho}</p>
-              </div>
-            </div>
-            {monAn.gioMoCua && (
-              <div className="flex items-center">
-                <Clock className="h-5 w-5 mr-3 flex-shrink-0 text-primary" />
-                <span>{monAn.gioMoCua}</span>
-              </div>
-            )}
-            {monAn.soDienThoai && (
-              <div className="flex items-center">
-                <Phone className="h-5 w-5 mr-3 flex-shrink-0 text-primary" />
-                <span>{monAn.soDienThoai}</span>
-                <Button variant="ghost" size="icon" onClick={handleCopyPhoneNumber} className="ml-2">
-                  <Copy className="h-4 w-4" />
-                  <span className="sr-only">Sao chép số điện thoại</span>
-                </Button>
-              </div>
-            )}
+            <h2 className="text-2xl font-bold">Thông tin chi nhánh</h2>
+            {monAn.branches.map((branch, index) => {
+              const isOpen = isStoreOpen(branch.gioMoCua);
+              return (
+                <Card key={index} className="p-4">
+                  <CardHeader className="p-0 mb-2">
+                    <CardTitle className="text-lg font-semibold">Chi nhánh {index + 1}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0 space-y-2">
+                    <div className="flex items-start">
+                      <MapPin className="h-5 w-5 mr-3 mt-1 flex-shrink-0 text-primary" />
+                      <div>
+                        <p className="font-semibold">{branch.diaChi}</p>
+                        <p className="text-sm text-muted-foreground">{branch.thanhPho}</p>
+                      </div>
+                    </div>
+                    {branch.gioMoCua && (
+                      <div className="flex items-center">
+                        <Clock className="h-5 w-5 mr-3 flex-shrink-0 text-primary" />
+                        <span>{branch.gioMoCua}</span>
+                        {isOpen !== null && (
+                          <>
+                            <span className="mx-1.5">·</span>
+                            <span className={cn(
+                              "font-semibold",
+                              isOpen ? "text-green-600" : "text-red-600"
+                            )}>
+                              {isOpen ? "Đang mở" : "Đóng cửa"}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                    )}
+                    {branch.soDienThoai && (
+                      <div className="flex items-center">
+                        <Phone className="h-5 w-5 mr-3 flex-shrink-0 text-primary" />
+                        <span>{branch.soDienThoai}</span>
+                        <Button variant="ghost" size="icon" onClick={() => handleCopyPhoneNumber(branch.soDienThoai!)} className="ml-2">
+                          <Copy className="h-4 w-4" />
+                          <span className="sr-only">Sao chép số điện thoại</span>
+                        </Button>
+                      </div>
+                    )}
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      <a href={branch.googleMapLink} target="_blank" rel="noopener noreferrer">
+                        <Button size="sm">
+                          <ExternalLink className="h-4 w-4 mr-2" />
+                          Mở trên Google Maps
+                        </Button>
+                      </a>
+                      <Button variant="outline" size="sm" onClick={() => handleCopyAddress(branch.diaChi)}>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Sao chép địa chỉ
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
             <div className="flex items-center">
               <span className="font-semibold mr-2 text-primary">Giá:</span>
               <span>{priceRange}</span>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 mb-6">
-            <a href={monAn.googleMapLink} target="_blank" rel="noopener noreferrer">
-              <Button>
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Mở trên Google Maps
-              </Button>
-            </a>
             {monAn.facebookLink && (
               <a href={monAn.facebookLink} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline">
@@ -162,10 +191,6 @@ const DetailPage = () => {
                 </Button>
               </a>
             )}
-            <Button variant="outline" onClick={handleCopyAddress}>
-              <Copy className="h-4 w-4 mr-2" />
-              Sao chép địa chỉ
-            </Button>
           </div>
           <Separator className="my-6" />
           <div className="flex flex-wrap gap-2">
@@ -225,9 +250,9 @@ const DetailPage = () => {
         </div>
       </div>
 
-      <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
+      <Dialog open={isViewerOpen > 0} onOpenChange={() => setIsViewerOpen(0)}>
         <DialogContent className="max-w-4xl w-full p-2 sm:p-4">
-          <Carousel opts={{ startIndex: selectedImageIndex, loop: true }} className="w-full">
+          <Carousel opts={{ startIndex: isViewerOpen - 1, loop: true }} className="w-full">
             <CarouselContent>
               {monAn.hinhAnh.map((img, index) => (
                 <CarouselItem key={index}>

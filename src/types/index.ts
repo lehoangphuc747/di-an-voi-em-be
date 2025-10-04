@@ -4,22 +4,26 @@ export interface LoaiMon {
   icon?: string;
 }
 
-export interface MonAn {
-  id: string;
-  ten: string;
-  loaiIds: string[]; // Thay đổi từ loaiId: string
-  hinhAnh: string[];
-  moTa: string;
+export interface MonAnBranch {
   diaChi: string;
   thanhPho: string;
   googleMapLink: string;
+  gioMoCua?: string;
+  soDienThoai?: string;
+}
+
+export interface MonAn {
+  id: string;
+  ten: string;
+  loaiIds: string[];
+  hinhAnh: string[];
+  moTa: string;
+  branches: MonAnBranch[]; // Thay thế các trường địa chỉ đơn lẻ bằng mảng chi nhánh
   facebookLink?: string;
   tags: string[];
   giaMin?: number;
   giaMax?: number;
   ngayTao: string; // ISO 8601 date string
-  gioMoCua?: string; // Thêm trường giờ mở cửa
-  soDienThoai?: string; // Thêm trường số điện thoại
 }
 
 export interface YeuThich {

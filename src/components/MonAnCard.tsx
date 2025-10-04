@@ -15,7 +15,8 @@ interface MonAnCardProps {
 }
 
 export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }: MonAnCardProps) => {
-  const isOpen = isStoreOpen(monAn.gioMoCua);
+  const firstBranch = monAn.branches[0];
+  const isOpen = firstBranch ? isStoreOpen(firstBranch.gioMoCua) : null;
 
   const priceRange =
     monAn.giaMin && monAn.giaMax
@@ -67,30 +68,30 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
               )}
             </div>
           </div>
-          <div className="flex items-start text-sm text-muted-foreground mt-1 flex-grow">
-            <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-            <span>{monAn.diaChi}</span>
-          </div>
+          {firstBranch && (
+            <div className="flex items-start text-sm text-muted-foreground mt-1 flex-grow">
+              <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+              <span>{firstBranch.diaChi} {monAn.branches.length > 1 && `(+${monAn.branches.length - 1} chi nhánh khác)`}</span>
+            </div>
+          )}
           
-          <div className="flex items-center text-xs text-muted-foreground mt-2">
-            {monAn.gioMoCua && (
-              <>
-                <Clock className="w-3 h-3 mr-1.5 flex-shrink-0" />
-                <span>{monAn.gioMoCua}</span>
-              </>
-            )}
-            {isOpen !== null && (
-              <>
-                {monAn.gioMoCua && <span className="mx-1.5">·</span>}
-                <span className={cn(
-                  "font-semibold",
-                  isOpen ? "text-green-600" : "text-red-600"
-                )}>
-                  {isOpen ? "Đang mở" : "Đóng cửa"}
-                </span>
-              </>
-            )}
-          </div>
+          {firstBranch?.gioMoCua && (
+            <div className="flex items-center text-xs text-muted-foreground mt-2">
+              <Clock className="w-3 h-3 mr-1.5 flex-shrink-0" />
+              <span>{firstBranch.gioMoCua}</span>
+              {isOpen !== null && (
+                <>
+                  <span className="mx-1.5">·</span>
+                  <span className={cn(
+                    "font-semibold",
+                    isOpen ? "text-green-600" : "text-red-600"
+                  )}>
+                    {isOpen ? "Đang mở" : "Đóng cửa"}
+                  </span>
+                </>
+              )}
+            </div>
+          )}
 
         </CardContent>
         <CardFooter className="p-4 pt-0 mt-auto">
