@@ -1,0 +1,22 @@
+{
+  "id": "27",
+  "ten": "Mì nấm Shiitake",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://a.l3n.co/P9Akqq.jpg",
+    "https://b.l3n.co/P9A6YA.jpg",
+    "https://d.l3n.co/P9ARf0.png",
+    "https://b.l3n.co/P9AEjD.png"
+  ],
+  "moTa": "Mì nấm Shiitake là một lựa chọn tuyệt vời cho những ai yêu thích ẩm thực chay hoặc muốn thưởng thức một món ăn thanh đạm. Sợi mì dai kết hợp với nước dùng ngọt thanh từ nấm shiitake và các loại rau củ.",
+  "diaChi": "16 Triệu Việt Vương, Phường 3, Thành phố Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Mì+nấm+Shiitake+16+Triệu+Việt+Vương+Đà+Lạt",
+  "facebookLink": "",
+  "tags": ["mì nấm", "shiitake", "đà lạt", "ăn chay", "ăn no", "thanh đạm"],
+  "giaMin": 60000,
+  "giaMax": 80000,
+  "ngayTao": "2024-08-12T10:00:00Z",
+  "gioMoCua": "12:00 PM–6:00 PM",
+  "soDienThoai": ""
+}
