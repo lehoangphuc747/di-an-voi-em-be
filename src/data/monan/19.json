@@ -1,0 +1,20 @@
+{
+  "id": "19",
+  "ten": "Bánh cuốn Ôh Ngon Quá! (Hai Bà Trưng)",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://i.imgur.com/example1.jpg",
+    "https://i.imgur.com/example2.jpg"
+  ],
+  "moTa": "Bánh cuốn có nhân trứng cá hồi tươi, một trải nghiệm ẩm thực độc đáo và ngon miệng. Vỏ bánh mỏng, nhân đầy đặn, hương vị khó quên.",
+  "diaChi": "93 Hai Bà Trưng, Phường 6, TP. Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://www.google.com/maps?q=93+Hai+Bà+Trưng,+Phường+6,+TP.+Đà+Lạt",
+  "facebookLink": "",
+  "tags": ["bánh cuốn", "trứng cá hồi", "đà lạt", "ăn no", "độc đáo"],
+  "giaMin": 50000,
+  "giaMax": 100000,
+  "ngayTao": "2024-08-05T08:00:00Z",
+  "gioMoCua": "6:00 AM–10:00 PM",
+  "soDienThoai": "0886986678"
+}
