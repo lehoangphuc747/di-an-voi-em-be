@@ -1,0 +1,24 @@
+{
+  "id": "21",
+  "ten": "Xôi xéo Cô Ba",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://d.l3n.co/PVyRVe.png",
+    "https://a.l3n.co/PVyTvk.jpg",
+    "https://a.l3n.co/PVxrJ9.png",
+    "https://c.l3n.co/PVxBy0.png",
+    "https://a.l3n.co/PVxzQk.png",
+    "https://b.l3n.co/PVxumP.png"
+  ],
+  "moTa": "Xôi xéo chuẩn vị Bắc, với nhiều loại topping chất lượng như chả, trứng kho, lạp xưởng, ruốc, hành phi... Đây là một quán xôi nổi tiếng và rất đông khách vào buổi sáng, đôi khi bạn sẽ phải xếp hàng chờ. Quán được nhiều người dân địa phương và khách du lịch yêu thích.",
+  "diaChi": "05 Bạch Đằng, Phường 7, TP. Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://www.google.com/maps?q=05+Bạch+Đằng,+Phường+7,+TP.+Đà+Lạt",
+  "facebookLink": "",
+  "tags": ["xôi xéo", "xôi", "đà lạt", "ăn sáng", "ăn no", "đồ ăn vặt"],
+  "giaMin": 20000,
+  "giaMax": 40000,
+  "ngayTao": "2024-08-06T09:00:00Z",
+  "gioMoCua": "6:00 AM–8:30 PM",
+  "soDienThoai": ""
+}
