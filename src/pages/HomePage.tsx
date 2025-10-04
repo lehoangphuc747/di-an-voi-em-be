@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { MonAn, LoaiMon } from "@/types/index";
 import { MonAnCard } from "@/components/MonAnCard";
 import { FilterSidebar, PriceRange } from "@/components/FilterSidebar";
@@ -29,7 +29,7 @@ const PRICE_RANGES: (PriceRange & { min: number; max: number })[] = [
   { id: 'over-500', ten: 'Trên 500k', min: 500000, max: Infinity },
 ];
 
-const ITEMS_PER_PAGE = 9;
+const ITEMS_PER_LOAD = 9; // Số lượng món ăn tải thêm mỗi lần
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
@@ -53,9 +53,11 @@ const HomePage = () => {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showWishlistOnly, setShowWishlistOnly] = useState(false);
   const [showVisitedOnly, setShowVisitedOnly] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
+  const [isFetchingMore, setIsFetchingMore] = useState(false); // State để quản lý việc đang tải thêm
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
+  const loadMoreRef = useRef<HTMLDivElement>(null); // Ref cho Intersection Observer
 
   useEffect(() => {
     const urlSearchTerm = searchParams.get('searchTerm') || '';
@@ -126,7 +128,7 @@ const HomePage = () => {
         
         const isOpen = isStoreOpen(mon.gioMoCua);
         if (isOpen === null) { 
-          return selectedOpeningStatus === 'closed';
+          return selectedOpeningStatus === 'closed'; // Nếu không có giờ mở cửa, coi là đóng cửa
         }
         if (selectedOpeningStatus === 'open') return isOpen;
         if (selectedOpeningStatus === 'closed') return !isOpen;
@@ -164,12 +166,41 @@ const HomePage = () => {
   ]);
 
   useEffect(() => {
-    setVisibleCount(ITEMS_PER_PAGE);
+    setVisibleCount(ITEMS_PER_LOAD); // Reset visible count khi bộ lọc hoặc sắp xếp thay đổi
   }, [filteredAndSortedMonAn]);
 
   const itemsToDisplay = useMemo(() => {
     return filteredAndSortedMonAn.slice(0, visibleCount);
   }, [filteredAndSortedMonAn, visibleCount]);
+
+  // Intersection Observer cho cuộn vô hạn
+  useEffect(() => {
+    if (loadingAllMonAn || loadingFoodLists || isFetchingMore) return; // Không quan sát khi đang tải hoặc đang fetch
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && visibleCount < filteredAndSortedMonAn.length) {
+          setIsFetchingMore(true);
+          setTimeout(() => { // Giả lập độ trễ tải dữ liệu
+            setVisibleCount(prev => prev + ITEMS_PER_LOAD);
+            setIsFetchingMore(false);
+          }, 500); 
+        }
+      },
+      { threshold: 0.5 } // Kích hoạt khi 50% của phần tử hiển thị
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current);
+      }
+    };
+  }, [visibleCount, filteredAndSortedMonAn.length, loadingAllMonAn, loadingFoodLists, isFetchingMore]);
+
 
   const filterContent = (
     <div>
@@ -215,9 +246,9 @@ const HomePage = () => {
       <main>
         <div className="mb-6">
           <RandomFoodPicker 
-            favorites={favorites} // Truyền danh sách yêu thích
+            favorites={favorites} 
             wishlist={wishlist} 
-            visited={visited} // Truyền danh sách đã thử
+            visited={visited} 
             allMonAn={allMonAn} 
             allCategories={allCategories}
             allCities={allCities}
@@ -245,9 +276,9 @@ const HomePage = () => {
           </Select>
         </div>
 
-        {isLoading ? (
+        {isLoading && visibleCount === ITEMS_PER_LOAD ? ( // Chỉ hiển thị skeleton ban đầu khi isLoading và chưa có dữ liệu
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, index) => (
+            {Array.from({ length: ITEMS_PER_LOAD }).map((_, index) => (
               <MonAnCardSkeleton key={index} />
             ))}
           </div>
@@ -266,10 +297,14 @@ const HomePage = () => {
               ))}
             </div>
             {visibleCount < filteredAndSortedMonAn.length && (
-              <div className="mt-8 text-center">
-                <Button onClick={() => setVisibleCount(prev => prev + ITEMS_PER_PAGE)}>
-                  Tải thêm
-                </Button>
+              <div ref={loadMoreRef} className="mt-8 text-center py-4">
+                {isFetchingMore && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {Array.from({ length: 3 }).map((_, index) => ( // Hiển thị 3 skeleton khi đang tải thêm
+                      <MonAnCardSkeleton key={`loading-${index}`} />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
           </>
