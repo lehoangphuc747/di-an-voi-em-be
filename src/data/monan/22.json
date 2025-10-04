@@ -1,0 +1,30 @@
+{
+  "id": "22",
+  "ten": "Bánh căn chị 7",
+  "loaiIds": ["an-no", "an-vat"],
+  "hinhAnh": [
+    "https://b.l3n.co/PVyxkx.jpg",
+    "https://c.l3n.co/PVybak.jpg",
+    "https://b.l3n.co/PVyol0.jpg",
+    "https://c.l3n.co/PVyuXD.jpg",
+    "https://a.l3n.co/PVyNrq.jpg",
+    "https://d.l3n.co/PVyP4A.jpg",
+    "https://c.l3n.co/PVyfNM.jpg",
+    "https://a.l3n.co/PVyUiQ.jpg",
+    "https://b.l3n.co/PVyc9a.jpg",
+    "https://a.l3n.co/PVyXLe.jpg",
+    "https://c.l3n.co/PVyvLr.jpg",
+    "https://b.l3n.co/PVyLGF.png"
+  ],
+  "moTa": "Bánh căn hải sản với tôm tươi, mực và trứng cút. Bánh được làm từ bột gạo, đổ trong khuôn đất nung, ăn kèm nước mắm pha và xíu mại. Quán được đánh giá cao nhờ không gian có 'view' đẹp, thoáng đãng, nhân viên thân thiện. Đây là một địa điểm ăn sáng nổi tiếng, thu hút cả người dân địa phương và khách du lịch. Ngoài bánh căn, quán còn phục vụ cà phê và một số món ăn sáng khác.",
+  "diaChi": "1C Hoàng Hoa Thám, Phường 10, TP. Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://www.google.com/maps?q=1C+Hoàng+Hoa+Thám,+Phường+10,+TP.+Đà+Lạt",
+  "facebookLink": "",
+  "tags": ["bánh căn", "hải sản", "đà lạt", "ăn sáng", "ăn vặt", "view đẹp"],
+  "giaMin": 30000,
+  "giaMax": 50000,
+  "ngayTao": "2024-08-07T07:00:00Z",
+  "gioMoCua": "6:30 AM–10:00 AM",
+  "soDienThoai": ""
+}
