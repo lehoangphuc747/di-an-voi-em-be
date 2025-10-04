@@ -1,0 +1,22 @@
+{
+  "id": "28",
+  "ten": "Xiên nhúng lẩu Tứ Xuyên mini",
+  "loaiIds": ["an-vat"],
+  "hinhAnh": [
+    "https://d.l3n.co/P9Aq1k.jpg",
+    "https://a.l3n.co/P9ABKx.jpg",
+    "https://d.l3n.co/P9A4qc.jpg",
+    "https://b.l3n.co/P9AmfH.jpg"
+  ],
+  "moTa": "Xiên nhúng lẩu Tứ Xuyên mini với giá chỉ 1.000 VNĐ/xiên. Nước chấm cay tê đặc trưng, ngoài ra còn có mì trộn. Một món ăn vặt đường phố hấp dẫn ngay trước cổng trường Đại học Yersin.",
+  "diaChi": "27 Tôn Thất Tùng, Phường 8, Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=27+Tôn+Thất+Tùng+Đà+Lạt",
+  "facebookLink": "",
+  "tags": ["xiên que", "lẩu tứ xuyên", "đà lạt", "ăn vặt", "đường phố", "cay", "mì trộn"],
+  "giaMin": 1000,
+  "giaMax": 20000,
+  "ngayTao": "2024-08-13T10:00:00Z",
+  "gioMoCua": "2:00 PM–9:00 PM",
+  "soDienThoai": ""
+}
