@@ -23,6 +23,12 @@ interface FilterSidebarProps {
   onPriceRangeChange: (id: string) => void;
   selectedOpeningStatus: OpeningStatus;
   onOpeningStatusChange: (status: OpeningStatus) => void;
+  showFavoritesOnly: boolean;
+  onShowFavoritesOnlyChange: (checked: boolean) => void;
+  showWishlistOnly: boolean;
+  onShowWishlistOnlyChange: (checked: boolean) => void;
+  showVisitedOnly: boolean;
+  onShowVisitedOnlyChange: (checked: boolean) => void;
 }
 
 export const FilterSidebar = ({
@@ -37,6 +43,12 @@ export const FilterSidebar = ({
   onPriceRangeChange,
   selectedOpeningStatus,
   onOpeningStatusChange,
+  showFavoritesOnly,
+  onShowFavoritesOnlyChange,
+  showWishlistOnly,
+  onShowWishlistOnlyChange,
+  showVisitedOnly,
+  onShowVisitedOnlyChange,
 }: FilterSidebarProps) => {
   return (
     <div className="space-y-6">
@@ -68,6 +80,43 @@ export const FilterSidebar = ({
                 </Label>
               </div>
             </RadioGroup>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="lists">
+          <AccordionTrigger>Danh sách của tôi</AccordionTrigger>
+          <AccordionContent>
+            <div className="space-y-2 p-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="filter-favorites"
+                  checked={showFavoritesOnly}
+                  onCheckedChange={(checked) => onShowFavoritesOnlyChange(checked as boolean)}
+                />
+                <Label htmlFor="filter-favorites" className="font-normal cursor-pointer">
+                  Chỉ hiển thị món yêu thích
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="filter-wishlist"
+                  checked={showWishlistOnly}
+                  onCheckedChange={(checked) => onShowWishlistOnlyChange(checked as boolean)}
+                />
+                <Label htmlFor="filter-wishlist" className="font-normal cursor-pointer">
+                  Chỉ hiển thị món muốn thử
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="filter-visited"
+                  checked={showVisitedOnly}
+                  onCheckedChange={(checked) => onShowVisitedOnlyChange(checked as boolean)}
+                />
+                <Label htmlFor="filter-visited" className="font-normal cursor-pointer">
+                  Chỉ hiển thị món đã thử
+                </Label>
+              </div>
+            </div>
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="cities">

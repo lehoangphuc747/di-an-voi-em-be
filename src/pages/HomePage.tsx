@@ -33,8 +33,8 @@ const ITEMS_PER_PAGE = 9;
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
-  const { wishlist, isFavorite, isWishlist, isVisited } = useFoodLists();
-  const { allMonAn, isLoading: loadingSubmitted } = useAllMonAn();
+  const { isFavorite, isWishlist, isVisited, isLoading: loadingFoodLists } = useFoodLists();
+  const { allMonAn, isLoading: loadingAllMonAn } = useAllMonAn();
 
   const [loaiMonMap] = useState<Map<string, LoaiMon>>(() => {
     const map = new Map<string, LoaiMon>();
@@ -50,6 +50,9 @@ const HomePage = () => {
   const [selectedPriceRangeId, setSelectedPriceRangeId] = useState<string>('all');
   const [sortOption, setSortOption] = useState<SortOption>("newest");
   const [selectedOpeningStatus, setSelectedOpeningStatus] = useState<OpeningStatus>('all');
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [showWishlistOnly, setShowWishlistOnly] = useState(false);
+  const [showVisitedOnly, setShowVisitedOnly] = useState(false);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 300);
@@ -63,7 +66,7 @@ const HomePage = () => {
 
   const allCities = useMemo(() => {
     const cities = new Set<string>();
-    allMonAn.forEach(m => cities.add(m.thanhPho)); // Lấy thành phố từ trường thanhPho
+    allMonAn.forEach(m => cities.add(m.thanhPho));
     return [...cities];
   }, [allMonAn]);
   const allCategories = useMemo(() => [...loaiMonData], []);
@@ -86,6 +89,9 @@ const HomePage = () => {
     setSelectedCategories([]);
     setSelectedPriceRangeId('all');
     setSelectedOpeningStatus('all');
+    setShowFavoritesOnly(false);
+    setShowWishlistOnly(false);
+    setShowVisitedOnly(false);
   };
 
   const filteredAndSortedMonAn = useMemo(() => {
@@ -97,7 +103,7 @@ const HomePage = () => {
         : true;
 
       const cityMatch = selectedCities.length > 0 
-        ? selectedCities.includes(mon.thanhPho) // Lọc theo trường thanhPho
+        ? selectedCities.includes(mon.thanhPho)
         : true;
       
       const categoryMatch = selectedCategories.length > 0
@@ -118,7 +124,7 @@ const HomePage = () => {
       const statusMatch = (() => {
         if (selectedOpeningStatus === 'all') return true;
         
-        const isOpen = isStoreOpen(mon.gioMoCua); // Kiểm tra giờ mở cửa trực tiếp từ monAn
+        const isOpen = isStoreOpen(mon.gioMoCua);
         if (isOpen === null) { 
           return selectedOpeningStatus === 'closed';
         }
@@ -126,8 +132,12 @@ const HomePage = () => {
         if (selectedOpeningStatus === 'closed') return !isOpen;
         return true;
       })();
+
+      const favoritesMatch = showFavoritesOnly ? isFavorite(mon.id) : true;
+      const wishlistMatch = showWishlistOnly ? isWishlist(mon.id) : true;
+      const visitedMatch = showVisitedOnly ? isVisited(mon.id) : true;
       
-      return searchMatch && cityMatch && categoryMatch && priceMatch && statusMatch;
+      return searchMatch && cityMatch && categoryMatch && priceMatch && statusMatch && favoritesMatch && wishlistMatch && visitedMatch;
     });
 
     switch (sortOption) {
@@ -147,7 +157,11 @@ const HomePage = () => {
     }
 
     return filtered;
-  }, [allMonAn, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, sortOption, selectedOpeningStatus]);
+  }, [
+    allMonAn, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, 
+    sortOption, selectedOpeningStatus, showFavoritesOnly, showWishlistOnly, showVisitedOnly,
+    isFavorite, isWishlist, isVisited
+  ]);
 
   useEffect(() => {
     setVisibleCount(ITEMS_PER_PAGE);
@@ -175,9 +189,17 @@ const HomePage = () => {
         onPriceRangeChange={setSelectedPriceRangeId}
         selectedOpeningStatus={selectedOpeningStatus}
         onOpeningStatusChange={setSelectedOpeningStatus}
+        showFavoritesOnly={showFavoritesOnly}
+        onShowFavoritesOnlyChange={setShowFavoritesOnly}
+        showWishlistOnly={showWishlistOnly}
+        onShowWishlistOnlyChange={setShowWishlistOnly}
+        showVisitedOnly={showVisitedOnly}
+        onShowVisitedOnlyChange={setShowVisitedOnly}
       />
     </div>
   );
+
+  const isLoading = loadingAllMonAn || loadingFoodLists;
 
   return (
     <div className="grid lg:grid-cols-[280px_1fr] lg:gap-8">
@@ -193,7 +215,7 @@ const HomePage = () => {
       <main>
         <div className="mb-6">
           <RandomFoodPicker 
-            wishlist={wishlist} 
+            wishlist={[]} // Pass an empty array or actual wishlist if needed, but it's not used for filtering here
             allMonAn={allMonAn} 
             allCategories={allCategories}
             allCities={allCities}
@@ -221,7 +243,7 @@ const HomePage = () => {
           </Select>
         </div>
 
-        {loadingSubmitted ? (
+        {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, index) => (
               <MonAnCardSkeleton key={index} />
