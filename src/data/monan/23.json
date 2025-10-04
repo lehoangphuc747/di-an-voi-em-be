@@ -1,0 +1,27 @@
+{
+  "id": "23",
+  "ten": "Tiệm Mì Sủi Cảo An Gia",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://c.l3n.co/PVyylH.png",
+    "https://a.l3n.co/PVy5b1.jpg",
+    "https://d.l3n.co/PVyarc.jpg",
+    "https://a.l3n.co/PV52PZ.jpg",
+    "https://d.l3n.co/PV5AiP.jpg",
+    "https://c.l3n.co/PV5Wdm.jpg",
+    "https://d.l3n.co/PV5iMi.jpg",
+    "https://b.l3n.co/PV5jao.jpg",
+    "https://c.l3n.co/PV5I69.png"
+  ],
+  "moTa": "Mì sủi cảo và hoành thánh với nước dùng được mô tả là đậm vị, sợi mì tươi và dai. Quán còn có dưa cải muối chua ngọt ăn kèm rất hợp vị. Đây là một tiệm mì nhỏ, mang hương vị đặc trưng của người Hoa. Quán được nhiều thực khách khen ngợi về chất lượng sủi cảo với nhân đầy đặn và nước dùng đậm đà, rất thích hợp để thưởng thức trong tiết trời se lạnh của Đà Lạt.",
+  "diaChi": "46A Trần Nhật Duật, Phường 5, TP. Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://www.google.com/maps?q=46A+Trần+Nhật+Duật,+Phường+5,+TP.+Đà+Lạt",
+  "facebookLink": "",
+  "tags": ["mì sủi cảo", "hoành thánh", "mì", "người hoa", "đà lạt", "ăn no", "sủi cảo", "dưa cải", "nui", "hải sản", "yaourt", "hủ tiếu", "mì bò hầm"],
+  "giaMin": 20000,
+  "giaMax": 60000,
+  "ngayTao": "2024-08-08T10:00:00Z",
+  "gioMoCua": "2:00 PM–9:00 PM",
+  "soDienThoai": ""
+}
