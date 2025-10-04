@@ -1,0 +1,22 @@
+{
+  "id": "26",
+  "ten": "Bánh Bèo Bé Tư",
+  "loaiIds": ["an-vat", "an-no"],
+  "hinhAnh": [
+    "https://d.l3n.co/P9AWd5.png",
+    "https://a.l3n.co/P9AiMz.png",
+    "https://d.l3n.co/P9AjhT.png",
+    "https://c.l3n.co/P9AI6b.png"
+  ],
+  "moTa": "Quán Bánh Bèo Bé Tư là một địa điểm nổi tiếng ở Nha Trang, chuyên phục vụ các loại bánh truyền thống miền Trung như bánh bèo, bánh nậm, bánh lọc. Hương vị đậm đà, dân dã, thu hút nhiều thực khách.",
+  "diaChi": "15 Huỳnh Thúc Kháng, Phước Tân, Nha Trang, Khánh Hòa",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Bánh+Bèo+Bé+Tư+15+Huỳnh+Thúc+Kháng+Nha+Trang",
+  "facebookLink": "",
+  "tags": ["bánh bèo", "bánh nậm", "bánh lọc", "nha trang", "ăn vặt", "truyền thống"],
+  "giaMin": 20000,
+  "giaMax": 40000,
+  "ngayTao": "2024-08-11T10:00:00Z",
+  "gioMoCua": "6:00 AM–9:00 PM",
+  "soDienThoai": ""
+}
