@@ -1,0 +1,23 @@
+{
+  "id": "25",
+  "ten": "Tacos Nhà Đậu",
+  "loaiIds": ["an-vat", "an-no"],
+  "hinhAnh": [
+    "https://d.l3n.co/P985bo.jpg",
+    "https://a.l3n.co/P98baP.png",
+    "https://a.l3n.co/P98at9.jpg",
+    "https://d.l3n.co/P98x6m.png",
+    "https://b.l3n.co/P98yzi.jpg"
+  ],
+  "moTa": "Quán Tacos Nhà Đậu chuyên phục vụ các món tacos Mexico với nhiều loại nhân hấp dẫn như gà rán, phô mai. Một lựa chọn mới lạ cho tín đồ ăn vặt tại Nha Trang.",
+  "diaChi": "67 Huỳnh Thúc Kháng, Tân Lập, Nha Trang, Khánh Hòa",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Tacos+Nhà+Đậu+67+Huỳnh+Thúc+Kháng+Nha+Trang",
+  "facebookLink": "",
+  "tags": ["tacos", "mexican food", "nha trang", "ăn vặt", "gà rán", "phô mai"],
+  "giaMin": 30000,
+  "giaMax": 50000,
+  "ngayTao": "2024-08-10T10:00:00Z",
+  "gioMoCua": "3:00 PM–10:30 PM",
+  "soDienThoai": ""
+}
