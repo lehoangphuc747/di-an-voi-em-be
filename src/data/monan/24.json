@@ -1,0 +1,22 @@
+{
+  "id": "24",
+  "ten": "Xôi Khâu Nhục Quảng Đông",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://b.l3n.co/PV5ttC.png",
+    "https://a.l3n.co/PV5RPz.jpg",
+    "https://b.l3n.co/PV5EjT.jpg",
+    "https://c.l3n.co/PV5145.jpg"
+  ],
+  "moTa": "Chuyên bán xôi và bánh mì với khâu nhục (thịt kho theo kiểu người Hoa Quảng Đông). Món ăn đặc trưng là thịt được hầm mềm, thấm gia vị, ăn cùng xôi dẻo thơm. Đây là một quán ăn gia truyền, mang hương vị đặc trưng của người Hoa. Khâu nhục được chế biến cầu kỳ, mềm tan, đậm đà, là điểm nhấn chính của món ăn. Quán có bán trên các ứng dụng giao đồ ăn như GrabFood. Giờ hoạt động: Sáng: 05:00 - 09:00, Chiều: 17:00 - 21:00.",
+  "diaChi": "246 Ngô Gia Tự, TP. Nha Trang",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://www.google.com/maps/search/246+Ngô+Gia+Tự,+TP.+Nha+Trang",
+  "facebookLink": "",
+  "tags": ["xôi", "khâu nhục", "quảng đông", "nha trang", "ăn no", "bánh mì", "người hoa", "gia truyền", "grabfood"],
+  "giaMin": 33000,
+  "giaMax": 50000,
+  "ngayTao": "2024-08-09T10:00:00Z",
+  "gioMoCua": "05:00 AM–09:00 AM",
+  "soDienThoai": "0932514161"
+}
