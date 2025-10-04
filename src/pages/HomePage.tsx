@@ -33,7 +33,7 @@ const ITEMS_PER_PAGE = 9;
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
-  const { isFavorite, isWishlist, isVisited, isLoading: loadingFoodLists } = useFoodLists();
+  const { favorites, wishlist, visited, isFavorite, isWishlist, isVisited, isLoading: loadingFoodLists } = useFoodLists();
   const { allMonAn, isLoading: loadingAllMonAn } = useAllMonAn();
 
   const [loaiMonMap] = useState<Map<string, LoaiMon>>(() => {
@@ -215,7 +215,9 @@ const HomePage = () => {
       <main>
         <div className="mb-6">
           <RandomFoodPicker 
-            wishlist={[]} // Pass an empty array or actual wishlist if needed, but it's not used for filtering here
+            favorites={favorites} // Truyền danh sách yêu thích
+            wishlist={wishlist} 
+            visited={visited} // Truyền danh sách đã thử
             allMonAn={allMonAn} 
             allCategories={allCategories}
             allCities={allCities}

@@ -8,9 +8,13 @@ import { Dices } from 'lucide-react';
 import { MonAnCard } from './MonAnCard';
 import { showError } from '@/utils/toast';
 import loaiMonData from "@/data/loaimon.json";
+import { YeuThich } from '@/types'; // Import YeuThich type
+import { isStoreOpen } from '@/lib/time-utils'; // Import isStoreOpen
 
 interface RandomFoodPickerProps {
+  favorites: YeuThich[]; // Thêm danh sách yêu thích
   wishlist: string[];
+  visited: { monAnId: string; rating: number | null; notes: string | null }[]; // Thêm danh sách đã thử
   allMonAn: MonAn[];
   allCategories: LoaiMon[];
   allCities: string[];
@@ -19,23 +23,44 @@ interface RandomFoodPickerProps {
 const loaiMonMap = new Map<string, LoaiMon>();
 loaiMonData.forEach(loai => loaiMonMap.set(loai.id, loai));
 
-export const RandomFoodPicker = ({ wishlist, allMonAn, allCategories, allCities }: RandomFoodPickerProps) => {
+export const RandomFoodPicker = ({ favorites, wishlist, visited, allMonAn, allCategories, allCities }: RandomFoodPickerProps) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedMonAn, setSelectedMonAn] = useState<MonAn | null>(null);
-  const [searchScope, setSearchScope] = useState<'wishlist' | 'all'>('wishlist');
+  const [searchScope, setSearchScope] = useState<'wishlist' | 'all' | 'favorites' | 'visited'>('wishlist'); // Cập nhật searchScope
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedCity, setSelectedCity] = useState<string>('all');
+  const [selectedOpeningStatus, setSelectedOpeningStatus] = useState<'all' | 'open' | 'closed'>('all'); // Thêm trạng thái mở cửa
 
   const handlePick = () => {
-    const wishlistMonAn = allMonAn.filter(m => wishlist.includes(m.id));
-    let sourceList = searchScope === 'wishlist' ? wishlistMonAn : allMonAn;
+    let baseList: MonAn[] = [];
+
+    if (searchScope === 'wishlist') {
+      baseList = allMonAn.filter(m => wishlist.includes(m.id));
+    } else if (searchScope === 'favorites') {
+      const favoriteIds = new Set(favorites.map(f => f.monAnId));
+      baseList = allMonAn.filter(m => favoriteIds.has(m.id));
+    } else if (searchScope === 'visited') {
+      const visitedIds = new Set(visited.map(v => v.monAnId));
+      baseList = allMonAn.filter(m => visitedIds.has(m.id));
+    } else { // 'all'
+      baseList = allMonAn;
+    }
+
+    let sourceList = baseList;
 
     // Apply filters
     if (selectedCity !== 'all') {
-      sourceList = sourceList.filter(m => m.thanhPho === selectedCity); // Lọc theo trường thanhPho
+      sourceList = sourceList.filter(m => m.thanhPho === selectedCity);
     }
     if (selectedCategory !== 'all') {
       sourceList = sourceList.filter(m => m.loaiIds.includes(selectedCategory));
+    }
+    if (selectedOpeningStatus !== 'all') {
+      sourceList = sourceList.filter(m => {
+        const isOpen = isStoreOpen(m.gioMoCua);
+        if (isOpen === null) return false; // If no opening hours, consider it not matching
+        return selectedOpeningStatus === 'open' ? isOpen : !isOpen;
+      });
     }
 
     if (sourceList.length === 0) {
@@ -61,10 +86,12 @@ export const RandomFoodPicker = ({ wishlist, allMonAn, allCategories, allCities 
           <DialogTitle>Gợi ý ngẫu nhiên</DialogTitle>
         </DialogHeader>
         <div className="py-4">
-          <Tabs value={searchScope} onValueChange={(value) => setSearchScope(value as 'wishlist' | 'all')} className="w-full mb-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="wishlist">Từ "Muốn thử"</TabsTrigger>
-              <TabsTrigger value="all">Từ tất cả</TabsTrigger>
+          <Tabs value={searchScope} onValueChange={(value) => setSearchScope(value as 'wishlist' | 'all' | 'favorites' | 'visited')} className="w-full mb-4">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="all">Tất cả</TabsTrigger>
+              <TabsTrigger value="favorites">Yêu thích</TabsTrigger>
+              <TabsTrigger value="wishlist">Muốn thử</TabsTrigger>
+              <TabsTrigger value="visited">Ăn rùi</TabsTrigger>
             </TabsList>
           </Tabs>
 
@@ -89,6 +116,18 @@ export const RandomFoodPicker = ({ wishlist, allMonAn, allCategories, allCities 
                 {allCategories.map(cat => (
                   <SelectItem key={cat.id} value={cat.id}>{cat.ten}</SelectItem>
                 ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="mb-4">
+            <Select value={selectedOpeningStatus} onValueChange={(value) => setSelectedOpeningStatus(value as 'all' | 'open' | 'closed')}>
+              <SelectTrigger>
+                <SelectValue placeholder="Trạng thái mở cửa" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                <SelectItem value="open">Đang mở</SelectItem>
+                <SelectItem value="closed">Đóng cửa</SelectItem>
               </SelectContent>
             </Select>
           </div>
