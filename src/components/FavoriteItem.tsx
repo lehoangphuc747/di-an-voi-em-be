@@ -36,8 +36,6 @@ export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
       ? `Từ ${formatPrice(monAn.giaMin)}`
       : "—";
 
-  const firstBranch = monAn.branches[0];
-
   return (
     <Card className="h-full flex flex-col overflow-hidden">
       <Link to={`/mon/${monAn.id}`} className="block group">
@@ -52,10 +50,10 @@ export const FavoriteItem = ({ monAn, loaiMon }: FavoriteItemProps) => {
         </CardHeader>
         <CardContent className="p-4">
           <CardTitle className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">{monAn.ten}</CardTitle>
-          {firstBranch && (
+          {monAn.diaChi && (
             <div className="flex items-start text-sm text-muted-foreground mt-1">
               <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-              <span>{firstBranch.diaChi} {monAn.branches.length > 1 && `(+${monAn.branches.length - 1} chi nhánh khác)`}</span>
+              <span>{monAn.diaChi}</span>
             </div>
           )}
         </CardContent>

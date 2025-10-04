@@ -63,7 +63,7 @@ const HomePage = () => {
 
   const allCities = useMemo(() => {
     const cities = new Set<string>();
-    allMonAn.forEach(m => m.branches.forEach(b => cities.add(b.thanhPho)));
+    allMonAn.forEach(m => cities.add(m.thanhPho)); // Lấy thành phố từ trường thanhPho
     return [...cities];
   }, [allMonAn]);
   const allCategories = useMemo(() => [...loaiMonData], []);
@@ -97,7 +97,7 @@ const HomePage = () => {
         : true;
 
       const cityMatch = selectedCities.length > 0 
-        ? mon.branches.some(branch => selectedCities.includes(branch.thanhPho))
+        ? selectedCities.includes(mon.thanhPho) // Lọc theo trường thanhPho
         : true;
       
       const categoryMatch = selectedCategories.length > 0
@@ -118,17 +118,13 @@ const HomePage = () => {
       const statusMatch = (() => {
         if (selectedOpeningStatus === 'all') return true;
         
-        // Check if ANY branch matches the opening status
-        const anyBranchMatches = mon.branches.some(branch => {
-          const isOpen = isStoreOpen(branch.gioMoCua);
-          if (isOpen === null) { // If no opening hours, treat as closed for 'open' filter, or match for 'closed' filter
-            return selectedOpeningStatus === 'closed';
-          }
-          if (selectedOpeningStatus === 'open') return isOpen;
-          if (selectedOpeningStatus === 'closed') return !isOpen;
-          return true;
-        });
-        return anyBranchMatches;
+        const isOpen = isStoreOpen(mon.gioMoCua); // Kiểm tra giờ mở cửa trực tiếp từ monAn
+        if (isOpen === null) { 
+          return selectedOpeningStatus === 'closed';
+        }
+        if (selectedOpeningStatus === 'open') return isOpen;
+        if (selectedOpeningStatus === 'closed') return !isOpen;
+        return true;
       })();
       
       return searchMatch && cityMatch && categoryMatch && priceMatch && statusMatch;

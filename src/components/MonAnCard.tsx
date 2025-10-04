@@ -15,8 +15,7 @@ interface MonAnCardProps {
 }
 
 export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }: MonAnCardProps) => {
-  const firstBranch = monAn.branches[0];
-  const isOpen = firstBranch ? isStoreOpen(firstBranch.gioMoCua) : null;
+  const isOpen = isStoreOpen(monAn.gioMoCua);
 
   const priceRange =
     monAn.giaMin && monAn.giaMax
@@ -68,17 +67,17 @@ export const MonAnCard = ({ monAn, loaiMon, isFavorite, isWishlist, isVisited }:
               )}
             </div>
           </div>
-          {firstBranch && (
+          {monAn.diaChi && (
             <div className="flex items-start text-sm text-muted-foreground mt-1 flex-grow">
               <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-              <span>{firstBranch.diaChi} {monAn.branches.length > 1 && `(+${monAn.branches.length - 1} chi nhánh khác)`}</span>
+              <span>{monAn.diaChi}</span>
             </div>
           )}
           
-          {firstBranch?.gioMoCua && (
+          {monAn.gioMoCua && (
             <div className="flex items-center text-xs text-muted-foreground mt-2">
               <Clock className="w-3 h-3 mr-1.5 flex-shrink-0" />
-              <span>{firstBranch.gioMoCua}</span>
+              <span>{monAn.gioMoCua}</span>
               {isOpen !== null && (
                 <>
                   <span className="mx-1.5">·</span>

@@ -34,6 +34,8 @@ const formSchema = z.object({
     (val) => (val === "" ? undefined : Number(val)),
     z.number().min(0, { message: "Giá tối đa phải là số dương." }).optional()
   ),
+  gioMoCua: z.string().max(50, { message: "Giờ mở cửa quá dài." }).optional().or(z.literal('')),
+  soDienThoai: z.string().max(20, { message: "Số điện thoại quá dài." }).optional().or(z.literal('')),
 }).refine(data => {
   if (data.giaMin !== undefined && data.giaMax !== undefined && data.giaMin > data.giaMax) {
     return false;
@@ -68,6 +70,8 @@ const SubmitFoodPage = () => {
       tags: [],
       giaMin: undefined,
       giaMax: undefined,
+      gioMoCua: '',
+      soDienThoai: '',
     },
   });
 
@@ -97,6 +101,8 @@ const SubmitFoodPage = () => {
             tags: data.tags || [],
             giaMin: data.gia_min ?? undefined,
             giaMax: data.gia_max ?? undefined,
+            gioMoCua: data.gio_mo_cua || '',
+            soDienThoai: data.so_dien_thoai || '',
           });
           setImageUrls(data.hinh_anh && data.hinh_anh.length > 0 ? data.hinh_anh : ['']);
           setTagInputs(data.tags && data.tags.length > 0 ? data.tags : ['']);
@@ -146,7 +152,7 @@ const SubmitFoodPage = () => {
       return;
     }
 
-    const { giaMin, giaMax, ...rest } = values;
+    const { giaMin, giaMax, gioMoCua, soDienThoai, ...rest } = values;
 
     const payload = {
       user_id: user.id,
@@ -155,6 +161,8 @@ const SubmitFoodPage = () => {
       tags: values.tags || [],
       gia_min: giaMin,
       gia_max: giaMax,
+      gio_mo_cua: gioMoCua || null,
+      so_dien_thoai: soDienThoai || null,
     };
 
     let error;
@@ -376,6 +384,35 @@ const SubmitFoodPage = () => {
                   <FormMessage />
                 </FormItem>
             )}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <FormField
+              control={form.control}
+              name="gioMoCua"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Giờ mở cửa</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ví dụ: 7:00 AM–10:00 PM" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="soDienThoai"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Số điện thoại</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Ví dụ: 0901234567" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
 

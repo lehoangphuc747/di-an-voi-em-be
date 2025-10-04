@@ -4,21 +4,17 @@ export interface LoaiMon {
   icon?: string;
 }
 
-export interface MonAnBranch {
-  diaChi: string;
-  thanhPho: string;
-  googleMapLink: string;
-  gioMoCua?: string;
-  soDienThoai?: string;
-}
-
 export interface MonAn {
   id: string;
   ten: string;
   loaiIds: string[];
   hinhAnh: string[];
   moTa: string;
-  branches: MonAnBranch[]; // Thay thế các trường địa chỉ đơn lẻ bằng mảng chi nhánh
+  diaChi: string; // Hoàn nguyên về địa chỉ đơn lẻ
+  thanhPho: string; // Hoàn nguyên về thành phố đơn lẻ
+  googleMapLink?: string; // Hoàn nguyên về liên kết Google Maps đơn lẻ
+  gioMoCua?: string; // Hoàn nguyên về giờ mở cửa đơn lẻ
+  soDienThoai?: string; // Hoàn nguyên về số điện thoại đơn lẻ
   facebookLink?: string;
   tags: string[];
   giaMin?: number;

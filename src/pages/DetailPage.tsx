@@ -98,6 +98,8 @@ const DetailPage = () => {
       ? `Từ ${formatPrice(monAn.giaMin)}`
       : "Chưa cập nhật";
 
+  const isOpen = isStoreOpen(monAn.gioMoCua);
+
   return (
     <>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -118,65 +120,63 @@ const DetailPage = () => {
           <p className="text-muted-foreground mb-6">{monAn.moTa}</p>
           
           <div className="space-y-4 mb-6">
-            <h2 className="text-2xl font-bold">Thông tin chi nhánh</h2>
-            {monAn.branches.map((branch, index) => {
-              const isOpen = isStoreOpen(branch.gioMoCua);
-              return (
-                <Card key={index} className="p-4">
-                  <CardHeader className="p-0 mb-2">
-                    <CardTitle className="text-lg font-semibold">Chi nhánh {index + 1}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0 space-y-2">
-                    <div className="flex items-start">
-                      <MapPin className="h-5 w-5 mr-3 mt-1 flex-shrink-0 text-primary" />
-                      <div>
-                        <p className="font-semibold">{branch.diaChi}</p>
-                        <p className="text-sm text-muted-foreground">{branch.thanhPho}</p>
-                      </div>
+            <h2 className="text-2xl font-bold">Thông tin liên hệ</h2>
+            <Card className="p-4">
+              <CardContent className="p-0 space-y-2">
+                {monAn.diaChi && (
+                  <div className="flex items-start">
+                    <MapPin className="h-5 w-5 mr-3 mt-1 flex-shrink-0 text-primary" />
+                    <div>
+                      <p className="font-semibold">{monAn.diaChi}</p>
+                      <p className="text-sm text-muted-foreground">{monAn.thanhPho}</p>
                     </div>
-                    {branch.gioMoCua && (
-                      <div className="flex items-center">
-                        <Clock className="h-5 w-5 mr-3 flex-shrink-0 text-primary" />
-                        <span>{branch.gioMoCua}</span>
-                        {isOpen !== null && (
-                          <>
-                            <span className="mx-1.5">·</span>
-                            <span className={cn(
-                              "font-semibold",
-                              isOpen ? "text-green-600" : "text-red-600"
-                            )}>
-                              {isOpen ? "Đang mở" : "Đóng cửa"}
-                            </span>
-                          </>
-                        )}
-                      </div>
+                  </div>
+                )}
+                {monAn.gioMoCua && (
+                  <div className="flex items-center">
+                    <Clock className="h-5 w-5 mr-3 flex-shrink-0 text-primary" />
+                    <span>{monAn.gioMoCua}</span>
+                    {isOpen !== null && (
+                      <>
+                        <span className="mx-1.5">·</span>
+                        <span className={cn(
+                          "font-semibold",
+                          isOpen ? "text-green-600" : "text-red-600"
+                        )}>
+                          {isOpen ? "Đang mở" : "Đóng cửa"}
+                        </span>
+                      </>
                     )}
-                    {branch.soDienThoai && (
-                      <div className="flex items-center">
-                        <Phone className="h-5 w-5 mr-3 flex-shrink-0 text-primary" />
-                        <span>{branch.soDienThoai}</span>
-                        <Button variant="ghost" size="icon" onClick={() => handleCopyPhoneNumber(branch.soDienThoai!)} className="ml-2">
-                          <Copy className="h-4 w-4" />
-                          <span className="sr-only">Sao chép số điện thoại</span>
-                        </Button>
-                      </div>
-                    )}
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      <a href={branch.googleMapLink} target="_blank" rel="noopener noreferrer">
-                        <Button size="sm">
-                          <ExternalLink className="h-4 w-4 mr-2" />
-                          Mở trên Google Maps
-                        </Button>
-                      </a>
-                      <Button variant="outline" size="sm" onClick={() => handleCopyAddress(branch.diaChi)}>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Sao chép địa chỉ
+                  </div>
+                )}
+                {monAn.soDienThoai && (
+                  <div className="flex items-center">
+                    <Phone className="h-5 w-5 mr-3 flex-shrink-0 text-primary" />
+                    <span>{monAn.soDienThoai}</span>
+                    <Button variant="ghost" size="icon" onClick={() => handleCopyPhoneNumber(monAn.soDienThoai!)} className="ml-2">
+                      <Copy className="h-4 w-4" />
+                      <span className="sr-only">Sao chép số điện thoại</span>
+                    </Button>
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2 mt-4">
+                  {monAn.googleMapLink && (
+                    <a href={monAn.googleMapLink} target="_blank" rel="noopener noreferrer">
+                      <Button size="sm">
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Mở trên Google Maps
                       </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                    </a>
+                  )}
+                  {monAn.diaChi && (
+                    <Button variant="outline" size="sm" onClick={() => handleCopyAddress(monAn.diaChi)}>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Sao chép địa chỉ
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
             <div className="flex items-center">
               <span className="font-semibold mr-2 text-primary">Giá:</span>
               <span>{priceRange}</span>

@@ -32,7 +32,7 @@ export const RandomFoodPicker = ({ wishlist, allMonAn, allCategories, allCities 
 
     // Apply filters
     if (selectedCity !== 'all') {
-      sourceList = sourceList.filter(m => m.branches.some(branch => branch.thanhPho === selectedCity));
+      sourceList = sourceList.filter(m => m.thanhPho === selectedCity); // Lọc theo trường thanhPho
     }
     if (selectedCategory !== 'all') {
       sourceList = sourceList.filter(m => m.loaiIds.includes(selectedCategory));
