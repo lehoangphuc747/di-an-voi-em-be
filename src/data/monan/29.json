@@ -1,0 +1,23 @@
+{
+  "id": "29",
+  "ten": "Ốc ba làng",
+  "loaiIds": ["hai-san", "an-no"],
+  "hinhAnh": [
+    "https://c.l3n.co/PdZfbZ.png",
+    "https://d.l3n.co/PdZgHZ.png",
+    "https://c.l3n.co/PdZzXM.jpg",
+    "https://c.l3n.co/PdIw5q.jpg",
+    "https://c.l3n.co/PdIsQ1.jpg"
+  ],
+  "moTa": "Chuyên hải sản tươi sống, chế biến nhanh, ngon, hấp dẫn.",
+  "diaChi": "104 Dương Hiến Quyền, Nha Trang",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Ốc+ba+làng+104+Dương+Hiến+Quyền+Nha+Trang",
+  "facebookLink": "",
+  "tags": ["ốc", "hải sản", "nha trang", "ăn no", "tươi sống"],
+  "giaMin": 60000,
+  "giaMax": 200000,
+  "ngayTao": "2024-08-14T10:00:00Z",
+  "gioMoCua": "",
+  "soDienThoai": "0963193271"
+}
