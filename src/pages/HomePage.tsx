@@ -277,14 +277,14 @@ const HomePage = () => {
         </div>
 
         {isLoading && visibleCount === ITEMS_PER_LOAD ? ( // Chỉ hiển thị skeleton ban đầu khi isLoading và chưa có dữ liệu
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {Array.from({ length: ITEMS_PER_LOAD }).map((_, index) => (
               <MonAnCardSkeleton key={index} />
             ))}
           </div>
         ) : itemsToDisplay.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {itemsToDisplay.map((monAn) => (
                 <MonAnCard 
                   key={monAn.id} 
@@ -299,7 +299,7 @@ const HomePage = () => {
             {visibleCount < filteredAndSortedMonAn.length && (
               <div ref={loadMoreRef} className="mt-8 text-center py-4">
                 {isFetchingMore && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                     {Array.from({ length: 3 }).map((_, index) => ( // Hiển thị 3 skeleton khi đang tải thêm
                       <MonAnCardSkeleton key={`loading-${index}`} />
                     ))}
