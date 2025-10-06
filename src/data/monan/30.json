@@ -1,0 +1,19 @@
+{
+  "id": "30",
+  "ten": "Bún sườn bò",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://b.l3n.co/PqaOIH.jpg"
+  ],
+  "moTa": "Bún sườn bò thơm ngon, một đặc sản tại Bảo Lộc.",
+  "diaChi": "82 Nguyễn Thái Học, Bảo Lộc",
+  "thanhPho": "Bảo Lộc",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Bún+sườn+bò+82+Nguyễn+Thái+Học+Bảo+Lộc",
+  "facebookLink": "",
+  "tags": ["bún sườn bò", "bún bò", "bảo lộc", "ăn no"],
+  "giaMin": 40000,
+  "giaMax": 60000,
+  "ngayTao": "2024-08-15T10:00:00Z",
+  "gioMoCua": "",
+  "soDienThoai": ""
+}
