@@ -1,0 +1,19 @@
+{
+  "id": "38",
+  "ten": "Bánh cuốn nóng cô Hoa",
+  "loaiIds": ["an-no", "an-sang"],
+  "hinhAnh": [
+    "https://a.l3n.co/P3Uk0c.png"
+  ],
+  "moTa": "Bánh cuốn nóng hổi, tráng tại chỗ, ăn kèm chả lụa, nem chua và nước mắm chua ngọt đậm đà. Một lựa chọn tuyệt vời cho bữa sáng tại Đà Lạt.",
+  "diaChi": "15A Nhà Chung, Phường 3, Đà Lạt, Lâm Đồng",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Bánh+cuốn+nóng+cô+Hoa+15A+Nhà+Chung+Đà+Lạt",
+  "facebookLink": "",
+  "tags": ["bánh cuốn", "đà lạt", "ăn sáng", "nóng"],
+  "giaMin": 30000,
+  "giaMax": 50000,
+  "ngayTao": "2024-08-22T07:00:00Z",
+  "gioMoCua": "06:00 AM–12:00 PM",
+  "soDienThoai": ""
+}
