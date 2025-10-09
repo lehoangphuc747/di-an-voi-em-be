@@ -1,0 +1,18 @@
+{
+  "id": "banh-cuon-co-hoa",
+  "ten": "Bánh Cuốn Nóng Cô Hoà",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://a.l3n.co/P3Uk0c.png",
+    "/images/banh-cuon-co-hoa-2.jpg"
+  ],
+  "moTa": "Bánh cuốn nóng Cô Hoà là một địa chỉ ăn sáng quen thuộc của nhiều người dân Đà Lạt. Bánh được tráng mỏng, nóng hổi, nhân thịt mộc nhĩ đậm đà, ăn kèm với chả lụa, nem chua và nước mắm chua ngọt đặc trưng. Quán nhỏ, không gian đơn giản nhưng luôn sạch sẽ và phục vụ nhanh nhẹn.",
+  "diaChi": "42A Phan Đình Phùng, Phường 1, Đà Lạt, Lâm Đồng",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://maps.app.goo.gl/EXAMPLE",
+  "tags": ["bánh cuốn", "bữa sáng", "truyền thống", "bình dân"],
+  "giaMin": 30000,
+  "giaMax": 45000,
+  "ngayTao": "2023-10-26",
+  "gioMoCua": "06:00 - 11:00"
+}

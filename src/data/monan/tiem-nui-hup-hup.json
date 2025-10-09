@@ -1,0 +1,20 @@
+{
+  "id": "tiem-nui-hup-hup",
+  "ten": "Tiệm Nui Húp Húp",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://b.l3n.co/P3x2iv.png",
+    "https://c.l3n.co/P3wG49.jpg",
+    "https://d.l3n.co/P3waP2.png",
+    "https://a.l3n.co/P3x8dC.png",
+    "https://d.l3n.co/P3xAL5.png"
+  ],
+  "moTa": "Tiệm Nui Húp Húp chuyên phục vụ một món duy nhất: nui sườn heo. Với nước dùng hầm từ xương ngọt thanh và đậm đà, món ăn được ví như sự kết hợp độc đáo giữa súp mì gà Mỹ và hương vị sườn heo Việt Nam. Quán có không gian ấm cúng, thu hút với mặt tiền sơn màu đất nung, là lựa chọn tuyệt vời cho một bữa ăn nóng hổi.",
+  "diaChi": "85 Yersin, Phường 10, Đà Lạt, Lâm Đồng",
+  "thanhPho": "Đà Lạt",
+  "tags": ["nui sườn heo", "nui hầm", "bữa sáng", "bữa trưa", "bữa tối", "độc đáo"],
+  "giaMin": 45000,
+  "giaMax": 60000,
+  "ngayTao": "2024-07-29",
+  "gioMoCua": "Cả ngày"
+}
