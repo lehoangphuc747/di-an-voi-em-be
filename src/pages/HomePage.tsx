@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,34 +11,49 @@ import { Heart, Star, MapPin, Eye } from 'lucide-react';
 import { useSession } from '@/components/SessionContextProvider';
 import { toggleListItem } from '@/lib/userActions';
 import { toast } from 'sonner';
-import { MonAn } from '@/types'; // Changed FoodItem to MonAn
+import { MonAn } from '@/types';
 import foodData from '@/data/monan';
+import loaiMonData from '@/data/loaimon.json';
 
 export default function HomePage() {
   const { session, userLists, setUserLists } = useSession();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredFood, setFilteredFood] = useState<MonAn[]>([]); // Changed FoodItem to MonAn
+  const [selectedCity, setSelectedCity] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [filteredFood, setFilteredFood] = useState<MonAn[]>([]);
 
   const allFoodItems = useMemo(() => Object.values(foodData), []);
 
-  useEffect(() => {
-    setFilteredFood(allFoodItems);
+  const uniqueCities = useMemo(() => {
+    const cities = new Set(allFoodItems.map(item => item.thanhPho));
+    return ['all', ...Array.from(cities)];
   }, [allFoodItems]);
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    if (!term) {
-      setFilteredFood(allFoodItems);
-      return;
+  useEffect(() => {
+    let results = [...allFoodItems];
+
+    // Filter by search term
+    if (searchTerm) {
+      const lowercasedTerm = searchTerm.toLowerCase();
+      results = results.filter(item =>
+        item.ten.toLowerCase().includes(lowercasedTerm) ||
+        item.tags.some(tag => tag.toLowerCase().includes(lowercasedTerm)) ||
+        item.diaChi.toLowerCase().includes(lowercasedTerm)
+      );
     }
-    const lowercasedTerm = term.toLowerCase();
-    const results = allFoodItems.filter(item =>
-      item.ten.toLowerCase().includes(lowercasedTerm) ||
-      item.tags.some(tag => tag.toLowerCase().includes(lowercasedTerm)) ||
-      item.diaChi.toLowerCase().includes(lowercasedTerm)
-    );
+
+    // Filter by city
+    if (selectedCity !== 'all') {
+      results = results.filter(item => item.thanhPho === selectedCity);
+    }
+
+    // Filter by category
+    if (selectedCategory !== 'all') {
+      results = results.filter(item => item.loaiIds.includes(selectedCategory));
+    }
+
     setFilteredFood(results);
-  };
+  }, [searchTerm, selectedCity, selectedCategory, allFoodItems]);
 
   const handleToggle = async (listType: 'favorites' | 'wishlist' | 'visited', foodId: string) => {
     if (!session) {
@@ -73,14 +89,39 @@ export default function HomePage() {
         <p className="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
           Tìm kiếm những món ăn ngon, những địa điểm hấp dẫn không thể bỏ lỡ tại thành phố ngàn hoa.
         </p>
-        <div className="mt-8 max-w-md mx-auto">
+        <div className="mt-8 max-w-2xl mx-auto flex flex-col sm:flex-row gap-4">
           <Input
             type="search"
             placeholder="Tìm món ăn, địa chỉ, tag..."
             className="w-full text-lg"
             value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
+          <div className="flex gap-4">
+            <Select value={selectedCity} onValueChange={setSelectedCity}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Chọn thành phố" />
+              </SelectTrigger>
+              <SelectContent>
+                {uniqueCities.map(city => (
+                  <SelectItem key={city} value={city}>
+                    {city === 'all' ? 'Tất cả TP' : city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Chọn loại món" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Tất cả loại</SelectItem>
+                {loaiMonData.map(loai => (
+                  <SelectItem key={loai.id} value={loai.id}>{loai.ten}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -147,10 +188,10 @@ export default function HomePage() {
           );
         })}
       </div>
-      {filteredFood.length === 0 && searchTerm && (
+      {filteredFood.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-xl text-gray-700 dark:text-gray-300">Không tìm thấy kết quả nào cho "{searchTerm}".</p>
-          <p className="text-gray-500 dark:text-gray-400 mt-2">Hãy thử tìm kiếm với từ khóa khác nhé.</p>
+          <p className="text-xl text-gray-700 dark:text-gray-300">Không tìm thấy kết quả nào phù hợp.</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">Hãy thử thay đổi bộ lọc hoặc từ khóa tìm kiếm nhé.</p>
         </div>
       )}
     </div>

@@ -45,29 +45,68 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
  *   - **Local State:** Managed within individual components using `useState` and `useEffect`.
  *   - **Global State:** Managed via React Context for things like user session and app-wide settings.
  *
+ * ### 5. AI Content Generation Rules
+ * **Objective:** To process raw text submitted by users about a food spot and convert it into a
+ * standardized, structured JSON object that conforms to the `MonAn` type.
+ *
+ * **Input:** A block of raw, unstructured text from a user.
+ *   - *Example Input:* "quán bánh căn nhà chung ở số 1 nhà chung đà lạt ngon lắm, giá khoảng 50k một phần. quán bán buổi sáng thôi. nó là đồ ăn vặt á. nên thử nha"
+ *
+ * **Output:** A structured JSON object matching the `MonAn` interface.
+ *
+ * **Standardization Rules:**
+ * 1.  **Tên (Name):**
+ *     - Must be proper Title Case (e.g., "Bánh Căn Nhà Chung" instead of "bánh căn nhà chung").
+ *     - If the name is generic (e.g., "Quán bún bò"), combine it with the street name (e.g., "Bún Bò Phan Đình Phùng").
+ * 2.  **Địa chỉ (Address):**
+ *     - Standardize to the format: `Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/Thành phố`.
+ *     - Always include "Đà Lạt" as the city and "Lâm Đồng" as the province if not specified otherwise.
+ *     - Attempt to verify the address's plausibility.
+ * 3.  **Mô tả (Description):**
+ *     - Write in an objective, descriptive, and helpful tone.
+ *     - The first sentence should be a general summary of the food spot.
+ *     - Mention key dishes, specialties, price range, and suitable times to visit (e.g., breakfast, lunch, dinner).
+ *     - Keep it concise, around 2-4 sentences.
+ * 4.  **Tags:**
+ *     - Generate 3-5 relevant, lowercase tags.
+ *     - Tags should include the main dish (e.g., "bánh căn"), meal type ("bữa sáng"), and characteristics ("đặc sản đà lạt", "giá rẻ").
+ *     - Do not use `#`.
+ * 5.  **Loại Món (Category - `loaiIds`):**
+ *     - Analyze the user's text to map it to one or more existing category IDs from `loaimon.json`.
+ *     - Example mapping: "ăn no", "bữa chính" -> `an-no`; "ăn vặt", "ăn xế" -> `an-vat`; "cà phê", "trà sữa" -> `ca-phe-giai-khat`.
+ * 6.  **Giá (Price - `giaMin`, `giaMax`):**
+ *     - Extract any numbers mentioned with currency units (k, vnd, ngàn).
+ *     - If a single price is mentioned, set both `giaMin` and `giaMax` to that value.
+ *     - If a range is mentioned, extract it.
+ *
+ * **AI Processing Workflow:**
+ * 1.  **Analyze Input:** Read the user's raw text.
+ * 2.  **Entity Extraction:** Identify and extract key pieces of information (Tên, Địa chỉ, Món ăn, Giá cả, Thời gian, etc.).
+ * 3.  **Field Standardization:** Apply the rules above to clean and format each extracted entity.
+ * 4.  **Tag & Category Generation:** Based on the context, generate relevant tags and map to `loaiIds`.
+ * 5.  **Description Synthesis:** Write a concise `moTa` based on the gathered information.
+ * 6.  **JSON Assembly:** Construct the final JSON object according to the `MonAn` type.
+ *
  * ===================================================================================
  *                            REACT CONTEXT IMPLEMENTATION
  * ===================================================================================
  */
 
-// 1. Define the type for the context state
+// ... (The rest of the React Context code remains unchanged)
+
 interface CodebaseContextType {
-  // This is an example state. You can add any state or functions
-  // you want to share across your application.
   appName: string;
   setAppName: (name: string) => void;
 }
 
-// 2. Create the context with a default undefined value
 const CodebaseContext = createContext<CodebaseContextType | undefined>(undefined);
 
-// 3. Create the Provider component
 interface CodebaseProviderProps {
   children: ReactNode;
 }
 
 export const CodebaseProvider = ({ children }: CodebaseProviderProps) => {
-  const [appName, setAppName] = useState('embe'); // Example state
+  const [appName, setAppName] = useState('embe');
 
   const value = {
     appName,
@@ -81,7 +120,6 @@ export const CodebaseProvider = ({ children }: CodebaseProviderProps) => {
   );
 };
 
-// 4. Create a custom hook for easy consumption in other components
 export const useCodebase = () => {
   const context = useContext(CodebaseContext);
   if (context === undefined) {
