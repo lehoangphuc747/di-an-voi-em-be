@@ -1,0 +1,22 @@
+{
+  "id": "35",
+  "ten": "Bún riêu Dì Cảnh",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://c.l3n.co/P3ccGb.jpg",
+    "https://a.l3n.co/P3XTdK.png",
+    "https://c.l3n.co/P3XEMZ.png",
+    "https://b.l3n.co/P3XkaP.png"
+  ],
+  "moTa": "Bún riêu Dì Cảnh nổi tiếng với hương vị đậm đà, cua đồng tươi ngon. Quán còn phục vụ mì quảng, là địa điểm lý tưởng cho bữa sáng tại Đà Lạt.",
+  "diaChi": "23/6 Bà Triệu, Phường 4, Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Bún+riêu+Dì+Cảnh+23/6+Bà+Triệu+Đà+Lạt",
+  "facebookLink": "",
+  "tags": ["bún riêu", "đà lạt", "ăn sáng", "ăn no", "mì quảng"],
+  "giaMin": null,
+  "giaMax": null,
+  "ngayTao": "2024-08-20T06:00:00Z",
+  "gioMoCua": "06:00 AM–11:00 AM",
+  "soDienThoai": "0919816672"
+}
