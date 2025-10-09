@@ -1,0 +1,22 @@
+{
+  "id": "36",
+  "ten": "Bánh căn Cô Hoa",
+  "loaiIds": ["an-no", "an-vat"],
+  "hinhAnh": [
+    "https://a.l3n.co/P3XdK2.jpg",
+    "https://c.l3n.co/P3XqPv.png",
+    "https://d.l3n.co/P3XmjC.png",
+    "https://c.l3n.co/P3X9t9.jpg"
+  ],
+  "moTa": "Đây được xem là một trong những quán bánh căn lâu đời và chuẩn vị Đà Lạt. Quán có thực đơn bánh căn đa dạng với nhiều loại nhân như tôm, bò, trứng gà, trứng cút. Đặc biệt, có lựa chọn trứng cút lòng đào. Nước chấm ăn kèm có hai loại là nước mắm và mắm nêm, trong chén nước chấm có sẵn 2 viên xíu mại. Ngoài bánh căn, quán còn có bán thêm bánh flan và sữa chua. Quán thường đông khách, cả khách du lịch và người dân địa phương.",
+  "diaChi": "12 Phan Đình Phùng, Phường 1, Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Bánh+căn+Cô+Hoa+12+Phan+Đình+Phùng+Đà+Lạt",
+  "facebookLink": "",
+  "tags": ["bánh căn", "đà lạt", "ăn sáng", "ăn vặt", "truyền thống", "bánh flan", "sữa chua"],
+  "giaMin": 30000,
+  "giaMax": 50000,
+  "ngayTao": "2024-08-21T06:00:00Z",
+  "gioMoCua": "06:00 AM–12:00 PM",
+  "soDienThoai": "0389406043"
+}
