@@ -22,18 +22,32 @@ export interface MonAn {
 export interface LoaiMon {
   id: string;
   ten: string;
-  moTa: string;
+  moTa?: string; // Made optional to fix compile errors
 }
 
-// Represents a row in the 'favorites' table
+// Represents a row in the 'favorites' table from the database
 export interface YeuThich {
   id: string;
   user_id: string;
   mon_an_id: string;
   created_at: string;
+  ghi_chu?: string | null;
 }
 
-// Represents the state of user's lists
+// Represents a simplified favorite entry for client-side state
+export interface FavoriteEntry {
+  monAnId: string;
+  ghiChu: string;
+}
+
+// Represents a simplified visited entry for client-side state
+export interface VisitedEntry {
+  monAnId: string;
+  rating: number | null;
+  notes: string;
+}
+
+// Represents the state of user's lists (used in SessionContext)
 export interface UserLists {
   favorites: string[];
   wishlist: string[];

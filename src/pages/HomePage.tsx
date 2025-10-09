@@ -10,15 +10,15 @@ import { Heart, Star, MapPin, Eye } from 'lucide-react';
 import { useSession } from '@/components/SessionContextProvider';
 import { toggleListItem } from '@/lib/userActions';
 import { toast } from 'sonner';
-import { FoodItem } from '@/types';
-import foodData from '@/data/monan/index';
+import { MonAn } from '@/types'; // Changed FoodItem to MonAn
+import foodData from '@/data/monan';
 
 export default function HomePage() {
   const { session, userLists, setUserLists } = useSession();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredFood, setFilteredFood] = useState<FoodItem[]>([]);
+  const [filteredFood, setFilteredFood] = useState<MonAn[]>([]); // Changed FoodItem to MonAn
 
-  const allFoodItems: FoodItem[] = useMemo(() => Object.values(foodData), []);
+  const allFoodItems = useMemo(() => Object.values(foodData), []);
 
   useEffect(() => {
     setFilteredFood(allFoodItems);
