@@ -1,51 +1,31 @@
-import { useFoodLists } from "@/hooks/use-food-lists";
-import { MonAnCard } from "@/components/MonAnCard"; // Changed from VisitedItem
-import loaiMonData from "@/data/loaimon.json";
-import { MonAn, LoaiMon } from "@/types";
-import { useAllMonAn } from "@/hooks/use-all-mon-an";
-import { Loader2 } from "lucide-react";
+"use client";
 
-const VisitedPage = () => {
-  const { visited, isFavorite, isWishlist } = useFoodLists(); // Added isFavorite, isWishlist
-  const { allMonAn, isLoading } = useAllMonAn();
-  
-  const loaiMonMap = new Map<string, LoaiMon>();
-  loaiMonData.forEach(loai => loaiMonMap.set(loai.id, loai));
+import { useMemo } from 'react';
+import { useSession } from '@/components/SessionContextProvider';
+import { useAllMonAn } from '@/hooks/use-all-mon-an';
+import { UserFoodListPage } from '@/components/UserFoodListPage';
+import { Skeleton } from '@/components/ui/skeleton';
 
-  const visitedMonAnIds = new Set(visited.map(v => v.monAnId));
-  const visitedMonAnList: MonAn[] = allMonAn.filter(m => visitedMonAnIds.has(m.id));
+export default function VisitedPage() {
+  const { userLists, isLoading } = useSession();
+  const { allMonAn, isLoading: isFoodLoading } = useAllMonAn();
 
-  if (isLoading) {
+  const visitedItems = useMemo(() => {
+    if (isLoading || isFoodLoading) return [];
+    const visitedIds = new Set(userLists.visited);
+    return allMonAn.filter(item => visitedIds.has(item.id));
+  }, [userLists.visited, allMonAn, isLoading, isFoodLoading]);
+
+  if (isLoading || isFoodLoading) {
     return (
-      <div className="flex justify-center items-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="container mx-auto px-4 py-8">
+        <Skeleton className="h-8 w-1/3 mb-8" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-72 w-full" />)}
+        </div>
       </div>
     );
   }
 
-  return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Ăn rùi (Đã thử)</h1>
-      {visitedMonAnList.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {visitedMonAnList.map((monAn) => (
-            <MonAnCard 
-              key={monAn.id} 
-              monAn={monAn} 
-              loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]}
-              isVisited={true} // Mark as visited
-              isFavorite={isFavorite(monAn.id)} // Pass favorite status
-              isWishlist={isWishlist(monAn.id)} // Pass wishlist status
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Bạn chưa đánh dấu món ăn nào đã thử.</p>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default VisitedPage;
+  return <UserFoodListPage title="Các món Đã thử" foodItems={visitedItems} />;
+}

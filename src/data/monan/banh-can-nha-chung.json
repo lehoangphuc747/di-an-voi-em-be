@@ -1,0 +1,15 @@
+{
+  "id": "banh-can-nha-chung",
+  "ten": "Bánh Căn Nhà Chung",
+  "loaiIds": ["an-no"],
+  "hinhAnh": ["/images/banh-can-nha-chung.jpg"],
+  "moTa": "Bánh căn Nhà Chung là một trong những địa chỉ bánh căn nổi tiếng và lâu đời nhất tại Đà Lạt. Quán luôn tấp nập khách, đặc biệt là vào buổi sáng. Bánh căn ở đây được đúc giòn rụm, ăn kèm với nước mắm mỡ hành, xíu mại và chả lụa, tạo nên hương vị đặc trưng khó quên.",
+  "diaChi": "13 Nhà Chung, Phường 3, Đà Lạt, Lâm Đồng",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://maps.app.goo.gl/EXAMPLE",
+  "tags": ["bánh căn", "bữa sáng", "đặc sản đà lạt", "giá rẻ"],
+  "giaMin": 30000,
+  "giaMax": 50000,
+  "ngayTao": "2023-10-26",
+  "gioMoCua": "06:00 - 10:00"
+}

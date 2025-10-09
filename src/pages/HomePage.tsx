@@ -13,13 +13,11 @@ import { toggleListItem } from '@/lib/userActions';
 import { toast } from 'sonner';
 import { MonAn } from '@/types';
 import foodData from '@/data/monan';
-import loaiMonData from '@/data/loaimon.json';
 
 export default function HomePage() {
   const { session, userLists, setUserLists } = useSession();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
-  const [selectedCategory, setSelectedCategory] = useState('all');
   const [filteredFood, setFilteredFood] = useState<MonAn[]>([]);
 
   const allFoodItems = useMemo(() => Object.values(foodData), []);
@@ -47,13 +45,8 @@ export default function HomePage() {
       results = results.filter(item => item.thanhPho === selectedCity);
     }
 
-    // Filter by category
-    if (selectedCategory !== 'all') {
-      results = results.filter(item => item.loaiIds.includes(selectedCategory));
-    }
-
     setFilteredFood(results);
-  }, [searchTerm, selectedCity, selectedCategory, allFoodItems]);
+  }, [searchTerm, selectedCity, allFoodItems]);
 
   const handleToggle = async (listType: 'favorites' | 'wishlist' | 'visited', foodId: string) => {
     if (!session) {
@@ -89,7 +82,7 @@ export default function HomePage() {
         <p className="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
           Tìm kiếm những món ăn ngon, những địa điểm hấp dẫn không thể bỏ lỡ tại thành phố ngàn hoa.
         </p>
-        <div className="mt-8 max-w-2xl mx-auto flex flex-col sm:flex-row gap-4">
+        <div className="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row gap-4">
           <Input
             type="search"
             placeholder="Tìm món ăn, địa chỉ, tag..."
@@ -97,31 +90,18 @@ export default function HomePage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <div className="flex gap-4">
-            <Select value={selectedCity} onValueChange={setSelectedCity}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Chọn thành phố" />
-              </SelectTrigger>
-              <SelectContent>
-                {uniqueCities.map(city => (
-                  <SelectItem key={city} value={city}>
-                    {city === 'all' ? 'Tất cả TP' : city}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Chọn loại món" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Tất cả loại</SelectItem>
-                {loaiMonData.map(loai => (
-                  <SelectItem key={loai.id} value={loai.id}>{loai.ten}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <Select value={selectedCity} onValueChange={setSelectedCity}>
+            <SelectTrigger className="w-full sm:w-[220px]">
+              <SelectValue placeholder="Chọn thành phố" />
+            </SelectTrigger>
+            <SelectContent>
+              {uniqueCities.map(city => (
+                <SelectItem key={city} value={city}>
+                  {city === 'all' ? 'Tất cả thành phố' : city}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
