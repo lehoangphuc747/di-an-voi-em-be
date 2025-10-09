@@ -11,28 +11,31 @@ import VisitedPage from '@/pages/VisitedPage';
 import ProfilePage from '@/pages/ProfilePage';
 import SubmitFoodPage from '@/pages/SubmitFoodPage';
 import NotFound from '@/pages/NotFound';
+import { CodebaseProvider } from '@/contexts/CodebaseContext';
 
 function App() {
   return (
-    <SessionContextProvider>
-      <Router>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/mon/:id" element={<DetailPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/favorites" element={<FavoritesPage />} />
-            <Route path="/wishlist" element={<WishlistPage />} />
-            <Route path="/visited" element={<VisitedPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/submit-food" element={<SubmitFoodPage />} />
-            <Route path="/submit-food/:id/edit" element={<SubmitFoodPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Layout>
-        <Toaster richColors />
-      </Router>
-    </SessionContextProvider>
+    <CodebaseProvider>
+      <SessionContextProvider>
+        <Router>
+          <Layout>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/mon/:id" element={<DetailPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/favorites" element={<FavoritesPage />} />
+              <Route path="/wishlist" element={<WishlistPage />} />
+              <Route path="/visited" element={<VisitedPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/submit-food" element={<SubmitFoodPage />} />
+              <Route path="/submit-food/:id/edit" element={<SubmitFoodPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Layout>
+          <Toaster richColors />
+        </Router>
+      </SessionContextProvider>
+    </CodebaseProvider>
   );
 }
 
