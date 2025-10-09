@@ -1,56 +1,93 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
-import { Session, User } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
-import { showSuccess, showError } from '@/utils/toast';
+"use client";
 
-interface SessionContextType {
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Session, User } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase';
+import { UserLists } from '@/types';
+
+export interface SessionContextType {
   session: Session | null;
   user: User | null;
   isLoading: boolean;
+  userLists: UserLists;
+  setUserLists: React.Dispatch<React.SetStateAction<UserLists>>;
 }
 
-const SessionContext = createContext<SessionContextType | undefined>(undefined);
+export const SessionContext = createContext<SessionContextType | undefined>(undefined);
 
-export const SessionContextProvider = ({ children }: { children: React.ReactNode }) => {
+interface SessionProviderProps {
+  children: ReactNode;
+}
+
+export const SessionContextProvider = ({ children }: SessionProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [userLists, setUserLists] = useState<UserLists>({
+    favorites: [],
+    wishlist: [],
+    visited: [],
+  });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, currentSession) => {
-      if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
-        setSession(currentSession);
-        setUser(currentSession?.user || null);
-        showSuccess('Đăng nhập thành công!');
-      } else if (event === 'SIGNED_OUT') {
-        setSession(null);
-        setUser(null);
-        showSuccess('Đã đăng xuất!');
-      } else if (event === 'INITIAL_SESSION') {
-        setSession(currentSession);
-        setUser(currentSession?.user || null);
-      }
-      // Removed: else if (event === 'AUTH_ERROR') as it's not a valid event type for onAuthStateChange
+    const fetchSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
       setIsLoading(false);
-    });
+    };
 
-    // Fetch initial session
-    supabase.auth.getSession().then(({ data: { session: initialSession } }) => {
-      setSession(initialSession);
-      setUser(initialSession?.user || null);
-      setIsLoading(false);
-    }).catch((error) => {
-      console.error("Error fetching initial session:", error);
-      showError('Lỗi khi tải phiên đăng nhập ban đầu.');
-      setIsLoading(false);
+    fetchSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (_event !== 'INITIAL_SESSION') {
+        setIsLoading(false);
+      }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const fetchUserLists = async (userId: string) => {
+      try {
+        const [favoritesRes, wishlistRes, visitedRes] = await Promise.all([
+          supabase.from('favorites').select('mon_an_id').eq('user_id', userId),
+          supabase.from('wishlist').select('mon_an_id').eq('user_id', userId),
+          supabase.from('visited').select('mon_an_id').eq('user_id', userId),
+        ]);
+
+        if (favoritesRes.error) throw favoritesRes.error;
+        if (wishlistRes.error) throw wishlistRes.error;
+        if (visitedRes.error) throw visitedRes.error;
+
+        setUserLists({
+          favorites: favoritesRes.data.map(item => item.mon_an_id),
+          wishlist: wishlistRes.data.map(item => item.mon_an_id),
+          visited: visitedRes.data.map(item => item.mon_an_id),
+        });
+      } catch (error) {
+        console.error('Failed to fetch user lists:', error);
+      }
+    };
+
+    if (session?.user) {
+      fetchUserLists(session.user.id);
+    } else {
+      setUserLists({ favorites: [], wishlist: [], visited: [] });
+    }
+  }, [session]);
+
+  const value = {
+    session,
+    user: session?.user ?? null,
+    isLoading,
+    userLists,
+    setUserLists,
+  };
+
   return (
-    <SessionContext.Provider value={{ session, user, isLoading }}>
-      {children}
+    <SessionContext.Provider value={value}>
+      {!isLoading && children}
     </SessionContext.Provider>
   );
 };

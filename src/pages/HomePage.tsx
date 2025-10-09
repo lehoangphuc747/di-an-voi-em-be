@@ -1,321 +1,158 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { MonAn, LoaiMon } from "@/types/index";
-import { MonAnCard } from "@/components/MonAnCard";
-import { FilterSidebar, PriceRange } from "@/components/FilterSidebar";
-import { FilterDrawer } from "@/components/FilterDrawer";
+"use client";
+
+import { useState, useEffect, useMemo } from 'react';
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useIsMobile } from "@/hooks/use-mobile";
-import loaiMonData from "@/data/loaimon.json";
-import { RotateCcw } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
-import { isStoreOpen } from "@/lib/time-utils";
-import { useFoodLists } from "@/hooks/use-food-lists";
-import { useAllMonAn } from "@/hooks/use-all-mon-an";
-import { MonAnCardSkeleton } from "@/components/MonAnCardSkeleton";
-import { RandomFoodPicker } from "@/components/RandomFoodPicker";
+import { Link } from 'react-router-dom';
+import { Heart, Star, MapPin, Eye } from 'lucide-react';
+import { useSession } from '@/components/SessionContextProvider';
+import { toggleListItem } from '@/lib/userActions';
+import { toast } from 'sonner';
+import { FoodItem } from '@/types';
+import foodData from '@/data/monan/index';
 
-type SortOption = "newest" | "price-asc" | "price-desc" | "name-asc";
-type OpeningStatus = 'all' | 'open' | 'closed';
+export default function HomePage() {
+  const { session, userLists, setUserLists } = useSession();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredFood, setFilteredFood] = useState<FoodItem[]>([]);
 
-const PRICE_RANGES: (PriceRange & { min: number; max: number })[] = [
-  { id: 'all', ten: 'Tất cả', min: 0, max: Infinity },
-  { id: 'under-100', ten: 'Dưới 100k', min: 0, max: 100000 },
-  { id: '100-200', ten: '100k - 200k', min: 100000, max: 200000 },
-  { id: '200-300', ten: '200k - 300k', min: 200000, max: 300000 },
-  { id: '300-500', ten: '300k - 500k', min: 300000, max: 500000 },
-  { id: 'over-500', ten: 'Trên 500k', min: 500000, max: Infinity },
-];
-
-const ITEMS_PER_LOAD = 9; // Số lượng món ăn tải thêm mỗi lần
-
-const HomePage = () => {
-  const [searchParams] = useSearchParams();
-  const { favorites, wishlist, visited, isFavorite, isWishlist, isVisited, isLoading: loadingFoodLists } = useFoodLists();
-  const { allMonAn, isLoading: loadingAllMonAn } = useAllMonAn();
-
-  const [loaiMonMap] = useState<Map<string, LoaiMon>>(() => {
-    const map = new Map<string, LoaiMon>();
-    loaiMonData.forEach(loai => map.set(loai.id, loai));
-    return map;
-  });
-
-  const isMobile = useIsMobile();
-
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('searchTerm') || "");
-  const [selectedCities, setSelectedCities] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedPriceRangeId, setSelectedPriceRangeId] = useState<string>('all');
-  const [sortOption, setSortOption] = useState<SortOption>("newest");
-  const [selectedOpeningStatus, setSelectedOpeningStatus] = useState<OpeningStatus>('all');
-  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
-  const [showWishlistOnly, setShowWishlistOnly] = useState(false);
-  const [showVisitedOnly, setShowVisitedOnly] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
-  const [isFetchingMore, setIsFetchingMore] = useState(false); // State để quản lý việc đang tải thêm
-
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
-  const loadMoreRef = useRef<HTMLDivElement>(null); // Ref cho Intersection Observer
+  const allFoodItems: FoodItem[] = useMemo(() => Object.values(foodData), []);
 
   useEffect(() => {
-    const urlSearchTerm = searchParams.get('searchTerm') || '';
-    if (searchTerm !== urlSearchTerm) {
-      setSearchTerm(urlSearchTerm);
+    setFilteredFood(allFoodItems);
+  }, [allFoodItems]);
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    if (!term) {
+      setFilteredFood(allFoodItems);
+      return;
     }
-  }, [searchParams, searchTerm]);
-
-  const allCities = useMemo(() => {
-    const cities = new Set<string>();
-    allMonAn.forEach(m => cities.add(m.thanhPho));
-    return [...cities];
-  }, [allMonAn]);
-  const allCategories = useMemo(() => [...loaiMonData], []);
-
-  const handleCityChange = (city: string) => {
-    setSelectedCities(prev => 
-      prev.includes(city) ? prev.filter(c => c !== city) : [...prev, city]
+    const lowercasedTerm = term.toLowerCase();
+    const results = allFoodItems.filter(item =>
+      item.ten.toLowerCase().includes(lowercasedTerm) ||
+      item.tags.some(tag => tag.toLowerCase().includes(lowercasedTerm)) ||
+      item.diaChi.toLowerCase().includes(lowercasedTerm)
     );
+    setFilteredFood(results);
   };
 
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategories(prev =>
-      prev.includes(categoryId) ? prev.filter(c => c !== categoryId) : [...prev, categoryId]
-    );
-  };
-
-  const handleResetFilters = () => {
-    setSearchTerm('');
-    setSelectedCities([]);
-    setSelectedCategories([]);
-    setSelectedPriceRangeId('all');
-    setSelectedOpeningStatus('all');
-    setShowFavoritesOnly(false);
-    setShowWishlistOnly(false);
-    setShowVisitedOnly(false);
-  };
-
-  const filteredAndSortedMonAn = useMemo(() => {
-    let filtered = allMonAn.filter(mon => {
-      const searchTermLower = debouncedSearchTerm.toLowerCase();
-      const searchMatch = debouncedSearchTerm 
-        ? mon.ten.toLowerCase().includes(searchTermLower) || 
-          mon.tags.some(tag => tag.toLowerCase().includes(searchTermLower))
-        : true;
-
-      const cityMatch = selectedCities.length > 0 
-        ? selectedCities.includes(mon.thanhPho)
-        : true;
-      
-      const categoryMatch = selectedCategories.length > 0
-        ? selectedCategories.some(catId => mon.loaiIds.includes(catId))
-        : true;
-      
-      const priceMatch = (() => {
-        if (selectedPriceRangeId === 'all') return true;
-        const range = PRICE_RANGES.find(r => r.id === selectedPriceRangeId);
-        if (!range) return true;
-
-        const itemPrice = mon.giaMin ?? mon.giaMax;
-        if (itemPrice === undefined) return false;
-
-        return itemPrice >= range.min && itemPrice < range.max;
-      })();
-
-      const statusMatch = (() => {
-        if (selectedOpeningStatus === 'all') return true;
-        
-        const isOpen = isStoreOpen(mon.gioMoCua);
-        if (isOpen === null) { 
-          return selectedOpeningStatus === 'closed'; // Nếu không có giờ mở cửa, coi là đóng cửa
-        }
-        if (selectedOpeningStatus === 'open') return isOpen;
-        if (selectedOpeningStatus === 'closed') return !isOpen;
-        return true;
-      })();
-
-      const favoritesMatch = showFavoritesOnly ? isFavorite(mon.id) : true;
-      const wishlistMatch = showWishlistOnly ? isWishlist(mon.id) : true;
-      const visitedMatch = showVisitedOnly ? isVisited(mon.id) : true;
-      
-      return searchMatch && cityMatch && categoryMatch && priceMatch && statusMatch && favoritesMatch && wishlistMatch && visitedMatch;
-    });
-
-    switch (sortOption) {
-      case "price-asc":
-        filtered.sort((a, b) => (a.giaMin || 0) - (b.giaMin || 0));
-        break;
-      case "price-desc":
-        filtered.sort((a, b) => (b.giaMin || 0) - (a.giaMin || 0));
-        break;
-      case "name-asc":
-        filtered.sort((a, b) => a.ten.localeCompare(b.ten));
-        break;
-      case "newest":
-      default:
-        filtered.sort((a, b) => new Date(b.ngayTao).getTime() - new Date(a.ngayTao).getTime());
-        break;
+  const handleToggle = async (listType: 'favorites' | 'wishlist' | 'visited', foodId: string) => {
+    if (!session) {
+      toast.error("Bạn cần đăng nhập để thực hiện chức năng này.");
+      return;
     }
 
-    return filtered;
-  }, [
-    allMonAn, debouncedSearchTerm, selectedCities, selectedCategories, selectedPriceRangeId, 
-    sortOption, selectedOpeningStatus, showFavoritesOnly, showWishlistOnly, showVisitedOnly,
-    isFavorite, isWishlist, isVisited
-  ]);
+    const updatedLists = await toggleListItem(session.user.id, foodId, listType, userLists);
+    if (updatedLists) {
+      setUserLists(updatedLists);
+      let message = '';
+      const foodName = allFoodItems.find(f => f.id === foodId)?.ten || 'Món ăn';
+      const isInList = updatedLists[listType].includes(foodId);
 
-  useEffect(() => {
-    setVisibleCount(ITEMS_PER_LOAD); // Reset visible count khi bộ lọc hoặc sắp xếp thay đổi
-  }, [filteredAndSortedMonAn]);
-
-  const itemsToDisplay = useMemo(() => {
-    return filteredAndSortedMonAn.slice(0, visibleCount);
-  }, [filteredAndSortedMonAn, visibleCount]);
-
-  // Intersection Observer cho cuộn vô hạn
-  useEffect(() => {
-    if (loadingAllMonAn || loadingFoodLists || isFetchingMore) return; // Không quan sát khi đang tải hoặc đang fetch
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && visibleCount < filteredAndSortedMonAn.length) {
-          setIsFetchingMore(true);
-          setTimeout(() => { // Giả lập độ trễ tải dữ liệu
-            setVisibleCount(prev => prev + ITEMS_PER_LOAD);
-            setIsFetchingMore(false);
-          }, 500); 
-        }
-      },
-      { threshold: 0.5 } // Kích hoạt khi 50% của phần tử hiển thị
-    );
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
+      if (listType === 'favorites') {
+        message = isInList ? `Đã thêm "${foodName}" vào Yêu thích` : `Đã xóa "${foodName}" khỏi Yêu thích`;
+      } else if (listType === 'wishlist') {
+        message = isInList ? `Đã thêm "${foodName}" vào Muốn thử` : `Đã xóa "${foodName}" khỏi Muốn thử`;
+      } else {
+        message = isInList ? `Đã đánh dấu "${foodName}" là Đã thử` : `Đã bỏ đánh dấu "${foodName}"`;
       }
-    };
-  }, [visibleCount, filteredAndSortedMonAn.length, loadingAllMonAn, loadingFoodLists, isFetchingMore]);
+      toast.success(message);
+    }
+  };
 
-
-  const filterContent = (
-    <div>
-      <Button variant="ghost" onClick={handleResetFilters} className="w-full justify-start mb-2 text-sm text-muted-foreground hover:text-foreground">
-        <RotateCcw className="mr-2 h-4 w-4" />
-        Xóa bộ lọc
-      </Button>
-      <FilterSidebar
-        cities={allCities}
-        categories={allCategories}
-        selectedCities={selectedCities}
-        onCityChange={handleCityChange}
-        selectedCategories={selectedCategories}
-        onCategoryChange={handleCategoryChange}
-        priceRanges={PRICE_RANGES}
-        selectedPriceRangeId={selectedPriceRangeId}
-        onPriceRangeChange={setSelectedPriceRangeId}
-        selectedOpeningStatus={selectedOpeningStatus}
-        onOpeningStatusChange={setSelectedOpeningStatus}
-        showFavoritesOnly={showFavoritesOnly}
-        onShowFavoritesOnlyChange={setShowFavoritesOnly}
-        showWishlistOnly={showWishlistOnly}
-        onShowWishlistOnlyChange={setShowWishlistOnly}
-        showVisitedOnly={showVisitedOnly}
-        onShowVisitedOnlyChange={setShowVisitedOnly}
-      />
-    </div>
-  );
-
-  const isLoading = loadingAllMonAn || loadingFoodLists;
 
   return (
-    <div className="grid lg:grid-cols-[280px_1fr] lg:gap-8">
-      {isMobile ? (
-        <FilterDrawer>{filterContent}</FilterDrawer>
-      ) : (
-        <aside className="sticky top-20 h-fit">
-          <h2 className="text-xl font-semibold mb-4">Bộ lọc</h2>
-          {filterContent}
-        </aside>
-      )}
-      
-      <main>
-        <div className="mb-6">
-          <RandomFoodPicker 
-            favorites={favorites} 
-            wishlist={wishlist} 
-            visited={visited} 
-            allMonAn={allMonAn} 
-            allCategories={allCategories}
-            allCities={allCities}
-          />
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
+    <div className="container mx-auto px-4 py-8">
+      <div className="text-center mb-12">
+        <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl md:text-6xl">
+          Khám Phá Ẩm Thực Đà Lạt
+        </h1>
+        <p className="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+          Tìm kiếm những món ăn ngon, những địa điểm hấp dẫn không thể bỏ lỡ tại thành phố ngàn hoa.
+        </p>
+        <div className="mt-8 max-w-md mx-auto">
           <Input
-            type="text"
-            placeholder="Tìm kiếm tên món ăn, tag..."
-            className="flex-grow"
+            type="search"
+            placeholder="Tìm món ăn, địa chỉ, tag..."
+            className="w-full text-lg"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
           />
-          <Select value={sortOption} onValueChange={(value) => setSortOption(value as SortOption)}>
-            <SelectTrigger className="w-full sm:w-[220px]">
-              <SelectValue placeholder="Sắp xếp theo" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Mới nhất</SelectItem>
-              <SelectItem value="price-asc">Giá: Thấp đến Cao</SelectItem>
-              <SelectItem value="price-desc">Giá: Cao đến Thấp</SelectItem>
-              <SelectItem value="name-asc">Tên: A-Z</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
+      </div>
 
-        {isLoading && visibleCount === ITEMS_PER_LOAD ? ( // Chỉ hiển thị skeleton ban đầu khi isLoading và chưa có dữ liệu
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {Array.from({ length: ITEMS_PER_LOAD }).map((_, index) => (
-              <MonAnCardSkeleton key={index} />
-            ))}
-          </div>
-        ) : itemsToDisplay.length > 0 ? (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {itemsToDisplay.map((monAn) => (
-                <MonAnCard 
-                  key={monAn.id} 
-                  monAn={monAn} 
-                  loaiMon={monAn.loaiIds.map(id => loaiMonMap.get(id)).filter(Boolean) as LoaiMon[]}
-                  isFavorite={isFavorite(monAn.id)}
-                  isWishlist={isWishlist(monAn.id)}
-                  isVisited={isVisited(monAn.id)}
-                />
-              ))}
-            </div>
-            {visibleCount < filteredAndSortedMonAn.length && (
-              <div ref={loadMoreRef} className="mt-8 text-center py-4">
-                {isFetchingMore && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {Array.from({ length: 3 }).map((_, index) => ( // Hiển thị 3 skeleton khi đang tải thêm
-                      <MonAnCardSkeleton key={`loading-${index}`} />
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-          </>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">Không tìm thấy món ăn nào phù hợp.</p>
-          </div>
-        )}
-      </main>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filteredFood.map((item) => {
+          const isFavorite = userLists.favorites.includes(item.id);
+          const isWishlisted = userLists.wishlist.includes(item.id);
+          const isVisited = userLists.visited.includes(item.id);
+
+          return (
+            <Card key={item.id} className="flex flex-col overflow-hidden rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <CardHeader className="p-0 relative">
+                <Link to={`/mon/${item.id}`}>
+                  <img
+                    src={item.hinhAnh[0]}
+                    alt={item.ten}
+                    className="w-full h-48 object-cover"
+                  />
+                </Link>
+                <div className="absolute top-2 right-2 flex flex-col space-y-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`rounded-full h-8 w-8 bg-white/80 hover:bg-white ${isFavorite ? 'text-red-500' : 'text-gray-600'}`}
+                    onClick={() => handleToggle('favorites', item.id)}
+                  >
+                    <Heart className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`rounded-full h-8 w-8 bg-white/80 hover:bg-white ${isWishlisted ? 'text-blue-500' : 'text-gray-600'}`}
+                    onClick={() => handleToggle('wishlist', item.id)}
+                  >
+                    <Star className={`h-5 w-5 ${isWishlisted ? 'fill-current' : ''}`} />
+                  </Button>
+                   <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`rounded-full h-8 w-8 bg-white/80 hover:bg-white ${isVisited ? 'text-green-500' : 'text-gray-600'}`}
+                    onClick={() => handleToggle('visited', item.id)}
+                  >
+                    <Eye className={`h-5 w-5 ${isVisited ? 'fill-current' : ''}`} />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 flex-grow">
+                <CardTitle className="text-lg font-semibold hover:text-indigo-600">
+                  <Link to={`/mon/${item.id}`}>{item.ten}</Link>
+                </CardTitle>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 flex items-center">
+                  <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+                  {item.diaChi}
+                </p>
+              </CardContent>
+              <CardFooter className="p-4 pt-0">
+                <div className="flex flex-wrap gap-2">
+                  {item.tags.slice(0, 3).map((tag) => (
+                    <Badge key={tag} variant="secondary">{tag}</Badge>
+                  ))}
+                </div>
+              </CardFooter>
+            </Card>
+          );
+        })}
+      </div>
+      {filteredFood.length === 0 && searchTerm && (
+        <div className="text-center py-16">
+          <p className="text-xl text-gray-700 dark:text-gray-300">Không tìm thấy kết quả nào cho "{searchTerm}".</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">Hãy thử tìm kiếm với từ khóa khác nhé.</p>
+        </div>
+      )}
     </div>
   );
-};
-
-export default HomePage;
+}
