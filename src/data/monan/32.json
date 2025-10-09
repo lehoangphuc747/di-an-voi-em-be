@@ -1,0 +1,19 @@
+{
+  "id": "32",
+  "ten": "Bún Bò Mẹ Nấu (tại F Cà Phê)",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://c.l3n.co/P3Fwhb.jpg"
+  ],
+  "moTa": "Nước dùng được nhận xét là có vị ngọt thanh, trong và đậm đà. Ăn sáng trong không gian đẹp, nhiều hoa và thoáng đãng của F Cà Phê.",
+  "diaChi": "F Cà Phê, Lô C4, Khu Quy Hoạch Hoàng Văn Thụ, Phường 4, Đà Lạt",
+  "thanhPho": "Đà Lạt",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=F+Cà+Phê,+Lô+C4,+Khu+Quy+Hoạch+Hoàng+Văn+Thụ,+Phường+4,+Đà+Lạt",
+  "facebookLink": "",
+  "tags": ["bún bò", "đà lạt", "ăn sáng", "ăn no", "view đẹp", "cà phê"],
+  "giaMin": 35000,
+  "giaMax": 45000,
+  "ngayTao": "2024-08-17T08:00:00Z",
+  "gioMoCua": "07:00 AM–10:00 AM",
+  "soDienThoai": null
+}
