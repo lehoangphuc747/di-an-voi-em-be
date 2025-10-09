@@ -13,8 +13,8 @@
   "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Mì+quảng+Đà+Nẵng+CÔ+SÁU+268+Phan+Đình+Phùng+Đà+Lạt",
   "facebookLink": "",
   "tags": ["mì quảng", "đà nẵng", "đà lạt", "ăn no", "mì", "hải sản", "truyền thống"],
-  "giaMin": undefined,
-  "giaMax": undefined,
+  "giaMin": null,
+  "giaMax": null,
   "ngayTao": "2024-08-16T06:00:00Z",
   "gioMoCua": "06:00 AM–09:00 PM",
   "soDienThoai": "0905280058"
