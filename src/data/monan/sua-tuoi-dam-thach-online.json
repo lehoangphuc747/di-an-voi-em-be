@@ -1,0 +1,20 @@
+{
+  "id": "sua-tuoi-dam-thach-online",
+  "ten": "Sữa tươi dầm thạch (Online)",
+  "loaiIds": ["ca-phe", "an-vat"],
+  "hinhAnh": [
+    "https://b.l3n.co/PSUdqi.jpg",
+    "https://b.l3n.co/PSUpt5.png"
+  ],
+  "moTa": "Sữa tươi dầm thạch là một món giải khát mát lạnh, kết hợp giữa sữa tươi béo ngậy và các loại thạch dai giòn. Quán hoạt động online, phù hợp để đặt giao hàng tận nơi.",
+  "diaChi": "160 Ngô Gia Tự, Tân Tiến, Nha Trang, Khánh Hoà",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=160+Ngô+Gia+Tự,+Tân+Tiến,+Nha+Trang,+Khánh+Hoà",
+  "facebookLink": "",
+  "tags": ["sữa tươi", "thạch", "giải khát", "tráng miệng", "online", "nha trang"],
+  "giaMin": null,
+  "giaMax": null,
+  "ngayTao": "2024-08-23T10:00:00Z",
+  "gioMoCua": "7:00 AM–9:30 PM",
+  "soDienThoai": ""
+}
