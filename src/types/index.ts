@@ -60,4 +60,5 @@ export interface UserBackupData {
   wishlist: { mon_an_id: string }[];
   visited: { mon_an_id: string; rating: number | null; notes: string | null }[];
   personal_notes: { mon_an_id: string; content: string }[];
+  all_mon_an?: MonAn[]; // Added for comprehensive export
 }

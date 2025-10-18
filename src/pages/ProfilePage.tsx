@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Loader2, Upload, Download } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { UserBackupData } from '@/types';
+import { useAllMonAn } from '@/hooks/use-all-mon-an'; // Import useAllMonAn hook
 
 const profileFormSchema = z.object({
   nickname: z.string().min(1, { message: "Nickname không được để trống." }).max(50, { message: "Nickname quá dài." }).optional().or(z.literal('')),
@@ -24,6 +25,7 @@ type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 const ProfilePage = () => {
   const { user, isLoading: isSessionLoading, setUserLists } = useSession();
+  const { allMonAn, isLoading: isAllMonAnLoading } = useAllMonAn(); // Use the hook to get all food items
   const [loading, setLoading] = useState(true);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -135,6 +137,7 @@ const ProfilePage = () => {
         wishlist: wishlistRes.data,
         visited: visitedRes.data,
         personal_notes: notesRes.data,
+        all_mon_an: allMonAn, // Include all food items in the export
       };
 
       const jsonString = JSON.stringify(backupData, null, 2);
@@ -177,26 +180,26 @@ const ProfilePage = () => {
 
         const userId = user.id;
 
-        // Start a transaction-like process: delete existing, then insert new
-        // For simplicity, we'll do this sequentially. For very large datasets, batching might be needed.
+        // Delete existing user-specific data
         await supabase.from('favorites').delete().eq('user_id', userId);
         await supabase.from('wishlist').delete().eq('user_id', userId);
         await supabase.from('visited').delete().eq('user_id', userId);
         await supabase.from('personal_notes').delete().eq('user_id', userId);
 
-        if (backupData.favorites.length > 0) {
+        // Insert new user-specific data from backup
+        if (backupData.favorites && backupData.favorites.length > 0) {
           const { error } = await supabase.from('favorites').insert(backupData.favorites.map(item => ({ ...item, user_id: userId })));
           if (error) throw error;
         }
-        if (backupData.wishlist.length > 0) {
+        if (backupData.wishlist && backupData.wishlist.length > 0) {
           const { error } = await supabase.from('wishlist').insert(backupData.wishlist.map(item => ({ ...item, user_id: userId })));
           if (error) throw error;
         }
-        if (backupData.visited.length > 0) {
+        if (backupData.visited && backupData.visited.length > 0) {
           const { error } = await supabase.from('visited').insert(backupData.visited.map(item => ({ ...item, user_id: userId })));
           if (error) throw error;
         }
-        if (backupData.personal_notes.length > 0) {
+        if (backupData.personal_notes && backupData.personal_notes.length > 0) {
           const { error } = await supabase.from('personal_notes').insert(backupData.personal_notes.map(item => ({ ...item, user_id: userId })));
           if (error) throw error;
         }
@@ -232,7 +235,7 @@ const ProfilePage = () => {
     reader.readAsText(file);
   };
 
-  if (isSessionLoading || loading) {
+  if (isSessionLoading || loading || isAllMonAnLoading) {
     return (
       <div className="flex justify-center items-center min-h-[calc(100vh-100px)]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -310,8 +313,8 @@ const ProfilePage = () => {
               </Button>
             </div>
             <p className="text-sm text-muted-foreground">
-              Xuất dữ liệu để sao lưu các danh sách yêu thích, muốn thử và ghi chú cá nhân của bạn.
-              Nhập dữ liệu sẽ ghi đè lên các danh sách hiện có của bạn.
+              Xuất dữ liệu để sao lưu tất cả các món ăn và danh sách cá nhân của bạn.
+              Nhập dữ liệu sẽ ghi đè lên các danh sách cá nhân hiện có của bạn, dữ liệu món ăn chính sẽ không bị ảnh hưởng.
             </p>
           </div>
         </CardContent>
