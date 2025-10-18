@@ -53,3 +53,11 @@ export interface UserLists {
   wishlist: string[];
   visited: string[];
 }
+
+// Represents the structure of the user's backup data
+export interface UserBackupData {
+  favorites: { mon_an_id: string; ghi_chu: string | null }[];
+  wishlist: { mon_an_id: string }[];
+  visited: { mon_an_id: string; rating: number | null; notes: string | null }[];
+  personal_notes: { mon_an_id: string; content: string }[];
+}
