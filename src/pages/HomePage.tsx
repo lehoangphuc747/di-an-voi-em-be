@@ -18,7 +18,7 @@ export default function HomePage() {
   const { session, userLists, setUserLists } = useSession();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
-  const [sortOrder, setSortOrder] = useState('date'); // 'date', 'az', 'za'
+  const [sortOrder, setSortOrder] = useState('date'); // 'date' (newest), 'oldest', 'az', 'za'
   const [filteredFood, setFilteredFood] = useState<MonAn[]>([]);
 
   const allFoodItems = useMemo(() => Object.values(foodData), []);
@@ -48,7 +48,11 @@ export default function HomePage() {
 
     // Sort results
     if (sortOrder === 'date') {
+      // Mới nhất (Newest)
       results.sort((a, b) => new Date(b.ngayTao).getTime() - new Date(a.ngayTao).getTime());
+    } else if (sortOrder === 'oldest') {
+      // Cũ nhất (Oldest)
+      results.sort((a, b) => new Date(a.ngayTao).getTime() - new Date(b.ngayTao).getTime());
     } else if (sortOrder === 'az') {
       results.sort((a, b) => a.ten.localeCompare(b.ten));
     } else if (sortOrder === 'za') {
@@ -119,6 +123,7 @@ export default function HomePage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="date">Mới nhất</SelectItem>
+                <SelectItem value="oldest">Cũ nhất</SelectItem>
                 <SelectItem value="az">Tên A-Z</SelectItem>
                 <SelectItem value="za">Tên Z-A</SelectItem>
               </SelectContent>
