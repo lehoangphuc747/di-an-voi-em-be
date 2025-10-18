@@ -18,6 +18,7 @@ export default function HomePage() {
   const { session, userLists, setUserLists } = useSession();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCity, setSelectedCity] = useState('all');
+  const [sortOrder, setSortOrder] = useState('date'); // 'date', 'az', 'za'
   const [filteredFood, setFilteredFood] = useState<MonAn[]>([]);
 
   const allFoodItems = useMemo(() => Object.values(foodData), []);
@@ -35,7 +36,7 @@ export default function HomePage() {
       const lowercasedTerm = searchTerm.toLowerCase();
       results = results.filter(item =>
         item.ten.toLowerCase().includes(lowercasedTerm) ||
-        item.tags.some(tag => tag.toLowerCase().includes(lowercasedTerm)) ||
+        (item.tags && item.tags.some(tag => tag.toLowerCase().includes(lowercasedTerm))) ||
         item.diaChi.toLowerCase().includes(lowercasedTerm)
       );
     }
@@ -45,8 +46,17 @@ export default function HomePage() {
       results = results.filter(item => item.thanhPho === selectedCity);
     }
 
+    // Sort results
+    if (sortOrder === 'date') {
+      results.sort((a, b) => new Date(b.ngayTao).getTime() - new Date(a.ngayTao).getTime());
+    } else if (sortOrder === 'az') {
+      results.sort((a, b) => a.ten.localeCompare(b.ten));
+    } else if (sortOrder === 'za') {
+      results.sort((a, b) => b.ten.localeCompare(a.ten));
+    }
+
     setFilteredFood(results);
-  }, [searchTerm, selectedCity, allFoodItems]);
+  }, [searchTerm, selectedCity, sortOrder, allFoodItems]);
 
   const handleToggle = async (listType: 'favorites' | 'wishlist' | 'visited', foodId: string) => {
     if (!session) {
@@ -77,12 +87,12 @@ export default function HomePage() {
     <div className="container mx-auto px-4 py-8">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100 sm:text-5xl md:text-6xl">
-          Khám Phá Ẩm Thực Đà Lạt
+          Khám Phá Ẩm Thực
         </h1>
         <p className="mt-3 max-w-md mx-auto text-base text-gray-500 dark:text-gray-400 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-          Tìm kiếm những món ăn ngon, những địa điểm hấp dẫn không thể bỏ lỡ tại thành phố ngàn hoa.
+          Tìm kiếm những món ăn ngon, những địa điểm hấp dẫn không thể bỏ lỡ.
         </p>
-        <div className="mt-8 max-w-xl mx-auto flex flex-col sm:flex-row gap-4">
+        <div className="mt-8 max-w-3xl mx-auto flex flex-col sm:flex-row gap-4">
           <Input
             type="search"
             placeholder="Tìm món ăn, địa chỉ, tag..."
@@ -90,18 +100,30 @@ export default function HomePage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Select value={selectedCity} onValueChange={setSelectedCity}>
-            <SelectTrigger className="w-full sm:w-[220px]">
-              <SelectValue placeholder="Chọn thành phố" />
-            </SelectTrigger>
-            <SelectContent>
-              {uniqueCities.map(city => (
-                <SelectItem key={city} value={city}>
-                  {city === 'all' ? 'Tất cả thành phố' : city}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex gap-4">
+            <Select value={selectedCity} onValueChange={setSelectedCity}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Chọn thành phố" />
+              </SelectTrigger>
+              <SelectContent>
+                {uniqueCities.map(city => (
+                  <SelectItem key={city} value={city}>
+                    {city === 'all' ? 'Tất cả thành phố' : city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortOrder} onValueChange={setSortOrder}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Sắp xếp theo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="date">Mới nhất</SelectItem>
+                <SelectItem value="az">Tên A-Z</SelectItem>
+                <SelectItem value="za">Tên Z-A</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -159,7 +181,7 @@ export default function HomePage() {
               </CardContent>
               <CardFooter className="p-4 pt-0">
                 <div className="flex flex-wrap gap-2">
-                  {item.tags.slice(0, 3).map((tag) => (
+                  {item.tags && item.tags.slice(0, 3).map((tag) => (
                     <Badge key={tag} variant="secondary">{tag}</Badge>
                   ))}
                 </div>
