@@ -23,7 +23,7 @@ const DetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [isViewerOpen, setIsViewerOpen] = useState(0); // Use number for selected image index
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid'); // Changed default to 'grid'
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { user } = useSession();
