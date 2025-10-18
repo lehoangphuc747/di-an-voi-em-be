@@ -1,0 +1,23 @@
+{
+  "id": "40",
+  "ten": "Gà Nướng Cơm Lam Thiên Phúc",
+  "loaiIds": ["an-no"],
+  "hinhAnh": [
+    "https://c.l3n.co/Pe9Aez.png",
+    "https://d.l3n.co/Pe98J5.png",
+    "https://c.l3n.co/PeVGm2.png",
+    "https://d.l3n.co/PeVaov.png",
+    "https://a.l3n.co/Pe928C.png",
+    "https://d.l3n.co/PeV5I9.png"
+  ],
+  "moTa": "Chuyên phục vụ gà nướng nguyên con ăn kèm cơm lam và bánh bao chiên. Quán có các combo đa dạng, phù hợp cho nhóm bạn hoặc gia đình. Được đánh giá cao trên Google Maps.",
+  "diaChi": "80 Tố Hữu, Phước Hải, TP. Nha Trang",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Gà+Nướng+Cơm+Lam+Thiên+Phúc+80+Tố+Hữu+Nha+Trang",
+  "tags": ["gà nướng", "cơm lam", "nha trang", "ăn no", "combo"],
+  "giaMin": 200000,
+  "giaMax": 220000,
+  "ngayTao": "2024-08-24T10:05:00Z",
+  "gioMoCua": "8:00 AM–9:00 PM",
+  "soDienThoai": "0348190348"
+}

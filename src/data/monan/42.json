@@ -1,0 +1,27 @@
+{
+  "id": "42",
+  "ten": "Quán Ốc Sen Mai",
+  "loaiIds": ["hai-san", "an-vat"],
+  "hinhAnh": [
+    "https://a.l3n.co/Pe9CTQ.jpg",
+    "https://d.l3n.co/Pe9QUe.jpg",
+    "https://a.l3n.co/Pe99Zk.jpg",
+    "https://c.l3n.co/Pe9dmx.jpg",
+    "https://d.l3n.co/Pe9quH.jpg",
+    "https://b.l3n.co/Pe9J7a.jpg",
+    "https://c.l3n.co/Pe9EnA.jpg",
+    "https://a.l3n.co/Pe9R8D.jpg",
+    "https://d.l3n.co/Pe9TQq.jpg",
+    "https://d.l3n.co/Pe9kyM.jpg"
+  ],
+  "moTa": "Quán ốc bình dân nổi tiếng ở khu Hòn Rớ, Nha Trang. Chuyên các loại ốc, sò, hải sản tươi sống với mức giá rất phải chăng, đồng giá 20k/dĩa. Quán còn có xiên que nướng và 7 loại nước chấm đặc sắc. Luôn đông khách, đặc biệt là người dân địa phương.",
+  "diaChi": "185 Tôn Đức Thắng, Hòn Rớ, Nha Trang",
+  "thanhPho": "Nha Trang",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Quán+Ốc+Sen+Mai+185+Tôn+Đức+Thắng+Nha+Trang",
+  "tags": ["ốc", "hải sản", "nha trang", "bình dân", "giá rẻ", "xiên que"],
+  "giaMin": 5000,
+  "giaMax": 20000,
+  "ngayTao": "2024-08-24T10:15:00Z",
+  "gioMoCua": "8:00 AM–8:00 PM",
+  "soDienThoai": ""
+}

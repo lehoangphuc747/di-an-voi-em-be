@@ -1,0 +1,22 @@
+{
+  "id": "41",
+  "ten": "Bánh Căn Đà Lạt Huyền",
+  "loaiIds": ["an-vat", "an-no"],
+  "hinhAnh": [
+    "https://d.l3n.co/Pe9077.png",
+    "https://b.l3n.co/Pe9gIF.png",
+    "https://a.l3n.co/Pe9jRb.png",
+    "https://b.l3n.co/Pe9WyT.png",
+    "https://c.l3n.co/Pe9IUr.png"
+  ],
+  "moTa": "Quán bánh căn nổi tiếng tại Bảo Lộc với nhiều loại nhân đa dạng như thịt bò, mực, tôm. Là một địa điểm hấp dẫn cho những ai yêu thích món đặc sản này.",
+  "diaChi": "82/19 Lý Tự Trọng, Phường 2, Bảo Lộc",
+  "thanhPho": "Bảo Lộc",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Bánh+Căn+Đà+Lạt+Huyền+82/19+Lý+Tự+Trọng+Bảo+Lộc",
+  "tags": ["bánh căn", "bảo lộc", "đặc sản", "ăn vặt", "hải sản"],
+  "giaMin": null,
+  "giaMax": null,
+  "ngayTao": "2024-08-24T10:10:00Z",
+  "gioMoCua": "7:00 AM–8:30 PM",
+  "soDienThoai": ""
+}

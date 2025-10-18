@@ -1,0 +1,20 @@
+{
+  "id": "39",
+  "ten": "Há Cảo A Tôn",
+  "loaiIds": ["an-vat"],
+  "hinhAnh": [
+    "https://d.l3n.co/PeVL1a.jpg",
+    "https://b.l3n.co/PeVMpe.jpg",
+    "https://a.l3n.co/PeVYFk.jpg"
+  ],
+  "moTa": "Quán chuyên về há cảo và các món dimsum. Nằm ở mặt sau Vincom Bảo Lộc, là địa điểm ăn vặt lý tưởng vào buổi tối.",
+  "diaChi": "217 Phan Bội Châu, Phường 1, Bảo Lộc",
+  "thanhPho": "Bảo Lộc",
+  "googleMapLink": "https://www.google.com/maps/search/?api=1&query=Há+Cảo+A+Tôn+217+Phan+Bội+Châu+Bảo+Lộc",
+  "tags": ["há cảo", "dimsum", "bảo lộc", "ăn vặt", "đồ hoa"],
+  "giaMin": null,
+  "giaMax": null,
+  "ngayTao": "2024-08-24T10:00:00Z",
+  "gioMoCua": "5:00 PM–10:00 PM",
+  "soDienThoai": ""
+}
