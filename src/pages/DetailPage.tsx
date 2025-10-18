@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
-import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, List, LayoutGrid, ArrowLeft, Phone, Share2 } from "lucide-react";
+import { MapPin, ExternalLink, Copy, Heart, Bookmark, CheckCircle2, Facebook, Clock, List, LayoutGrid, ArrowLeft, Phone, Share2, Trash2, Edit, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +13,9 @@ import { cn } from "@/lib/utils";
 import { UserFeedbackSection } from "@/components/UserFeedbackSection";
 import { isStoreOpen } from "@/lib/time-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useSession } from '@/components/SessionContextProvider';
+import { supabase } from '@/integrations/supabase/client';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 const formatPrice = (price: number) => `${(price / 1000).toFixed(0)}k`;
 
@@ -21,7 +24,9 @@ const DetailPage = () => {
   const navigate = useNavigate();
   const [isViewerOpen, setIsViewerOpen] = useState(0); // Use number for selected image index
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [isDeleting, setIsDeleting] = useState(false);
 
+  const { user } = useSession();
   const { 
     addFavorite, removeFavorite, isFavorite,
     toggleWishlist, isWishlist,
@@ -89,6 +94,31 @@ const DetailPage = () => {
       .catch(() => showError("Không thể sao chép số điện thoại."));
   };
 
+  const handleDeleteMonAn = async () => {
+    if (!user || monAn.user_id !== user.id) {
+      showError("Bạn không có quyền xóa món ăn này.");
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from('user_submitted_mon_an')
+        .delete()
+        .eq('id', monAn.id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      showSuccess("Món ăn đã được xóa thành công!");
+      navigate('/profile'); // Navigate to profile or home page after deletion
+    } catch (error: any) {
+      console.error("Error deleting food item:", error);
+      showError(`Lỗi khi xóa món ăn: ${error.message}`);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const priceRange =
     monAn.giaMin && monAn.giaMax
       ? `${formatPrice(monAn.giaMin)} - ${formatPrice(monAn.giaMax)}`
@@ -99,6 +129,8 @@ const DetailPage = () => {
       : "Chưa cập nhật";
 
   const isOpen = isStoreOpen(monAn.gioMoCua);
+
+  const isOwner = user && monAn.user_id === user.id;
 
   return (
     <>
@@ -210,6 +242,39 @@ const DetailPage = () => {
               <Share2 className="h-4 w-4 mr-2" />
               Chia sẻ
             </Button>
+
+            {isOwner && (
+              <>
+                <Button variant="outline" onClick={() => navigate(`/submit-food/${monAn.id}/edit`)}>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Chỉnh sửa
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" disabled={isDeleting}>
+                      {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Xóa món ăn
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Bạn có chắc chắn muốn xóa món ăn này?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Hành động này không thể hoàn tác. Món ăn sẽ bị xóa vĩnh viễn khỏi danh sách.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Hủy</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteMonAn} disabled={isDeleting}>
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Xóa
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
           </div>
         </div>
 
