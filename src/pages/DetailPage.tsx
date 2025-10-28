@@ -10,7 +10,7 @@ import { useFoodLists } from "@/hooks/use-food-lists";
 import { showError, showSuccess } from "@/utils/toast";
 import { findMonAnById } from "@/data/loader";
 import { cn } from "@/lib/utils";
-import { UserFeedbackSection } from "@/components/UserFeedbackSection";
+import { UserFeedbackSection } from "@/components/features/detail/UserFeedbackSection";
 import { isStoreOpen } from "@/lib/time-utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useSession } from '@/components/SessionContextProvider';
