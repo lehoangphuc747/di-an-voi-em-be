@@ -9,10 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Link } from 'react-router-dom';
 import { Heart, Star, MapPin, Eye } from 'lucide-react';
 import { useSession } from '@/components/SessionContextProvider';
-import { toggleListItem } from '@/lib/userActions';
+import { toggleListItem } from '@/lib/user-actions';
 import { toast } from 'sonner';
 import { MonAn } from '@/types';
-import foodData from '@/data/monan';
+import foodData from '@/data/food-items';
 
 export default function HomePage() {
   const { session, userLists, setUserLists } = useSession();
@@ -29,7 +29,7 @@ export default function HomePage() {
   }, [allFoodItems]);
 
   useEffect(() => {
-    let results = [...allFoodItems];
+    let results = [...allFoodItems] as MonAn[];
 
     // Filter by search term
     if (searchTerm) {

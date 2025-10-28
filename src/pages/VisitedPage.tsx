@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { useSession } from '@/components/SessionContextProvider';
-import { useAllMonAn } from '@/hooks/use-all-mon-an';
+import { useAllMonAn } from '@/hooks/use-all-food-items';
 import { UserFoodListPage } from '@/components/shared/UserFoodListPage';
 import { Skeleton } from '@/components/ui/skeleton';
 

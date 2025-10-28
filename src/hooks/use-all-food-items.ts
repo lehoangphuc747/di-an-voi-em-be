@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { MonAn } from '@/types';
 import { supabase } from '@/integrations/supabase/client';
-import { monAnData as staticMonAnData } from '@/data/loader';
+import { monAnData as staticMonAnData } from '@/data/data-loader';
 import { showError } from '@/utils/toast';
 
 export const useAllMonAn = () => {
@@ -50,4 +50,4 @@ export const useAllMonAn = () => {
   }, [userSubmittedMonAn]);
 
   return { allMonAn, isLoading };
-};
+}

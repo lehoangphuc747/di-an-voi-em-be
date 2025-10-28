@@ -6,8 +6,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MonAn, LoaiMon } from '@/types';
 import { useFoodLists } from '@/hooks/use-food-lists';
-import { useAllMonAn } from '@/hooks/use-all-mon-an';
-import loaiMonData from '@/data/loaimon.json';
+import { useAllMonAn } from '@/hooks/use-all-food-items';
+import loaiMonData from '@/data/food-categories.json';
 import { Link } from 'react-router-dom';
 import { Dices } from 'lucide-react';
 

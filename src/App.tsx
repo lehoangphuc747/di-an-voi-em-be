@@ -10,7 +10,7 @@ import WishlistPage from '@/pages/WishlistPage';
 import VisitedPage from '@/pages/VisitedPage';
 import ProfilePage from '@/pages/ProfilePage';
 import SubmitFoodPage from '@/pages/SubmitFoodPage';
-import NotFound from '@/pages/NotFound';
+import NotFoundPage from '@/pages/NotFoundPage';
 import { CodebaseProvider } from '@/contexts/CodebaseContext';
 
 function App() {
@@ -29,7 +29,7 @@ function App() {
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/submit-food" element={<SubmitFoodPage />} />
               <Route path="/submit-food/:id/edit" element={<SubmitFoodPage />} />
-              <Route path="*" element={<NotFound />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Layout>
           <Toaster richColors />
